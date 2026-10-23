@@ -1,4 +1,3 @@
-
 @import "tailwindcss";
 
 @source "../views/**/*.blade.php";
@@ -110,4 +109,69 @@ body {
 .prose-docs pre code {
     color: #dbeafe;
     font-size: 0.875rem;
+}
+
+/* Landing page
+   Plain CSS on purpose: gradient/mask utilities were renamed between Tailwind v3 and v4. */
+
+.ss-hero-glow {
+    background:
+        radial-gradient(40rem 22rem at 50% 0%, rgb(56 189 248 / 16%), transparent 70%),
+        radial-gradient(28rem 18rem at 85% 10%, rgb(167 139 250 / 12%), transparent 70%),
+        radial-gradient(24rem 16rem at 12% 14%, rgb(52 211 153 / 7%), transparent 70%);
+}
+
+.ss-gradient-text {
+    background-image: linear-gradient(120deg, #ffffff 15%, #7dd3fc 55%, #a78bfa 95%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.ss-window {
+    border: 1px solid rgb(255 255 255 / 10%);
+    background: linear-gradient(180deg, rgb(15 23 42 / 85%), rgb(8 13 24 / 92%));
+    box-shadow:
+        0 40px 80px -30px rgb(14 165 233 / 25%),
+        0 0 0 1px rgb(255 255 255 / 3%) inset;
+}
+
+.ss-card {
+    border: 1px solid rgb(255 255 255 / 10%);
+    background: linear-gradient(180deg, rgb(255 255 255 / 4.5%), rgb(255 255 255 / 1.5%));
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.ss-card:hover {
+    border-color: rgb(56 189 248 / 30%);
+}
+
+.ss-cta {
+    border: 1px solid rgb(56 189 248 / 20%);
+    background:
+        radial-gradient(30rem 16rem at 0% 0%, rgb(56 189 248 / 16%), transparent 70%),
+        radial-gradient(28rem 16rem at 100% 100%, rgb(167 139 250 / 16%), transparent 70%),
+        rgb(15 23 42 / 60%);
+}
+
+.ss-step-line {
+    background: linear-gradient(90deg, rgb(56 189 248 / 50%), rgb(167 139 250 / 30%), transparent);
+}
+
+@keyframes ss-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ss-rise {
+    animation: ss-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ss-rise-2 { animation-delay: 0.08s; }
+.ss-rise-3 { animation-delay: 0.16s; }
+.ss-rise-4 { animation-delay: 0.28s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ss-rise { animation: none; }
 }

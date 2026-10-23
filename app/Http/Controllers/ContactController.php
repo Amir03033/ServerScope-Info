@@ -30,11 +30,6 @@ class ContactController extends Controller
             'subject' => $validated['subject'],
         ]);
 
-        return back()->with(
-            'success',
-            $locale === 'nl'
-                ? 'Bedankt voor je bericht.'
-                : 'Thank you for your message.'
-        );
+        return back()->with('success', trans('site.contact.success', [], $locale));
     }
 }

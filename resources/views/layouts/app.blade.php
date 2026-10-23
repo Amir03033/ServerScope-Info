@@ -1,10 +1,13 @@
 @php
-    $locale = $locale ?? app()->getLocale();
-    $isEn = $locale === 'en';
-    $other = $isEn ? 'nl' : 'en';
+    $locale = ($locale ?? app()->getLocale()) === 'en' ? 'en' : 'nl';
+    $other = $locale === 'en' ? 'nl' : 'en';
     $segments = request()->segments();
     $segments = count($segments) ? array_merge([$other], array_slice($segments, 1)) : [$other];
     $switchUrl = url(implode('/', $segments));
+    $canonical = url()->current();
+    $alternates = [$locale => $canonical, $other => $switchUrl];
+    $ogLocales = ['nl' => 'nl_NL', 'en' => 'en_GB'];
+    $defaultDescription = trans('site.meta.description', [], $locale);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}" class="scroll-smooth">
@@ -12,11 +15,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'ServerScope')</title>
-    <meta name="description" content="@yield('description', $isEn ? 'Manage servers, inspect metrics and track alerts from one clear platform.' : 'Beheer je servers, bekijk metrics en volg waarschuwingen vanuit één overzichtelijk platform.')">
+    <meta name="description" content="@yield('description', $defaultDescription)">
     <meta name="theme-color" content="#0b1220">
 
-    <link rel="alternate" hreflang="{{ $locale }}" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="{{ $other }}" href="{{ $switchUrl }}">
+    <link rel="canonical" href="{{ $canonical }}">
+    @foreach (['nl', 'en'] as $code)
+        <link rel="alternate" hreflang="{{ $code }}" href="{{ $alternates[$code] }}">
+    @endforeach
+    <link rel="alternate" hreflang="x-default" href="{{ $alternates['nl'] }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ServerScope">
+    <meta property="og:title" content="@yield('title', 'ServerScope')">
+    <meta property="og:description" content="@yield('description', $defaultDescription)">
+    <meta property="og:url" content="{{ $canonical }}">
+    <meta property="og:locale" content="{{ $ogLocales[$locale] }}">
+    <meta property="og:locale:alternate" content="{{ $ogLocales[$other] }}">
+    <meta name="twitter:card" content="summary">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800" rel="stylesheet">
@@ -51,15 +66,15 @@
 </head>
 <body class="min-h-screen bg-[#0b1220] font-sans text-slate-300 antialiased selection:bg-sky-400/30">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-sky-400 focus:px-4 focus:py-2 focus:text-slate-950">
-        {{ $isEn ? 'Skip to content' : 'Naar de inhoud' }}
+        {{ trans('site.skip', [], $locale) }}
     </a>
 
-    <x-navbar />
+    <x-navbar :locale="$locale" :switch-url="$switchUrl" />
 
     <main id="main">
         @yield('content')
     </main>
 
-    <x-footer />
+    <x-footer :locale="$locale" />
 </body>
 </html>
