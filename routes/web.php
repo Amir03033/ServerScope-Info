@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChangelogController;
 
 Route::redirect('/', '/nl');
 
@@ -33,8 +34,7 @@ Route::prefix('{locale}')
             ->where('slug', '[a-zA-Z0-9_-]+')
             ->name('blog.show');
 
-        Route::view('/changelog', 'changelog.index')
-            ->name('changelog');
+        Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog');
 
         Route::get('/contact', [ContactController::class, 'create'])
             ->name('contact');

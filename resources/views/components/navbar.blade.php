@@ -10,7 +10,7 @@
 <header class="sticky top-0 z-40 border-b border-white/10 bg-[#0b1220]/80 backdrop-blur">
     <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6" aria-label="{{ $t('label') }}">
         <a href="{{ url($locale) }}" class="flex items-center gap-2.5 text-white">
-            <x-icon name="pulse" class="h-7 w-7 text-sky-400" />
+            <x-ss-icon name="pulse" class="h-7 w-7 text-sky-400" />
             <span class="text-lg font-extrabold tracking-tight">ServerScope</span>
         </a>
 
@@ -37,7 +37,7 @@
         {{-- Mobile menu --}}
         <details class="group relative lg:hidden">
             <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-white/10 text-slate-200 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/70 [&::-webkit-details-marker]:hidden" aria-label="{{ $t('menu') }}">
-                <x-icon name="menu" />
+                <x-ss-icon name="menu" />
             </summary>
             <div class="absolute right-0 mt-3 w-64 rounded-2xl border border-white/10 bg-slate-900 p-2 shadow-2xl">
                 @foreach (array_merge($links, ['contact']) as $slug)

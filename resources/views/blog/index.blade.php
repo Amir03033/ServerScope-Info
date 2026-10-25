@@ -28,13 +28,13 @@
                         $date = data_get($article, 'date');
                     @endphp
                     <article class="flex flex-col rounded-2xl border border-white/10 bg-slate-900/50 p-6 transition hover:border-sky-400/30">
-                        @if ($date)<time class="text-xs text-slate-500" datetime="{{ $date }}">{{ $date }}</time>@endif
+                        @if ($date)<time class="text-xs text-slate-500" datetime="{{ $date }}">{{ \Illuminate\Support\Carbon::parse($date)->locale($lang)->translatedFormat('j F Y') }}</time>@endif
                         <h2 class="mt-2 text-lg font-semibold text-white">
                             <a href="{{ url($lang . '/blog/' . $slug) }}" class="hover:text-sky-300">{{ data_get($article, 'title') }}</a>
                         </h2>
                         <p class="mt-2 flex-1 leading-relaxed text-slate-400">{{ data_get($article, 'excerpt') }}</p>
                         <a href="{{ url($lang . '/blog/' . $slug) }}" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-300 hover:text-sky-200">
-                            {{ $t('read') }} <x-icon name="arrow" class="h-4 w-4" />
+                            {{ $t('read') }} <x-ss-icon name="arrow" class="h-4 w-4" />
                         </a>
                     </article>
                 @endforeach

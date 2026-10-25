@@ -18,7 +18,7 @@
     <div class="mx-auto grid max-w-6xl gap-10 px-4 pt-16 sm:px-6 lg:grid-cols-[16rem_1fr]">
         <aside class="lg:sticky lg:top-24 lg:h-fit">
             <a href="{{ url($lang . '/docs') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-sky-300">
-                <x-icon name="arrow" class="h-4 w-4 rotate-180" /> {{ trans('site.docs.all', [], $lang) }}
+                <x-ss-icon name="arrow" class="h-4 w-4 rotate-180" /> {{ trans('site.docs.all', [], $lang) }}
             </a>
             @if ($others->isNotEmpty())
                 <nav class="mt-5 space-y-1" aria-label="{{ trans('site.docs.headline', [], $lang) }}">

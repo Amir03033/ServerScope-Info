@@ -14,7 +14,7 @@
 
             @if (session('success'))
                 <div role="status" class="mt-8 flex items-start gap-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-200">
-                    <x-icon name="check" class="mt-0.5 h-5 w-5 shrink-0" /> {{ session('success') ?: $t('success') }}
+                    <x-ss-icon name="check" class="mt-0.5 h-5 w-5 shrink-0" /> {{ session('success') ?: $t('success') }}
                 </div>
             @endif
 

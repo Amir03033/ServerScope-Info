@@ -40,10 +40,10 @@
             @endforeach
         </ol>
         <p class="mt-6 flex items-start gap-2 text-sm text-slate-500">
-            <x-icon name="shield" class="mt-0.5 h-4 w-4 shrink-0" /> {{ $t('note') }}
+            <x-ss-icon name="shield" class="mt-0.5 h-4 w-4 shrink-0" /> {{ $t('note') }}
         </p>
         <div class="mt-10">
-            <x-button :href="url($lang . '/docs')">{{ $t('cta') }} <x-icon name="arrow" class="h-4 w-4" /></x-button>
+            <x-button :href="url($lang . '/docs')">{{ $t('cta') }} <x-ss-icon name="arrow" class="h-4 w-4" /></x-button>
         </div>
     </section>
 @endsection

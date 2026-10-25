@@ -47,13 +47,13 @@
             <p class="ss-rise ss-rise-3 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">{{ $t('intro') }}</p>
 
             <div class="ss-rise ss-rise-3 mt-10 flex flex-wrap justify-center gap-3">
-                <x-button :href="url($lang . '/features')" class="!px-6 !py-3.5">{{ $t('primary') }} <x-icon name="arrow" class="h-4 w-4" /></x-button>
+                <x-button :href="url($lang . '/features')" class="!px-6 !py-3.5">{{ $t('primary') }} <x-ss-icon name="arrow" class="h-4 w-4" /></x-button>
                 <x-button :href="url($lang . '/docs')" variant="secondary" class="!px-6 !py-3.5">{{ $t('secondary') }}</x-button>
             </div>
 
             <ul class="ss-rise ss-rise-4 mt-10 flex flex-wrap justify-center gap-x-7 gap-y-2 text-sm text-slate-400">
                 @foreach ($t('points') as $point)
-                    <li class="flex items-center gap-2"><x-icon name="check" class="h-4 w-4 text-emerald-400" /> {{ $point }}</li>
+                    <li class="flex items-center gap-2"><x-ss-icon name="check" class="h-4 w-4 text-emerald-400" /> {{ $point }}</li>
                 @endforeach
             </ul>
         </div>
@@ -66,13 +66,13 @@
                 <aside class="hidden flex-col justify-between rounded-2xl border border-white/10 bg-[#0a111d] p-4 lg:flex">
                     <div>
                         <div class="flex items-center gap-2.5 px-1">
-                            <x-icon name="pulse" class="h-7 w-7 text-sky-400" />
+                            <x-ss-icon name="pulse" class="h-7 w-7 text-sky-400" />
                             <div><p class="text-sm font-extrabold leading-none text-white">ServerScope</p><p class="mt-1 text-[10px] text-slate-500">{{ $t('tagline') }}</p></div>
                         </div>
                         <ul class="mt-6 space-y-1">
                             @foreach (array_combine(['pulse', 'server', 'chart', 'bell', 'cpu'], $t('menu')) as $icon => $label)
                                 <li class="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm {{ $loop->first ? 'border border-sky-400/25 bg-sky-400/10 font-semibold text-white' : 'text-slate-400' }}">
-                                    <x-icon :name="$icon" class="h-4 w-4" /> {{ $label }}
+                                    <x-ss-icon :name="$icon" class="h-4 w-4" /> {{ $label }}
                                 </li>
                             @endforeach
                         </ul>
@@ -97,7 +97,7 @@
                         @foreach ($kpis as [$label, $value, $color, $points, $icon])
                             <div class="relative overflow-hidden rounded-2xl border border-white/10 ss-card p-4">
                                 <div class="flex items-start gap-3">
-                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border {{ $tone[$color][1] }} {{ $tone[$color][0] }}"><x-icon :name="$icon" /></span>
+                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border {{ $tone[$color][1] }} {{ $tone[$color][0] }}"><x-ss-icon :name="$icon" /></span>
                                     <div class="min-w-0"><p class="truncate text-xs text-slate-400">{{ $label }}</p><p class="text-2xl font-bold tracking-tight text-white">{{ $value }}</p></div>
                                 </div>
                                 <svg viewBox="0 0 200 40" preserveAspectRatio="none" class="mt-3 h-9 w-full" aria-hidden="true"><path d="{{ $points }}" fill="none" stroke="{{ $tone[$color][2] }}" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
@@ -216,7 +216,7 @@
                 <h2 class="text-2xl font-bold tracking-tight text-white sm:text-4xl">{{ $t('cta_title') }}</h2>
                 <p class="mt-3 text-lg text-slate-400">{{ $t('cta_text') }}</p>
             </div>
-            <x-button :href="url($lang . '/docs')" class="shrink-0 !px-6 !py-3.5">{{ $t('cta') }} <x-icon name="arrow" class="h-4 w-4" /></x-button>
+            <x-button :href="url($lang . '/docs')" class="shrink-0 !px-6 !py-3.5">{{ $t('cta') }} <x-ss-icon name="arrow" class="h-4 w-4" /></x-button>
         </div>
     </section>
 @endsection

@@ -11,7 +11,7 @@
     <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
             <a href="{{ url($locale) }}" class="flex items-center gap-2.5 text-white">
-                <x-icon name="pulse" class="h-6 w-6 text-sky-400" />
+                <x-ss-icon name="pulse" class="h-6 w-6 text-sky-400" />
                 <span class="text-base font-extrabold tracking-tight">ServerScope</span>
             </a>
             <p class="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">{{ $t('footer.tagline') }}</p>

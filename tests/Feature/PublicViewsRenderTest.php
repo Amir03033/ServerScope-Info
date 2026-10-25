@@ -30,7 +30,7 @@ class PublicViewsRenderTest extends TestCase
         return $cases;
     }
 
-    /** @dataProvider pages */
+    #[\PHPUnit\Framework\Attributes\DataProvider('pages')]
     public function test_view_renders_with_metadata_and_without_missing_translation_keys(string $view, string $locale): void
     {
         app()->setLocale($locale);
