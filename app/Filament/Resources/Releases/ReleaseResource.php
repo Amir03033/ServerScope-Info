@@ -18,7 +18,17 @@ class ReleaseResource extends Resource
 {
     protected static ?string $model = Release::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRocketLaunch;
+
+    protected static ?string $modelLabel = 'release';
+
+    protected static ?string $pluralModelLabel = 'Changelog';
+
+    protected static ?string $navigationLabel = 'Changelog';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Website';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'version';
 

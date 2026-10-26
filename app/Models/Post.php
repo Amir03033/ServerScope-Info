@@ -22,9 +22,28 @@ class Post extends Model
     {
         static::saving(function (Post $post): void {
             if (blank($post->slug)) {
-                $post->slug = Str::slug($post->title);
+                $post->slug = static::uniqueSlug($post);
             }
         });
+    }
+
+    /**
+     * Slug from the title, unique within the locale (-2, -3, ... on collision).
+     */
+    public static function uniqueSlug(Post $post): string
+    {
+        $base = Str::limit(Str::slug($post->title), 140, '') ?: 'artikel';
+        $slug = $base;
+
+        for ($i = 2; static::query()
+            ->where('locale', $post->locale)
+            ->where('slug', $slug)
+            ->when($post->exists, fn (Builder $q) => $q->whereKeyNot($post->getKey()))
+            ->exists(); $i++) {
+            $slug = "{$base}-{$i}";
+        }
+
+        return $slug;
     }
 
     public function scopePublished(Builder $query): Builder

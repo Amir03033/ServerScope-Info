@@ -27,11 +27,16 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
+    /**
+     * Only explicit administrators (is_admin, not mass assignable) may use
+     * the admin panel. Grant it with `php artisan info:admin`.
+     */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->email === 'hosseinjebari@gmail.com';
+        return $panel->getId() === 'admin' && $this->is_admin;
     }
 }
