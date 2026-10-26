@@ -1,5 +1,6 @@
 ---
-order: 3
+order: 2
+category: monitoring
 icon: globe
 description: HTTP-beschikbaarheid, SSL-certificaten, DNS-records en domeinregistratie bewaken, met de instellingen en wanneer er een incident ontstaat.
 ---

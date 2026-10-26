@@ -17,8 +17,12 @@ use League\CommonMark\MarkdownConverter;
  *
  *     ---
  *     order: 2
+ *     category: monitoring
+ *     icon: server
  *     description: One sentence for the index and meta description.
  *     ---
+ *
+ * Categories (see CATEGORIES) group the sidebar and the index.
  *
  * The placeholder {app_url} is replaced with the ServerScope application
  * URL, so links into the app follow config('serverscope.app_url').
@@ -31,6 +35,12 @@ class DocumentationService
         'nl' => ['NOTE' => 'Opmerking', 'TIP' => 'Tip', 'IMPORTANT' => 'Belangrijk', 'WARNING' => 'Let op', 'CAUTION' => 'Pas op'],
         'en' => ['NOTE' => 'Note', 'TIP' => 'Tip', 'IMPORTANT' => 'Important', 'WARNING' => 'Warning', 'CAUTION' => 'Caution'],
     ];
+
+    /** Sidebar/index groups in display order; labels live in lang/{locale}/site.php (docs.categories). */
+    public const CATEGORIES = ['start', 'monitoring', 'incidents', 'integrations', 'developers', 'account'];
+
+    /** Old slugs that moved, so existing links keep working. */
+    public const REDIRECTS = ['api-webhooks' => 'api-reference'];
 
     /** @var array<string, array<int, array>> */
     private array $cache = [];
@@ -71,7 +81,7 @@ class DocumentationService
     /**
      * All articles of a locale in reading order.
      *
-     * @return array<int, array{slug: string, title: string, description: ?string, order: int, icon: string, excerpt: string, text: string}>
+     * @return array<int, array{slug: string, title: string, description: ?string, order: int, icon: string, category: string, minutes: int, excerpt: string, text: string}>
      */
     public function all(string $locale): array
     {
@@ -107,14 +117,39 @@ class DocumentationService
                 'description' => $meta['description'] ?? null,
                 'order' => (int) ($meta['order'] ?? 1000),
                 'icon' => $meta['icon'] ?? 'book',
+                'category' => in_array($meta['category'] ?? null, self::CATEGORIES, true) ? $meta['category'] : 'start',
+                'minutes' => $this->minutes($body),
                 'excerpt' => Str::limit($meta['description'] ?? $text, 180),
                 'text' => $text,
             ];
         }
 
-        usort($articles, fn (array $a, array $b): int => [$a['order'], $a['title']] <=> [$b['order'], $b['title']]);
+        // Reading order: by category, then by order within it.
+        $rank = array_flip(self::CATEGORIES);
+        usort($articles, fn (array $a, array $b): int => [$rank[$a['category']], $a['order'], $a['title']] <=> [$rank[$b['category']], $b['order'], $b['title']]);
 
         return $this->cache[$locale] = $articles;
+    }
+
+    /**
+     * Articles grouped by category, in display order (empty groups left out).
+     *
+     * @return array<string, array<int, array>>
+     */
+    public function grouped(string $locale): array
+    {
+        $groups = array_fill_keys(self::CATEGORIES, []);
+
+        foreach ($this->all($locale) as $article) {
+            $groups[$article['category']][] = $article;
+        }
+
+        return array_filter($groups);
+    }
+
+    public function exists(string $locale, string $slug): bool
+    {
+        return in_array($slug, array_column($this->all($locale), 'slug'), true);
     }
 
     public function find(string $locale, string $slug): ?array
@@ -140,10 +175,14 @@ class DocumentationService
             ? ['slug' => $articles[$index + $offset]['slug'], 'title' => $articles[$index + $offset]['title']]
             : null;
 
+        $current = $index !== false ? $articles[$index] : null;
+
         return [
             'slug' => $slug,
             'title' => $this->title($body, $slug),
             'description' => $meta['description'] ?? null,
+            'category' => $current['category'] ?? 'start',
+            'minutes' => $current['minutes'] ?? $this->minutes($body),
             'content' => $body,
             'html' => $html,
             'toc' => $this->toc($html),
@@ -155,7 +194,7 @@ class DocumentationService
     /**
      * Simple full-text search over title, description and body.
      *
-     * @return array<int, array{slug: string, title: string, description: ?string, snippet: string}>
+     * @return array<int, array{slug: string, title: string, description: ?string, category: string, snippet: string}>
      */
     public function search(string $locale, string $query): array
     {
@@ -187,6 +226,7 @@ class DocumentationService
                 'slug' => $article['slug'],
                 'title' => $article['title'],
                 'description' => $article['description'],
+                'category' => $article['category'],
                 'snippet' => $this->snippet($article['text'], $terms[0]),
                 'score' => $score,
             ];
@@ -224,7 +264,7 @@ class DocumentationService
 
         return preg_replace_callback(
             '~<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*~',
-            fn (array $m) => '<blockquote class="callout callout-'.strtolower($m[1]).'"><p class="callout-title">'.e($labels[$m[1]]).'</p><p>',
+            fn (array $m) => '<blockquote role="note" class="callout callout-'.strtolower($m[1]).'"><p class="callout-title">'.e($labels[$m[1]]).'</p><p>',
             $html,
         ) ?? $html;
     }
@@ -250,6 +290,16 @@ class DocumentationService
         $text = preg_replace('/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]|[#>*_`|]/', ' ', $text) ?? $text;
 
         return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+    }
+
+    /** Reading time in minutes at ~200 words per minute (code blocks count half). */
+    private function minutes(string $markdown): int
+    {
+        preg_match_all('/```.*?```/s', $markdown, $code);
+        $codeWords = str_word_count(implode(' ', $code[0]));
+        $words = str_word_count(preg_replace('/```.*?```/s', ' ', $markdown) ?? $markdown);
+
+        return max(1, (int) round(($words + $codeWords / 2) / 200));
     }
 
     private function snippet(string $text, string $term): string

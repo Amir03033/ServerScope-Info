@@ -1,5 +1,6 @@
 ---
-order: 4
+order: 1
+category: incidents
 icon: bell
 description: Hoe alertregels werken, hoe je een incident onderzoekt en de tijdlijn volgt, en hoe meldingen worden verstuurd.
 ---
@@ -112,4 +113,4 @@ Om te veel meldingen te voorkomen:
 
 Onder **Meldingen → Verzendgeschiedenis** zie je per melding of die verzonden, mislukt of onderdrukt is.
 
-Beheerders kunnen gebeurtenissen daarnaast doorsturen naar [Discord](discord-notifications) of naar een eigen systeem met [webhooks](api-webhooks).
+Beheerders kunnen gebeurtenissen daarnaast doorsturen naar [Discord](discord-notifications) of naar een eigen systeem met [webhooks](webhooks).

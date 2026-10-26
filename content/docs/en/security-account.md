@@ -1,5 +1,6 @@
 ---
-order: 8
+order: 1
+category: account
 icon: shield
 description: Two-factor authentication, passwords, inviting users, roles, the audit log, maintenance windows and data retention.
 ---
@@ -78,4 +79,4 @@ By default ServerScope keeps all history. Whoever hosts ServerScope can set a re
 
 ## Reporting a security problem
 
-Noticed something wrong, or think a token or webhook URL has leaked? Revoke the token or replace the URL (see [Discord](discord-notifications) and [API and webhooks](api-webhooks)) and [get in touch](/en/contact). Never include tokens, passwords or webhook URLs.
+Noticed something wrong, or think a token or webhook URL has leaked? Revoke the token or replace the URL (see [Discord](discord-notifications) and [API reference](api-reference) and [webhooks](webhooks)) and [get in touch](/en/security). Never include tokens, passwords or webhook URLs.

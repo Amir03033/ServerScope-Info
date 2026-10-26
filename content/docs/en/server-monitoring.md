@@ -1,5 +1,6 @@
 ---
-order: 2
+order: 1
+category: monitoring
 icon: server
 description: Add a server, install and configure the agent, verify that data arrives and fix common installation problems.
 ---

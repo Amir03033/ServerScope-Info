@@ -13,13 +13,8 @@ class BlogController extends Controller
             ->published()
             ->where('locale', $locale)
             ->latest('published_at')
-            ->get(['slug', 'title', 'excerpt', 'published_at'])
-            ->map(fn (Post $post): array => [
-                'slug' => $post->slug,
-                'title' => $post->title,
-                'excerpt' => $post->excerpt,
-                'date' => $post->published_at->toDateString(),
-            ])
+            ->get(['slug', 'title', 'excerpt', 'body', 'published_at'])
+            ->map(fn (Post $post): array => $post->summary())
             ->all();
 
         return view('blog.index', ['locale' => $locale, 'articles' => $articles]);
@@ -33,15 +28,31 @@ class BlogController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
+        $related = Post::query()
+            ->published()
+            ->where('locale', $locale)
+            ->whereKeyNot($post->getKey())
+            ->latest('published_at')
+            ->limit(3)
+            ->get(['slug', 'title', 'excerpt', 'body', 'published_at'])
+            ->map(fn (Post $item): array => $item->summary())
+            ->all();
+
+        // Posts are written per language; link the other language's post
+        // only when one with the same slug exists, otherwise its blog index.
+        $other = $locale === 'en' ? 'nl' : 'en';
+        $translated = Post::query()->published()->where('locale', $other)->where('slug', $slug)->exists();
+
         return view('blog.article', [
             'locale' => $locale,
-            'article' => [
-                'slug' => $post->slug,
-                'title' => $post->title,
-                'excerpt' => $post->excerpt,
-                'date' => $post->published_at->toDateString(),
+            'article' => $post->summary() + [
                 'html' => $post->renderedBody(),
+                'updated' => $post->updated_at?->toIso8601String(),
+                'published' => $post->published_at->toIso8601String(),
             ],
+            'related' => $related,
+            'switchUrl' => url($other.'/blog'.($translated ? '/'.$slug : '')),
+            'translated' => $translated,
         ]);
     }
 }

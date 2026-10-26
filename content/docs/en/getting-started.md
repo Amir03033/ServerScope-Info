@@ -1,5 +1,6 @@
 ---
 order: 1
+category: start
 icon: book
 description: What ServerScope does, how to get access and how to find your way around the dashboard.
 ---
@@ -68,3 +69,4 @@ ServerScope has two roles:
 2. [Monitor a domain](domain-monitoring)
 3. [Understand alerts and incidents](alerts-incidents)
 4. [Send notifications to Discord](discord-notifications)
+5. [Connect your own tools with the API](api-reference)

@@ -1,5 +1,6 @@
 ---
-order: 2
+order: 1
+category: monitoring
 icon: server
 description: Een server toevoegen, de agent installeren en configureren, controleren dat er data binnenkomt en veelvoorkomende problemen oplossen.
 ---

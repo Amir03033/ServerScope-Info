@@ -1,5 +1,6 @@
 ---
-order: 6
+order: 3
+category: integrations
 icon: status
 description: Een publieke statuspagina maken voor je servers en domeinen, instellen wat er zichtbaar is, en de pagina delen.
 ---

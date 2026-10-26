@@ -1,5 +1,6 @@
 ---
-order: 6
+order: 3
+category: integrations
 icon: status
 description: Create a public status page for your servers and domains, decide what is visible, and share the page.
 ---

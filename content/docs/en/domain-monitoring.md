@@ -1,5 +1,6 @@
 ---
-order: 3
+order: 2
+category: monitoring
 icon: globe
 description: Monitor HTTP availability, SSL certificates, DNS records and domain registration, with the settings and when an incident is opened.
 ---

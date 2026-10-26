@@ -5,56 +5,106 @@
     $switchUrl ??= url($other);
     $t = fn (string $key) => trans('site.nav.' . $key, [], $locale);
     $app = config('serverscope.app_url');
-    // slug => path below /{locale}; '' is the home page.
-    $links = ['home' => '', 'features' => 'features', 'docs' => 'docs', 'changelog' => 'changelog', 'contact' => 'contact'];
-    $href = fn (string $path) => url($locale . ($path === '' ? '' : '/' . $path));
-    $isActive = fn (string $path) => $path === '' ? request()->is($locale) : request()->is($locale . '/' . $path, $locale . '/' . $path . '/*');
+    // label key => [path below /{locale}, paths that count as active]
+    $links = [
+        'features' => ['features', ['features']],
+        'docs' => ['docs', ['docs', 'docs/*']],
+        'api' => ['docs/api-reference', []],
+        'blog' => ['blog', ['blog', 'blog/*']],
+        'changelog' => ['changelog', ['changelog']],
+        'contact' => ['contact', ['contact']],
+    ];
+    $href = fn (string $path) => url($locale . '/' . $path);
+    $isActive = function (string $key, array $patterns) use ($locale): bool {
+        // The API link points into the docs; it is active on that page only,
+        // and then the general docs link is not.
+        $apiPage = request()->is($locale . '/docs/api-reference');
+
+        if ($key === 'api') {
+            return $apiPage;
+        }
+
+        if ($key === 'docs' && $apiPage) {
+            return false;
+        }
+
+        return $patterns !== [] && request()->is(...array_map(fn ($p) => $locale . '/' . $p, $patterns));
+    };
 @endphp
-<header class="sticky top-0 z-40 border-b border-white/10 bg-[#0b1220]/80 backdrop-blur">
-    <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6" aria-label="{{ $t('label') }}">
-        <a href="{{ url($locale) }}" class="flex items-center gap-2.5 text-white">
-            <x-ss-icon name="pulse" class="h-7 w-7 text-sky-400" />
-            <span class="text-lg font-extrabold tracking-tight">ServerScope</span>
+<header data-header class="ss-header sticky top-0 z-50 border-b border-transparent backdrop-blur-md">
+    <nav class="ss-container flex h-16 items-center justify-between gap-3" aria-label="{{ $t('label') }}">
+        <a href="{{ url($locale) }}" class="-m-1 rounded-lg p-1" aria-label="ServerScope — {{ $t('home') }}">
+            <x-logo />
         </a>
 
-        <ul class="hidden items-center gap-1 lg:flex">
-            @foreach ($links as $slug => $path)
-                <li>
-                    <a href="{{ $href($path) }}"
-                       @if ($isActive($path)) aria-current="page" @endif
-                       class="rounded-lg px-3 py-2 text-sm font-medium transition {{ $isActive($path) ? 'bg-sky-400/10 text-sky-300' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                        {{ $t($slug) }}
-                    </a>
+        <ul class="hidden items-center gap-0.5 lg:flex">
+            @foreach ($links as $key => [$path, $patterns])
+                {{-- The API link also sits in the docs sidebar; it needs the room of xl screens. --}}
+                <li @class(['hidden xl:block' => $key === 'api'])>
+                    <a href="{{ $href($path) }}" class="ss-nav-link" @if ($isActive($key, $patterns)) aria-current="page" @endif>{{ $t($key) }}</a>
                 </li>
             @endforeach
         </ul>
 
-        <div class="hidden items-center gap-2 lg:flex">
-            <a href="{{ $switchUrl }}" hreflang="{{ $other }}" lang="{{ $other }}" aria-label="{{ $t('switch_to') }}"
-               class="rounded-lg border border-white/10 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-slate-300 transition hover:bg-white/5 hover:text-white">
-                {{ $other }}
+        <div class="flex items-center gap-1.5">
+            <a href="{{ url($locale . '/docs') }}" data-search-open
+               class="hidden h-9 items-center gap-2 rounded-lg border border-white/10 bg-white/[.03] pl-2.5 pr-1.5 text-sm text-slate-400 transition hover:border-white/20 hover:text-slate-200 sm:inline-flex">
+                <x-ss-icon name="search" class="h-4 w-4" />
+                <span class="hidden whitespace-nowrap xl:inline" aria-hidden="true">{{ trans('site.docs.search_button', [], $locale) }}…</span>
+                <span class="sr-only">{{ $t('search') }}</span>
+                <kbd class="ss-kbd ml-1 hidden xl:inline-flex">/</kbd>
             </a>
-            <x-button :href="$app . '/login'" variant="ghost" class="!px-3 !py-2" data-app-link title="{{ $t('app_hint') }}">{{ $t('login') }}</x-button>
-            <x-button :href="$app" class="ss-cta-button !px-4 !py-2" data-app-link title="{{ $t('app_hint') }}">{{ $t('get_started') }} <x-ss-icon name="arrow" class="h-4 w-4" /></x-button>
-        </div>
 
-        {{-- Mobile menu --}}
-        <details class="group relative lg:hidden">
-            <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-white/10 text-slate-200 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/70 [&::-webkit-details-marker]:hidden" aria-label="{{ $t('menu') }}">
-                <x-ss-icon name="menu" />
-            </summary>
-            <div class="absolute right-0 mt-3 w-64 rounded-2xl border border-white/10 bg-slate-900 p-2 shadow-2xl">
-                @foreach ($links as $slug => $path)
-                    <a href="{{ $href($path) }}"
-                       @if ($isActive($path)) aria-current="page" @endif
-                       class="block rounded-lg px-3 py-2.5 text-sm font-medium {{ $isActive($path) ? 'bg-sky-400/10 text-sky-300' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">{{ $t($slug) }}</a>
-                @endforeach
-                <div class="mt-1 grid gap-2 border-t border-white/10 px-1 pb-1 pt-3">
-                    <x-button :href="$app . '/login'" variant="secondary" class="w-full !py-2.5" data-app-link>{{ $t('login') }}</x-button>
-                    <x-button :href="$app" class="w-full !py-2.5" data-app-link>{{ $t('get_started') }}</x-button>
-                </div>
-                <a href="{{ $switchUrl }}" hreflang="{{ $other }}" lang="{{ $other }}" class="mt-1 block rounded-lg border-t border-white/10 px-3 py-2.5 text-sm text-sky-300">{{ $t('switch_to') }}</a>
-            </div>
-        </details>
+            <a href="{{ $switchUrl }}" hreflang="{{ $other }}" lang="{{ $other }}" title="{{ $t('switch_to') }}"
+               class="hidden h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold uppercase tracking-wider text-slate-400 transition hover:bg-white/5 hover:text-white lg:inline-flex">
+                <x-ss-icon name="language" class="h-4 w-4" />
+                <span aria-hidden="true">{{ $other }}</span>
+                <span class="sr-only">{{ $t('switch_to') }}</span>
+            </a>
+
+            <x-button :href="$app . '/login'" variant="ghost" size="sm" class="hidden lg:inline-flex" data-app-link title="{{ $t('app_hint') }}">{{ $t('login') }}</x-button>
+            <x-button :href="url($locale . '/docs/getting-started')" size="sm" class="hidden sm:inline-flex" :arrow="true">{{ $t('get_started') }}</x-button>
+
+            {{-- Mobile menu toggle: without JavaScript the panel below is a plain list (see noscript). --}}
+            <button type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu"
+                    class="group inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-slate-200 transition hover:bg-white/5 lg:hidden">
+                <span class="sr-only">{{ $t('menu') }}</span>
+                <x-ss-icon name="menu" class="h-5 w-5 group-aria-expanded:hidden" />
+                <x-ss-icon name="x" class="hidden h-5 w-5 group-aria-expanded:block" />
+            </button>
+        </div>
     </nav>
+
+    <div id="mobile-menu" class="ss-mobile-panel absolute inset-x-0 top-full border-b border-white/10 bg-ink-900 shadow-2xl shadow-black/50 lg:hidden">
+        <div class="ss-container max-h-[calc(100dvh-4rem)] overflow-y-auto py-4">
+            <ul class="grid gap-1">
+                @foreach ($links as $key => [$path, $patterns])
+                    <li>
+                        <a href="{{ $href($path) }}" @if ($isActive($key, $patterns)) aria-current="page" @endif
+                           class="flex min-h-11 items-center justify-between rounded-lg px-3 text-[15px] font-medium text-slate-300 hover:bg-white/5 hover:text-white aria-[current=page]:bg-sky-400/10 aria-[current=page]:text-sky-200">
+                            {{ $t($key) }} <x-ss-icon name="chevron" class="h-4 w-4 text-slate-600" />
+                        </a>
+                    </li>
+                @endforeach
+                <li>
+                    <a href="{{ url($locale . '/docs') }}" data-search-open class="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-medium text-slate-300 hover:bg-white/5 hover:text-white">
+                        <x-ss-icon name="search" class="h-4 w-4" /> {{ $t('search') }}
+                    </a>
+                </li>
+            </ul>
+            <div class="mt-4 grid gap-2 border-t border-white/10 pt-4 sm:grid-cols-2">
+                <x-button :href="$app . '/login'" variant="secondary" class="w-full" data-app-link>{{ $t('login') }}</x-button>
+                <x-button :href="url($locale . '/docs/getting-started')" class="w-full">{{ $t('get_started') }}</x-button>
+            </div>
+            <a href="{{ $switchUrl }}" hreflang="{{ $other }}" lang="{{ $other }}"
+               class="mt-3 flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-slate-400 hover:bg-white/5 hover:text-white">
+                <x-ss-icon name="language" class="h-4 w-4" /> {{ $t('switch_to') }}
+            </a>
+        </div>
+    </div>
+    <noscript>
+        <style>#mobile-menu { position: static; visibility: visible; opacity: 1; transform: none; } [data-menu-toggle] { display: none; }</style>
+    </noscript>
 </header>
+
+<x-search-dialog :locale="$locale" />

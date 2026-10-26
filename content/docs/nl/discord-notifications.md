@@ -1,5 +1,6 @@
 ---
-order: 5
+order: 1
+category: integrations
 icon: message
 description: Een Discord-webhook aanmaken, koppelen aan ServerScope, testen, en de URL veilig vervangen.
 ---

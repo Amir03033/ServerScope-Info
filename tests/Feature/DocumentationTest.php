@@ -9,8 +9,8 @@ use Tests\TestCase;
 class DocumentationTest extends TestCase
 {
     private const SLUGS = [
-        'getting-started', 'server-monitoring', 'domain-monitoring', 'alerts-incidents',
-        'discord-notifications', 'status-pages', 'api-webhooks', 'security-account',
+        'getting-started', 'server-monitoring', 'domain-monitoring', 'alerts-incidents', 'reports',
+        'discord-notifications', 'webhooks', 'status-pages', 'api-reference', 'security-account',
     ];
 
     protected function setUp(): void
@@ -70,7 +70,7 @@ class DocumentationTest extends TestCase
     public function test_search_finds_matching_tutorials(): void
     {
         $this->get('/en/docs?q=webhook+token')->assertOk()->assertSee('Search results for')->assertSee('Discord notifications');
-        $this->get('/nl/docs?q=xyzzy-bestaat-niet')->assertOk()->assertSee('Geen resultaten');
+        $this->get('/nl/docs?q=xyzzy-bestaat-niet')->assertOk()->assertSee('Geen handleidingen gevonden');
 
         $results = app(DocumentationService::class)->search('en', 'rotate token');
         $this->assertContains('server-monitoring', array_column($results, 'slug'));
@@ -87,7 +87,7 @@ class DocumentationTest extends TestCase
     {
         // Verified against routes/web.php of ServerScope Core.
         $known = ['', '/login', '/servers', '/servers/create', '/domains/create', '/alert-rules', '/alert-rules/create',
-            '/alerts', '/incidents', '/profile', '/profile/api-tokens', '/webhooks', '/status-pages', '/users', '/audit-logs'];
+            '/alerts', '/incidents', '/reports', '/profile', '/profile/api-tokens', '/webhooks', '/status-pages', '/users', '/audit-logs'];
 
         foreach (['nl', 'en'] as $locale) {
             foreach (File::files(base_path("content/docs/{$locale}")) as $file) {

@@ -1,5 +1,6 @@
 ---
 order: 1
+category: start
 icon: book
 description: Wat ServerScope doet, hoe je toegang krijgt en hoe je de weg vindt in het dashboard.
 ---
@@ -68,3 +69,4 @@ ServerScope kent twee rollen:
 2. [Een domein bewaken](domain-monitoring)
 3. [Begrijpen hoe alerts en incidenten werken](alerts-incidents)
 4. [Meldingen naar Discord sturen](discord-notifications)
+5. [Je eigen tools koppelen met de API](api-reference)

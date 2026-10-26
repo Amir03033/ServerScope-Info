@@ -1,5 +1,6 @@
 ---
-order: 4
+order: 1
+category: incidents
 icon: bell
 description: How alert rules work, how to investigate an incident and follow its timeline, and how notifications are delivered.
 ---
@@ -112,4 +113,4 @@ To prevent notification floods:
 
 **Meldingen → Verzendgeschiedenis** (delivery history) shows whether each notification was sent, failed or suppressed.
 
-Administrators can also forward events to [Discord](discord-notifications) or to their own system with [webhooks](api-webhooks).
+Administrators can also forward events to [Discord](discord-notifications) or to their own system with [webhooks](webhooks).

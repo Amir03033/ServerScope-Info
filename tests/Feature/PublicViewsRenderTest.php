@@ -17,7 +17,7 @@ class PublicViewsRenderTest extends TestCase
     /** @return array<string, array{0: string, 1: string}> */
     public static function pages(): array
     {
-        $views = ['pages.home', 'pages.features', 'pages.status', 'pages.contact',
+        $views = ['pages.home', 'pages.features', 'pages.status', 'pages.contact', 'pages.security',
                   'blog.index', 'blog.article', 'docs.index', 'docs.article', 'changelog.index'];
 
         $cases = [];

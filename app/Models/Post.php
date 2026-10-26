@@ -52,6 +52,22 @@ class Post extends Model
     }
 
     /**
+     * The fields the blog pages list, with a reading time estimate.
+     *
+     * @return array{slug: string, title: string, excerpt: ?string, date: string, minutes: int}
+     */
+    public function summary(): array
+    {
+        return [
+            'slug' => $this->slug,
+            'title' => $this->title,
+            'excerpt' => $this->excerpt,
+            'date' => $this->published_at->toDateString(),
+            'minutes' => max(1, (int) round(str_word_count(strip_tags((string) $this->body)) / 200)),
+        ];
+    }
+
+    /**
      * Markdown -> HTML. Raw HTML in the source is stripped and unsafe links
      * (javascript:, data:) are removed, so the result is safe to print unescaped.
      */

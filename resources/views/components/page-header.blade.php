@@ -1,6 +1,12 @@
-{{-- Standard page title + intro. Use intro-class="" for full-width intros. --}}
-@props(['title', 'intro' => null, 'introClass' => 'max-w-xl'])
-<h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">{{ $title }}</h1>
-@if ($intro)
-    <p class="mt-4 text-lg text-slate-400 {{ $introClass }}">{{ $intro }}</p>
-@endif
+{{-- Standard page title with optional eyebrow and intro. --}}
+@props(['title', 'intro' => null, 'eyebrow' => null, 'introClass' => 'max-w-2xl'])
+<div {{ $attributes }}>
+    @if ($eyebrow)
+        <p class="ss-eyebrow ss-rise">{{ $eyebrow }}</p>
+    @endif
+    <h1 class="ss-h1 ss-rise mt-4" style="--rise-delay: 60ms">{{ $title }}</h1>
+    @if ($intro)
+        <p class="ss-lead ss-rise mt-5 {{ $introClass }}" style="--rise-delay: 120ms">{{ $intro }}</p>
+    @endif
+    {{ $slot }}
+</div>

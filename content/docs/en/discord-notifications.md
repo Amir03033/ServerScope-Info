@@ -1,5 +1,6 @@
 ---
-order: 5
+order: 1
+category: integrations
 icon: message
 description: Create a Discord webhook, connect it to ServerScope, test it, and replace the URL securely.
 ---

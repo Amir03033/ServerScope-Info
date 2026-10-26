@@ -1,5 +1,6 @@
 ---
-order: 8
+order: 1
+category: account
 icon: shield
 description: Tweestapsverificatie, wachtwoorden, gebruikers uitnodigen, rollen, het auditlog, onderhoudsvensters en bewaartermijnen.
 ---
@@ -78,4 +79,4 @@ Standaard bewaart ServerScope alle historie. Wie ServerScope host, kan per soort
 
 ## Een beveiligingsprobleem melden
 
-Zie je iets dat niet klopt, of denk je dat een token of webhook-URL is uitgelekt? Trek het token in of vervang de URL (zie [Discord](discord-notifications) en [API en webhooks](api-webhooks)) en neem [contact](/nl/contact) op. Stuur nooit tokens, wachtwoorden of webhook-URL's mee.
+Zie je iets dat niet klopt, of denk je dat een token of webhook-URL is uitgelekt? Trek het token in of vervang de URL (zie [Discord](discord-notifications) en [API-referentie](api-reference) en [webhooks](webhooks)) en lees [hoe je een probleem meldt](/nl/security). Stuur nooit tokens, wachtwoorden of webhook-URL's mee.

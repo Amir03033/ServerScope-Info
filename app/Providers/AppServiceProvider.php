@@ -11,7 +11,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Parsed Markdown is cached per request inside the service.
+        $this->app->singleton(\App\Services\DocumentationService::class);
     }
 
     /**

@@ -38,7 +38,7 @@ class ReleaseForm
                 ->schema([
                     Select::make('type')
                         ->label('Soort')
-                        ->options(['new' => 'Nieuw', 'improved' => 'Verbeterd', 'fixed' => 'Opgelost'])
+                        ->options(['new' => 'Toegevoegd', 'improved' => 'Verbeterd', 'changed' => 'Gewijzigd', 'fixed' => 'Opgelost'])
                         ->default('new')
                         ->required(),
                     TextInput::make('text')
