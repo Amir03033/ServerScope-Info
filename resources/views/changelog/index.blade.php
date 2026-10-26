@@ -24,7 +24,7 @@
 
         <ol class="relative mt-14 space-y-10 border-l border-white/10 pl-8">
             @foreach ($entries as $entry)
-                <li class="relative">
+                <li data-reveal class="relative">
                     <span class="absolute -left-[2.45rem] top-1.5 h-3 w-3 rounded-full border-2 border-[#0b1220] bg-sky-400" aria-hidden="true"></span>
                     <div class="flex flex-wrap items-baseline gap-x-3">
                         <h2 class="text-xl font-bold text-white">v{{ $entry['version'] }}</h2>

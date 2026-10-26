@@ -175,3 +175,230 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .ss-rise { animation: none; }
 }
+
+/* Scroll reveals (see resources/js/app.js). The hidden state only exists
+   once JavaScript has opted an element in, so content never depends on
+   the script. Opacity/transform only: no layout shift. */
+
+.ss-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms),
+        transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms);
+}
+
+.ss-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Cards and calls to action */
+
+.ss-card:hover {
+    transform: translateY(-2px);
+}
+
+.ss-cta-button {
+    box-shadow: 0 0 0 0 rgb(56 189 248 / 0%);
+    transition: background-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.ss-cta-button:hover {
+    box-shadow: 0 8px 28px -10px rgb(56 189 248 / 65%);
+    transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ss-reveal,
+    .ss-reveal.is-visible {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .ss-card:hover,
+    .ss-cta-button:hover {
+        transform: none;
+    }
+}
+
+@media print {
+    .ss-reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Tutorials */
+
+.ss-docs h2,
+.ss-docs h3 {
+    scroll-margin-top: 6rem;
+}
+
+.ss-docs .heading-permalink {
+    margin-left: 0.4em;
+    color: #475569;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.ss-docs h2:hover .heading-permalink,
+.ss-docs h3:hover .heading-permalink,
+.ss-docs .heading-permalink:focus {
+    opacity: 1;
+}
+
+/* Numbered instructions: ordered lists become step markers. */
+/* Beats the generic .ss-prose ol rule in the layout. */
+.ss-prose.ss-docs ol {
+    counter-reset: ss-step;
+    list-style: none;
+    padding-left: 0;
+}
+
+.ss-docs ol > li {
+    position: relative;
+    counter-increment: ss-step;
+    margin: 0 0 1rem;
+    padding-left: 2.6rem;
+}
+
+.ss-docs ol > li::before {
+    content: counter(ss-step);
+    position: absolute;
+    top: 0.1rem;
+    left: 0;
+    display: flex;
+    height: 1.75rem;
+    width: 1.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(56 189 248 / 30%);
+    border-radius: 999px;
+    background: rgb(56 189 248 / 10%);
+    color: #7dd3fc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.ss-docs ol > li > pre,
+.ss-docs ol > li > p {
+    margin-top: 0.5rem;
+}
+
+.ss-docs table {
+    display: block;
+    width: 100%;
+    margin: 0 0 1.25em;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.925rem;
+}
+
+.ss-docs th,
+.ss-docs td {
+    border-bottom: 1px solid rgb(255 255 255 / 8%);
+    padding: 0.55rem 0.9rem 0.55rem 0;
+    text-align: left;
+    vertical-align: top;
+}
+
+.ss-docs th {
+    color: #f1f5f9;
+    font-weight: 600;
+}
+
+/* Callouts: > [!NOTE], > [!TIP], > [!IMPORTANT], > [!WARNING], > [!CAUTION] */
+.ss-docs .callout {
+    margin: 0 0 1.25em;
+    border: 1px solid rgb(56 189 248 / 25%);
+    border-left-width: 4px;
+    border-radius: 0.75rem;
+    background: rgb(56 189 248 / 6%);
+    padding: 0.85rem 1.1rem;
+    color: #cbd5e1;
+}
+
+.ss-docs .callout > p {
+    margin: 0 0 0.5em;
+}
+
+.ss-docs .callout > :last-child {
+    margin-bottom: 0;
+}
+
+.ss-docs .callout-title {
+    color: #7dd3fc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ss-docs .callout-tip {
+    border-color: rgb(52 211 153 / 30%);
+    background: rgb(52 211 153 / 6%);
+}
+
+.ss-docs .callout-tip .callout-title {
+    color: #6ee7b7;
+}
+
+.ss-docs .callout-important {
+    border-color: rgb(167 139 250 / 35%);
+    background: rgb(167 139 250 / 7%);
+}
+
+.ss-docs .callout-important .callout-title {
+    color: #c4b5fd;
+}
+
+.ss-docs .callout-warning,
+.ss-docs .callout-caution {
+    border-color: rgb(251 191 36 / 35%);
+    background: rgb(251 191 36 / 7%);
+}
+
+.ss-docs .callout-warning .callout-title,
+.ss-docs .callout-caution .callout-title {
+    color: #fcd34d;
+}
+
+/* Code blocks with a copy button */
+.ss-docs pre.has-copy {
+    position: relative;
+    padding-right: 5.5rem;
+}
+
+.ss-copy {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 0.5rem;
+    background: rgb(15 23 42 / 90%);
+    padding: 0.25rem 0.6rem;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ss-copy:hover {
+    background: rgb(30 41 59);
+    color: #fff;
+}
+
+.ss-copy:focus-visible {
+    outline: 2px solid rgb(56 189 248 / 70%);
+    outline-offset: 2px;
+}
+
+.ss-copy.is-done {
+    color: #6ee7b7;
+}

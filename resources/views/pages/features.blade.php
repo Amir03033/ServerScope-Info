@@ -17,9 +17,9 @@
     </section>
 
     <section class="mx-auto max-w-6xl px-4 sm:px-6">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
             @foreach ($t('items') as [$icon, $title, $text])
-                <article class="rounded-2xl border border-white/10 bg-slate-900/50 p-6 transition hover:border-sky-400/30">
+                <article data-reveal class="ss-card rounded-2xl p-6">
                     <x-icon-tile :name="$icon" />
                     <h2 class="mt-5 text-lg font-semibold text-white">{{ $title }}</h2>
                     <p class="mt-2 leading-relaxed text-slate-400">{{ $text }}</p>
@@ -30,9 +30,9 @@
 
     <section class="mx-auto mt-24 max-w-6xl px-4 sm:px-6">
         <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">{{ $t('steps_title') }}</h2>
-        <ol class="mt-8 grid gap-4 md:grid-cols-3">
+        <ol class="mt-8 grid gap-4 md:grid-cols-3" data-reveal-group>
             @foreach ($t('steps') as $i => [$title, $text])
-                <li class="rounded-2xl border border-white/10 bg-[#0e1726] p-6">
+                <li data-reveal class="rounded-2xl border border-white/10 bg-[#0e1726] p-6">
                     <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sky-400 text-sm font-bold text-slate-950">{{ $i + 1 }}</span>
                     <h3 class="mt-4 font-semibold text-white">{{ $title }}</h3>
                     <p class="mt-2 text-sm leading-relaxed text-slate-400">{{ $text }}</p>

@@ -137,13 +137,13 @@
     {{-- Feature grid --}}
     <section class="mx-auto mt-32 max-w-6xl px-4 sm:px-6">
         <div class="mx-auto max-w-2xl text-center">
-            <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ $t('bento_title') }}</h2>
+            <h2 data-reveal class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ $t('bento_title') }}</h2>
             <p class="mt-4 text-lg text-slate-400">{{ $t('bento_text') }}</p>
         </div>
 
-        <div class="mt-12 grid gap-4 lg:grid-cols-6">
+        <div class="mt-12 grid gap-4 lg:grid-cols-6" data-reveal-group>
             {{-- Metrics --}}
-            <article class="ss-card flex flex-col overflow-hidden rounded-3xl p-7 lg:col-span-4">
+            <article data-reveal class="ss-card flex flex-col overflow-hidden rounded-3xl p-7 lg:col-span-4">
                 <x-icon-tile name="chart" />
                 <h3 class="mt-5 text-xl font-semibold text-white">{{ $t('metrics_title') }}</h3>
                 <p class="mt-2 max-w-md leading-relaxed text-slate-400">{{ $t('metrics_text') }}</p>
@@ -155,7 +155,7 @@
             </article>
 
             {{-- Alerts --}}
-            <article class="ss-card rounded-3xl p-7 lg:col-span-2">
+            <article data-reveal class="ss-card rounded-3xl p-7 lg:col-span-2">
                 <x-icon-tile name="bell" />
                 <h3 class="mt-5 text-xl font-semibold text-white">{{ $t('alerts_title') }}</h3>
                 <p class="mt-2 leading-relaxed text-slate-400">{{ $t('alerts_text') }}</p>
@@ -172,21 +172,21 @@
             </article>
 
             {{-- Servers --}}
-            <article class="ss-card rounded-3xl p-7 lg:col-span-2">
+            <article data-reveal class="ss-card rounded-3xl p-7 lg:col-span-2">
                 <x-icon-tile name="server" />
                 <h3 class="mt-5 text-xl font-semibold text-white">{{ $t('servers_title') }}</h3>
                 <p class="mt-2 leading-relaxed text-slate-400">{{ $t('servers_text') }}</p>
             </article>
 
             {{-- Agent --}}
-            <article class="ss-card rounded-3xl p-7 lg:col-span-2">
+            <article data-reveal class="ss-card rounded-3xl p-7 lg:col-span-2">
                 <x-icon-tile name="shield" />
                 <h3 class="mt-5 text-xl font-semibold text-white">{{ $t('agent_title') }}</h3>
                 <p class="mt-2 leading-relaxed text-slate-400">{{ $t('agent_text') }}</p>
             </article>
 
             {{-- Languages --}}
-            <article class="ss-card rounded-3xl p-7 lg:col-span-2">
+            <article data-reveal class="ss-card rounded-3xl p-7 lg:col-span-2">
                 <x-icon-tile name="globe" />
                 <h3 class="mt-5 text-xl font-semibold text-white">{{ $t('lang_title') }}</h3>
                 <p class="mt-2 leading-relaxed text-slate-400">{{ $t('lang_text') }}</p>
@@ -197,9 +197,9 @@
     {{-- How it works --}}
     <section class="mx-auto mt-32 max-w-6xl px-4 sm:px-6">
         <h2 class="text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ $t('steps_title') }}</h2>
-        <ol class="mt-12 grid gap-4 md:grid-cols-3">
+        <ol class="mt-12 grid gap-4 md:grid-cols-3" data-reveal-group>
             @foreach ($steps as $i => [$title, $text])
-                <li class="ss-card relative rounded-3xl p-7">
+                <li data-reveal class="ss-card relative rounded-3xl p-7">
                     <span class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-400 text-base font-bold text-slate-950">{{ $i + 1 }}</span>
                     <div class="ss-step-line absolute left-[4.75rem] right-7 top-[3rem] hidden h-px md:block" aria-hidden="true"></div>
                     <h3 class="mt-5 text-lg font-semibold text-white">{{ $title }}</h3>
@@ -211,7 +211,7 @@
 
     {{-- CTA --}}
     <section class="mx-auto mt-32 max-w-6xl px-4 sm:px-6">
-        <div class="ss-cta flex flex-col items-start justify-between gap-6 rounded-3xl p-8 sm:flex-row sm:items-center sm:p-14">
+        <div data-reveal class="ss-cta flex flex-col items-start justify-between gap-6 rounded-3xl p-8 sm:flex-row sm:items-center sm:p-14">
             <div class="max-w-xl">
                 <h2 class="text-2xl font-bold tracking-tight text-white sm:text-4xl">{{ $t('cta_title') }}</h2>
                 <p class="mt-3 text-lg text-slate-400">{{ $t('cta_text') }}</p>
