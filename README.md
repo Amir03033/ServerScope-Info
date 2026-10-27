@@ -51,4 +51,4 @@ vendor/bin/pint --test
 
 ## Deployment
 
-After pulling changes: `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`, `npm ci && npm run build` (or upload `public/build`), then `php artisan optimize`. `public/robots.txt` was replaced by the `/robots.txt` route, which also points to `/sitemap.xml`.
+After pulling changes: `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`, `public/build` is committed (the server needs no Node): after changing `resources/css` or `resources/js`, run `npm ci && npm run build` locally and commit the result, then `php artisan optimize`. `public/robots.txt` was replaced by the `/robots.txt` route, which also points to `/sitemap.xml`.
