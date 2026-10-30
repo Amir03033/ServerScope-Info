@@ -4,43 +4,45 @@
     $lang = ($locale ?? app()->getLocale()) === 'en' ? 'en' : 'nl';
     $t = fn (string $key) => trans('site.changelog.' . $key, [], $lang);
 
-    // Release data lives in lang/{nl,en}/changelog.php (newest first). A controller may still pass $entries to override it.
+    // Release data comes from the database (admin panel); before the import it
+    // falls back to lang/{nl,en}/changelog.php (newest first).
     $entries = $entries ?? trans('changelog.entries', [], $lang);
     $entries = is_array($entries) ? $entries : [];
-
-    $badge = [
-        'new' => 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
-        'improved' => 'border-sky-400/20 bg-sky-400/10 text-sky-300',
-        'fixed' => 'border-amber-400/20 bg-amber-400/10 text-amber-300',
-    ];
     $badgeLabels = $t('badges');
 @endphp
 
 @section('title', $t('title'))
+@section('description', $t('intro'))
 
 @section('content')
-    <section class="mx-auto max-w-3xl px-4 pt-20 sm:px-6">
-        <x-page-header :title="$t('headline')" :intro="$t('intro')" intro-class="" />
+    <section class="ss-container max-w-4xl pt-16 sm:pt-24">
+        <x-page-header :title="$t('headline')" :intro="$t('intro')" />
 
-        <ol class="relative mt-14 space-y-10 border-l border-white/10 pl-8">
+        <ol class="mt-14">
             @foreach ($entries as $entry)
-                <li data-reveal class="relative">
-                    <span class="absolute -left-[2.45rem] top-1.5 h-3 w-3 rounded-full border-2 border-[#0b1220] bg-sky-400" aria-hidden="true"></span>
-                    <div class="flex flex-wrap items-baseline gap-x-3">
-                        <h2 class="text-xl font-bold text-white" id="{{ $entry['id'] ?? '' }}">{{ filled($entry['title'] ?? null) ? $entry['title'] : 'v'.$entry['version'] }}</h2>
-                        <time class="text-sm text-slate-500" datetime="{{ $entry['date'] }}">{{ \Illuminate\Support\Carbon::parse($entry['date'])->locale($lang)->translatedFormat('j F Y') }}</time>
+                <li data-reveal class="relative grid gap-4 border-t border-line py-10 md:grid-cols-[10rem_1fr]">
+                    <div class="md:sticky md:top-24 md:h-fit">
+                        <time class="text-sm font-medium text-muted" datetime="{{ $entry['date'] }}">{{ \Illuminate\Support\Carbon::parse($entry['date'])->locale($lang)->translatedFormat('j F Y') }}</time>
+                        @if (filled($entry['version'] ?? null) && filled($entry['title'] ?? null))
+                            <p class="mt-1 font-mono text-xs text-subtle">v{{ $entry['version'] }}</p>
+                        @endif
                     </div>
-                    @if (filled($entry['html'] ?? null))
-                        <x-prose :html="$entry['html']" class="ss-docs mt-4" />
-                    @endif
-                    <ul class="mt-4 space-y-3">
-                        @foreach ($entry['items'] as [$type, $text])
-                            <li class="flex items-start gap-3">
-                                <span class="mt-0.5 shrink-0 rounded-md border px-2 py-0.5 text-xs font-semibold {{ $badge[$type] ?? $badge['new'] }}">{{ $badgeLabels[$type] ?? $type }}</span>
-                                <span class="text-slate-300">{{ $text }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div class="min-w-0">
+                        <h2 class="text-xl font-semibold tracking-[-0.015em] text-fg" @if (filled($entry['id'] ?? null)) id="{{ $entry['id'] }}" @endif>{{ filled($entry['title'] ?? null) ? $entry['title'] : 'v' . $entry['version'] }}</h2>
+                        @if (filled($entry['html'] ?? null))
+                            <x-prose :html="$entry['html']" class="mt-4" />
+                        @endif
+                        @if (($entry['items'] ?? []) !== [])
+                            <ul class="mt-4 space-y-2.5">
+                                @foreach ($entry['items'] as [$type, $text])
+                                    <li class="flex items-start gap-3">
+                                        <span class="ss-badge mt-0.5 shrink-0 {{ $type === 'new' ? 'ss-badge-soon' : '' }}">{{ $badgeLabels[$type] ?? $type }}</span>
+                                        <span class="text-fg">{{ $text }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
                 </li>
             @endforeach
         </ol>

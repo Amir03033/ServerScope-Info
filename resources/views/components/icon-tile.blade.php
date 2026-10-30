@@ -1,8 +1,8 @@
-{{-- Icon in a tinted rounded square. size: sm (2.5rem) | md (2.75rem, default) | lg (3rem) --}}
+{{-- Icon in a quiet rounded square. size: sm (2.25rem) | md (2.5rem, default) | lg (3rem) --}}
 @props(['name', 'size' => 'md'])
 @php
-    $sizes = ['sm' => 'h-10 w-10', 'md' => 'h-11 w-11', 'lg' => 'h-12 w-12'];
+    $sizes = ['sm' => 'h-9 w-9', 'md' => 'h-10 w-10', 'lg' => 'h-12 w-12'];
 @endphp
-<span {{ $attributes->merge(['class' => 'flex shrink-0 items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 text-sky-400 ' . ($sizes[$size] ?? $sizes['md'])]) }}>
-    <x-ss-icon :name="$name" />
+<span {{ $attributes->merge(['class' => 'flex shrink-0 items-center justify-center rounded-[10px] border border-line bg-surface-2 text-fg ' . ($sizes[$size] ?? $sizes['md'])]) }}>
+    <x-ss-icon :name="$name" class="h-[18px] w-[18px]" />
 </span>

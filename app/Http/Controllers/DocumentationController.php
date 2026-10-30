@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Feature;
 use App\Services\DocumentationService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,6 +24,14 @@ class DocumentationController extends Controller
             'query' => $query,
             'results' => $query !== '' ? $documentation->search($locale, $query) : null,
         ]);
+    }
+
+    /**
+     * Small index for the ⌘K search dialog (visible pages only).
+     */
+    public function searchIndex(DocumentationService $documentation, string $locale): JsonResponse
+    {
+        return response()->json($documentation->searchIndex($locale))->header('Cache-Control', 'public, max-age=300');
     }
 
     public function show(DocumentationService $documentation, string $locale, string $slug): View
