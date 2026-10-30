@@ -5,6 +5,8 @@
     $t = fn (string $key) => trans('site.contact.' . $key, [], $lang);
     // Pricing buttons link here with ?subject= while registration is closed.
     $subject = mb_substr((string) request()->query('subject', ''), 0, 150);
+    // Rendered without a controller (e.g. in tests): read the configuration directly.
+    $available = $available ?? filled(config('serverscope.contact_mail_to'));
 @endphp
 
 @section('title', $t('title'))
@@ -21,12 +23,18 @@
                 </div>
             @endif
 
-            @if ($errors->any())
+            @if (session('error'))
+                <div role="alert" class="mt-8 rounded-xl border border-bad/40 bg-surface p-4 text-sm text-bad">{{ session('error') }}</div>
+            @elseif ($errors->any())
                 <div role="alert" class="mt-8 rounded-xl border border-bad/40 bg-surface p-4 text-sm text-bad">{{ $t('errors') }}</div>
             @endif
 
-            <form method="POST" action="{{ url($lang . '/contact') }}" class="mt-8 max-w-xl space-y-5" novalidate>
+            @unless ($available)
+                <div role="status" class="mt-8 rounded-xl border border-line bg-surface p-4 text-sm text-fg">{{ $t('unavailable') }}</div>
+            @else
+            <form method="POST" action="{{ url($lang . '/contact') }}" class="relative mt-8 max-w-xl space-y-5" novalidate>
                 @csrf
+                <x-honeypot />
 
                 <x-form-field name="name" :label="$t('name')" />
                 <x-form-field name="email" type="email" :label="$t('email')" />
@@ -35,6 +43,7 @@
 
                 <x-button type="submit">{{ $t('send') }}</x-button>
             </form>
+            @endunless
         </div>
 
         <aside class="ss-card h-fit p-6">

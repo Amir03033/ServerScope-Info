@@ -84,12 +84,14 @@ class SiteRevampTest extends TestCase
 
     public function test_pricing_page_shows_placeholders_and_points_to_the_waitlist_while_registration_is_closed(): void
     {
+        Feature::query()->where('key', 'teams')->update(['status' => 'coming_soon']);
+
         $this->get('/nl/pricing')->assertOk()
             ->assertSeeInOrder(['Free', 'Pro', 'Ultra'])
             ->assertSee('Prijs volgt')
             ->assertSee('Gratis starten')
             ->assertSee('Registratie is nog niet open')
-            ->assertSee('/nl/contact?subject=Wachtlijst%20Pro', false)
+            ->assertSee('/nl/waitlist?plan=pro', false)
             ->assertSee('Vergelijk de abonnementen')
             ->assertSee('Binnenkort');
 
@@ -115,6 +117,8 @@ class SiteRevampTest extends TestCase
     public function test_hidden_features_disappear_everywhere_and_coming_soon_is_labelled(): void
     {
         $teams = Feature::query()->where('key', 'teams')->sole();
+        $this->get('/nl/features')->assertSee('Teams en rollen')->assertDontSee('Binnenkort');
+        $teams->update(['status' => 'coming_soon']);
 
         $this->get('/nl/features')->assertSee('Teams en rollen')->assertSee('Binnenkort');
         $this->get('/nl/pricing')->assertSee('Teams en rollen');
@@ -173,8 +177,9 @@ class SiteRevampTest extends TestCase
         $this->assertSame(2, $doc->feedback()->count());
     }
 
-    public function test_contact_subject_is_prefilled_from_the_pricing_buttons(): void
+    public function test_contact_subject_can_be_prefilled(): void
     {
+        config(['serverscope.contact_mail_to' => 'info@example.test']);
         $this->get('/nl/contact?subject=Wachtlijst%20Pro')->assertOk()->assertSee('value="Wachtlijst Pro"', false);
     }
 }

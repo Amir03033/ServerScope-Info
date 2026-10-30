@@ -67,7 +67,7 @@ class SiteData
 
     /**
      * Where a plan button goes: the plan's own link or the sign-up URL when
-     * registration is open, otherwise the waiting list or the contact form.
+     * registration is open, otherwise an external waiting list (when set) or this site's own one.
      */
     public function planUrl(Plan $plan, string $locale): string
     {
@@ -75,6 +75,6 @@ class SiteData
             return $plan->cta_url ?: (Setting::get('signup_url') ?: config('serverscope.app_url'));
         }
 
-        return Setting::get('waitlist_url') ?: url("{$locale}/contact").'?subject='.rawurlencode(trans('site.pricing.waitlist_subject', [], $locale).' '.$plan->translate('name', $locale));
+        return Setting::get('waitlist_url') ?: url("{$locale}/waitlist").'?plan='.rawurlencode($plan->key);
     }
 }

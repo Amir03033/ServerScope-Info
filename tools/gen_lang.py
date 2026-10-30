@@ -381,6 +381,50 @@ REVAMP = {
  },
 }
 
+# --- Waiting list and contact delivery (October 2026).
+REVAMP2 = {
+ 'nl': {
+  'contact': {'unavailable': 'Het contactformulier is op dit moment niet beschikbaar. Probeer het later opnieuw.',
+              'send_failed': 'Je bericht kon niet worden verstuurd. Probeer het later opnieuw.'},
+  'pricing': {'waitlist_note': 'Registratie is nog niet open. De knoppen brengen je naar de wachtlijst.'},
+  'waitlist': {
+    'title': 'Wachtlijst — ServerScope', 'headline': 'Wachtlijst',
+    'intro': 'Registratie voor ServerScope is nog niet open. Laat je e-mailadres achter, dan laten we je weten wanneer het zover is.',
+    'email': 'E-mailadres', 'plan': 'Abonnement', 'plan_none': 'Nog geen voorkeur',
+    'consent_label': 'toestemming',
+    'consent': 'Ik geef toestemming dat ServerScope mijn e-mailadres, taal en gekozen abonnement bewaart om mij te laten weten wanneer registratie opengaat. Ik kan mijn aanmelding altijd laten verwijderen.',
+    'submit': 'Aanmelden',
+    'privacy': 'We bewaren alleen je e-mailadres, taal, gekozen abonnement en het moment van je toestemming. We delen niets met anderen.',
+    'done': 'Je staat op de wachtlijst.',
+    'remove_link': 'Bewaar deze link als je je aanmelding later wilt laten verwijderen:',
+    'remove_contact': 'Link kwijt? Neem contact op, dan verwijderen we je aanmelding.',
+    'removed': 'Je aanmelding is verwijderd.',
+    'remove_title': 'Aanmelding verwijderen', 'remove_text': 'Wil je je aanmelding voor de wachtlijst verwijderen? Dit kan niet ongedaan worden gemaakt.',
+    'remove_button': 'Verwijder mijn aanmelding', 'remove_invalid': 'Deze link is ongeldig, of de aanmelding bestaat niet meer.',
+  },
+ },
+ 'en': {
+  'contact': {'unavailable': 'The contact form is not available at the moment. Please try again later.',
+              'send_failed': 'Your message could not be sent. Please try again later.'},
+  'pricing': {'waitlist_note': 'Registration is not open yet. The buttons take you to the waiting list.'},
+  'waitlist': {
+    'title': 'Waiting list — ServerScope', 'headline': 'Waiting list',
+    'intro': 'Registration for ServerScope is not open yet. Leave your e-mail address and we will let you know when it is.',
+    'email': 'E-mail address', 'plan': 'Plan', 'plan_none': 'No preference yet',
+    'consent_label': 'consent',
+    'consent': 'I agree that ServerScope stores my e-mail address, language and chosen plan to let me know when registration opens. I can have my entry removed at any time.',
+    'submit': 'Sign up',
+    'privacy': 'We only store your e-mail address, language, chosen plan and the moment you gave consent. We share nothing with others.',
+    'done': 'You are on the waiting list.',
+    'remove_link': 'Keep this link if you want to have your entry removed later:',
+    'remove_contact': 'Lost the link? Get in touch and we will remove your entry.',
+    'removed': 'Your entry has been removed.',
+    'remove_title': 'Remove entry', 'remove_text': 'Do you want to remove your entry from the waiting list? This cannot be undone.',
+    'remove_button': 'Remove my entry', 'remove_invalid': 'This link is invalid, or the entry no longer exists.',
+  },
+ },
+}
+
 def _merge(dst, src):
     for k, v in src.items():
         if isinstance(v, dict) and isinstance(dst.get(k), dict):
@@ -390,6 +434,7 @@ def _merge(dst, src):
 
 for _l in SITE:
     _merge(SITE[_l], REVAMP[_l])
+    _merge(SITE[_l], REVAMP2[_l])
     # The hard-coded "all systems operational" status is gone: /status shows
     # the real public ServerScope status page or "status unknown".
     for _k in ('all_ok', 'services', 'note'):

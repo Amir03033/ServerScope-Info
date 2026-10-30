@@ -65,7 +65,7 @@ class PlanResource extends Resource
                     TextInput::make('price_note.en')->label('Toelichting (EN)')->placeholder('excl. VAT')->maxLength(80),
                 ]),
             ]),
-            Section::make('Knop')->columnSpan(1)->description('Zolang registratie in de instellingen uit staat, gaat elke knop naar de wachtlijst of het contactformulier.')->schema([
+            Section::make('Knop')->columnSpan(1)->description('Zolang registratie in de instellingen uit staat, gaat elke knop naar de wachtlijst.')->schema([
                 Grid::make(2)->schema([
                     TextInput::make('cta_label.nl')->label('Tekst (NL)')->required()->maxLength(40),
                     TextInput::make('cta_label.en')->label('Tekst (EN)')->required()->maxLength(40),

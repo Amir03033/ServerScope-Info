@@ -47,11 +47,11 @@ class SiteSettings extends Page
     {
         return $schema->statePath('data')->components([
             Section::make('Aanmelden en abonnementen')
-                ->description('Zolang registratie uit staat, gaan alle knoppen op de prijspagina naar de wachtlijst (of, als die leeg is, naar het contactformulier).')
+                ->description('Zolang registratie uit staat, gaan alle knoppen op de prijspagina naar de wachtlijst.')
                 ->schema([
                     Toggle::make('registration_open')->label('Registratie in ServerScope staat open'),
                     TextInput::make('signup_url')->label('Registratie-URL')->url()->placeholder('https://serverscope.nl/register'),
-                    TextInput::make('waitlist_url')->label('Wachtlijst-URL')->url()->helperText('Leeg = het contactformulier van deze site, met het abonnement als onderwerp.'),
+                    TextInput::make('waitlist_url')->label('Wachtlijst-URL')->url()->helperText('Leeg = de eigen wachtlijst van deze site (aanmeldingen onder Inhoud → Wachtlijst).'),
                     Toggle::make('billing_toggle')->label('Schakelaar maandelijks/jaarlijks tonen'),
                     Grid::make(2)->schema([
                         TextInput::make('yearly_note.nl')->label('Tekst bij jaarlijks (NL)')->placeholder('bijv. 2 maanden gratis')->maxLength(60),

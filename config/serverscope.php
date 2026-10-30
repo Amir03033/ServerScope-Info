@@ -16,6 +16,13 @@ return [
     'app_url' => rtrim((string) env('SERVERSCOPE_APP_URL', 'https://serverscope.nl'), '/'),
 
     /*
+    | Where the contact form is delivered. Without an address the contact
+    | page says the form is unavailable instead of silently dropping messages.
+    */
+
+    'contact_mail_to' => env('CONTACT_MAIL_TO'),
+
+    /*
     |--------------------------------------------------------------------------
     | Staging
     |--------------------------------------------------------------------------

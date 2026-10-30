@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\WaitlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/nl');
@@ -51,6 +52,24 @@ Route::prefix('{locale}')
 
         Route::get('/pricing', [PricingController::class, 'index'])
             ->name('pricing');
+
+        Route::get('/waitlist', [WaitlistController::class, 'create'])
+            ->name('waitlist');
+
+        Route::post('/waitlist', [WaitlistController::class, 'store'])
+            ->middleware('throttle:5,1')
+            ->name('waitlist.store');
+
+        Route::get('/waitlist/remove/{entry}/{token}', [WaitlistController::class, 'confirmRemoval'])
+            ->whereNumber('entry')
+            ->where('token', '[A-Za-z0-9]{48}')
+            ->name('waitlist.remove');
+
+        Route::post('/waitlist/remove/{entry}/{token}', [WaitlistController::class, 'destroy'])
+            ->whereNumber('entry')
+            ->where('token', '[A-Za-z0-9]{48}')
+            ->middleware('throttle:10,1')
+            ->name('waitlist.destroy');
 
         Route::get('/blog', [BlogController::class, 'index'])
             ->name('blog.index');
