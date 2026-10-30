@@ -29,8 +29,11 @@
     };
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('intro'))
+@section('title', \App\Support\Seo::title('pricing', $lang))
+@section('description', \App\Support\Seo::description('pricing', $lang))
+@if (\App\Support\Seo::noindex('pricing', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="relative border-b border-line">

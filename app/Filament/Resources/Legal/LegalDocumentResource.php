@@ -7,11 +7,11 @@ use App\Filament\Locales;
 use App\Filament\Resources\Legal\Pages\EditLegalDocument;
 use App\Filament\Resources\Legal\Pages\ListLegalDocuments;
 use App\Filament\Resources\Legal\RelationManagers\VersionsRelationManager;
+use App\Filament\Resources\PageMeta\PageMetaResource;
 use App\Models\LegalDocument;
 use App\Services\Legal\CompanyData;
 use BackedEnum;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -51,7 +51,7 @@ class LegalDocumentResource extends Resource
         return $schema->components([
             TextInput::make('title')->label('Titel')->required()->maxLength(150),
             TextInput::make('slug')->label('Adres')->prefix(fn (LegalDocument $record) => '/'.$record->locale.'/')->disabled()->helperText('Vast per taal.'),
-            Textarea::make('seo_description')->label('Meta-omschrijving')->rows(2)->maxLength(300)->columnSpanFull(),
+            PageMetaResource::descriptionField('seo_description')->label('Meta-omschrijving')->rows(2)->columnSpanFull(),
         ]);
     }
 

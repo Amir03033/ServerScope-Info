@@ -439,6 +439,11 @@ REVAMP3 = {
     'privacy_link': 'privacyverklaring',
   },
   'footer': {'legal_title': 'Juridisch'},
+  'errors': {
+    'title': 'Pagina niet gevonden — ServerScope', 'eyebrow': 'Fout 404', 'headline': 'Deze pagina bestaat niet (meer)',
+    'text': 'Het adres klopt niet, of de pagina is verplaatst. Zoek in de documentatie of ga verder via een van de links hieronder.',
+    'search_label': 'Zoek in de documentatie', 'search_button': 'Zoeken', 'links': 'Misschien zoek je',
+  },
  },
  'en': {
   'legal': {
@@ -452,6 +457,11 @@ REVAMP3 = {
     'privacy_link': 'privacy statement',
   },
   'footer': {'legal_title': 'Legal'},
+  'errors': {
+    'title': 'Page not found — ServerScope', 'eyebrow': 'Error 404', 'headline': 'This page does not exist (any more)',
+    'text': 'The address is wrong, or the page has moved. Search the documentation or continue via one of the links below.',
+    'search_label': 'Search the documentation', 'search_button': 'Search', 'links': 'You may be looking for',
+  },
  },
 }
 

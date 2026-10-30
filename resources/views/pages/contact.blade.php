@@ -9,8 +9,11 @@
     $available = $available ?? filled(config('serverscope.contact_mail_to'));
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('intro'))
+@section('title', \App\Support\Seo::title('contact', $lang))
+@section('description', \App\Support\Seo::description('contact', $lang))
+@if (\App\Support\Seo::noindex('contact', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="ss-container grid gap-12 pt-16 sm:pt-24 lg:grid-cols-[1.4fr_1fr]">

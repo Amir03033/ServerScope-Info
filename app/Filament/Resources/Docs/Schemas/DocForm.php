@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Docs\Schemas;
 use App\Enums\FeatureStatus;
 use App\Enums\PublishStatus;
 use App\Filament\Locales;
+use App\Filament\Resources\PageMeta\PageMetaResource;
 use App\Models\DocCategory;
 use App\Models\Feature;
 use Filament\Forms\Components\DateTimePicker;
@@ -112,8 +113,8 @@ class DocForm
                         Section::make('SEO')
                             ->collapsed()
                             ->schema([
-                                TextInput::make('seo_title')->label('SEO-titel')->helperText('Leeg = de titel.')->maxLength(200),
-                                Textarea::make('seo_description')->label('Meta-omschrijving')->helperText('Leeg = de korte omschrijving.')->rows(2)->maxLength(300),
+                                PageMetaResource::titleField('seo_title')->label('SEO-titel')->helperText('Leeg = de titel. " — ServerScope" komt er altijd achter.'),
+                                PageMetaResource::descriptionField('seo_description')->label('Meta-omschrijving')->helperText('Leeg = de korte omschrijving.')->rows(2),
                                 Toggle::make('noindex')->label('Niet laten indexeren (noindex)'),
                             ]),
                     ]),

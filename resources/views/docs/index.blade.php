@@ -10,8 +10,16 @@
     $results = $results ?? null;
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('intro'))
+@section('title', \App\Support\Seo::title('docs', $lang))
+@section('description', \App\Support\Seo::description('docs', $lang))
+@if (\App\Support\Seo::noindex('docs', $lang))
+    @section('noindex', '1')
+@endif
+
+{{-- Search results are useful to visitors, not as separate pages in search engines. --}}
+@if ($query !== '')
+    @section('robots', 'noindex, follow')
+@endif
 
 @section('content')
     <section class="relative border-b border-line">

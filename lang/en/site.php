@@ -351,4 +351,13 @@ return [
         'privacy_note' => 'How we handle your data is described in the',
         'privacy_link' => 'privacy statement',
     ],
+    'errors' => [
+        'title' => 'Page not found — ServerScope',
+        'eyebrow' => 'Error 404',
+        'headline' => 'This page does not exist (any more)',
+        'text' => 'The address is wrong, or the page has moved. Search the documentation or continue via one of the links below.',
+        'search_label' => 'Search the documentation',
+        'search_button' => 'Search',
+        'links' => 'You may be looking for',
+    ],
 ];

@@ -22,8 +22,11 @@
     $chart = 'M0,110 C30,100 50,60 80,70 C110,80 130,30 160,40 C190,50 210,90 240,70 C270,50 300,20 330,30 C350,36 370,50 400,40';
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('description'))
+@section('title', \App\Support\Seo::title('home', $lang))
+@section('description', \App\Support\Seo::description('home', $lang))
+@if (\App\Support\Seo::noindex('home', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     {{-- Hero --}}

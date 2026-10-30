@@ -13,7 +13,11 @@
     }
     $ogLocales = ['nl' => 'nl_NL', 'en' => 'en_GB'];
     $defaultDescription = trans('site.meta.description', [], $locale);
-    $noindex = config('serverscope.noindex') || $__env->hasSection('noindex');
+    $robots = match (true) {
+        (bool) config('serverscope.noindex'), $__env->hasSection('noindex') => 'noindex, nofollow',
+        $__env->hasSection('robots') => trim($__env->yieldContent('robots')),
+        default => null,
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}">
@@ -25,8 +29,8 @@
     <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
     <meta name="color-scheme" content="light dark">
-    @if ($noindex)
-        <meta name="robots" content="noindex, nofollow">
+    @if ($robots)
+        <meta name="robots" content="{{ $robots }}">
     @endif
 
     {{-- Apply the saved theme before the first paint (no flash). --}}

@@ -8,8 +8,11 @@
     $categories = \App\Services\Site\FeatureCatalog::CATEGORIES;
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('v2_intro'))
+@section('title', \App\Support\Seo::title('features', $lang))
+@section('description', \App\Support\Seo::description('features', $lang))
+@if (\App\Support\Seo::noindex('features', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="relative border-b border-line">

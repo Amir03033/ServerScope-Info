@@ -16,7 +16,11 @@
     };
 @endphp
 
-@section('title', $t('title'))
+@section('title', \App\Support\Seo::title('status', $lang))
+@section('description', \App\Support\Seo::description('status', $lang))
+@if (\App\Support\Seo::noindex('status', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="ss-container max-w-3xl pt-16 sm:pt-24">

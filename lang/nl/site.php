@@ -351,4 +351,13 @@ return [
         'privacy_note' => 'Hoe we met je gegevens omgaan, lees je in de',
         'privacy_link' => 'privacyverklaring',
     ],
+    'errors' => [
+        'title' => 'Pagina niet gevonden — ServerScope',
+        'eyebrow' => 'Fout 404',
+        'headline' => 'Deze pagina bestaat niet (meer)',
+        'text' => 'Het adres klopt niet, of de pagina is verplaatst. Zoek in de documentatie of ga verder via een van de links hieronder.',
+        'search_label' => 'Zoek in de documentatie',
+        'search_button' => 'Zoeken',
+        'links' => 'Misschien zoek je',
+    ],
 ];

@@ -7,8 +7,11 @@
     $selected = old('plan', $selected ?? '');
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('intro'))
+@section('title', \App\Support\Seo::title('waitlist', $lang))
+@section('description', \App\Support\Seo::description('waitlist', $lang))
+@if (\App\Support\Seo::noindex('waitlist', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="ss-container max-w-2xl pt-16 sm:pt-24">

@@ -13,10 +13,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use Tests\Concerns\PublishesLegalDocuments;
 use Tests\TestCase;
 
 class LegalPagesTest extends TestCase
 {
+    use PublishesLegalDocuments;
     use RefreshDatabase;
 
     protected function setUp(): void
@@ -25,31 +27,6 @@ class LegalPagesTest extends TestCase
 
         $this->withoutVite();
         $this->artisan('site:defaults')->assertSuccessful();
-    }
-
-    private function fillCompany(): void
-    {
-        foreach (array_keys(CompanyData::FIELDS) as $key) {
-            if (! str_starts_with($key, 'legal.') && ! str_starts_with($key, 'retention.') && $key !== 'company.same_as' && $key !== 'company.phone') {
-                Setting::put($key, match ($key) {
-                    'company.vat_exempt' => false,
-                    'company.audience' => 'business',
-                    'security_txt.expires' => now()->addMonths(6)->toDateString(),
-                    default => 'Waarde '.$key,
-                });
-            }
-        }
-
-        Setting::put('retention.waitlist', 'tot registratie opengaat');
-        Setting::put('retention.contact', '12 maanden');
-    }
-
-    private function publish(string $key, string $locale = 'nl'): LegalVersion
-    {
-        $version = LegalDocument::query()->where('key', $key)->where('locale', $locale)->sole()->versions()->sole();
-        $version->update(['status' => 'published', 'effective_at' => today(), 'version' => '1.0']);
-
-        return $version;
     }
 
     public function test_seven_drafts_per_language_exist_and_nothing_is_public_yet(): void
