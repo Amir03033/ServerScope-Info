@@ -58,6 +58,12 @@
                 </ol>
             </nav>
 
+            @if (data_get($article ?? null, 'coming_soon'))
+                <p class="mb-4 rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100" role="note">
+                    <strong>{{ $t('coming_soon') }}</strong> — {{ $t('coming_soon_text') }}
+                </p>
+            @endif
+
             <h1 class="text-4xl font-extrabold leading-tight tracking-tight text-white">{{ $title }}</h1>
             @if (filled($description))
                 <p class="mt-4 max-w-2xl text-lg text-slate-400">{{ $description }}</p>

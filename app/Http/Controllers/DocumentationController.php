@@ -9,25 +9,23 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocumentationController extends Controller
 {
-    public function __construct(
-        private readonly DocumentationService $documentation
-    ) {}
-
-    public function index(Request $request, string $locale): View
+    // The service is resolved per request (not in the constructor): route
+    // controllers are cached, the documentation is not.
+    public function index(Request $request, DocumentationService $documentation, string $locale): View
     {
         $query = mb_substr(trim((string) $request->query('q', '')), 0, 100);
 
         return view('docs.index', [
             'locale' => $locale,
-            'articles' => $this->documentation->all($locale),
+            'articles' => $documentation->all($locale),
             'query' => $query,
-            'results' => $query !== '' ? $this->documentation->search($locale, $query) : null,
+            'results' => $query !== '' ? $documentation->search($locale, $query) : null,
         ]);
     }
 
-    public function show(string $locale, string $slug): View
+    public function show(DocumentationService $documentation, string $locale, string $slug): View
     {
-        $article = $this->documentation->find($locale, $slug);
+        $article = $documentation->find($locale, $slug);
 
         if ($article === null) {
             throw new NotFoundHttpException;
@@ -36,7 +34,7 @@ class DocumentationController extends Controller
         return view('docs.article', [
             'locale' => $locale,
             'article' => $article,
-            'articles' => $this->documentation->all($locale),
+            'articles' => $documentation->all($locale),
         ]);
     }
 }

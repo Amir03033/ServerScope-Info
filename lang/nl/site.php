@@ -194,6 +194,8 @@ return [
         'clear' => 'Wis zoekopdracht',
         'home' => 'Home',
         'on_this_page' => 'Op deze pagina',
+        'coming_soon' => 'Binnenkort',
+        'coming_soon_text' => 'Deze functie is nog niet beschikbaar. Deze handleiding beschrijft hoe ze gaat werken.',
         'previous' => 'Vorige',
         'next' => 'Volgende',
         'copy' => 'Kopiëren',

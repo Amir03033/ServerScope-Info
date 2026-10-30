@@ -194,6 +194,8 @@ return [
         'clear' => 'Clear search',
         'home' => 'Home',
         'on_this_page' => 'On this page',
+        'coming_soon' => 'Coming soon',
+        'coming_soon_text' => 'This feature is not available yet. This guide describes how it will work.',
         'previous' => 'Previous',
         'next' => 'Next',
         'copy' => 'Copy',
