@@ -46,3 +46,12 @@ Route::prefix('{locale}')
         Route::view('/status', 'pages.status')
             ->name('status');
     });
+
+// Dynamic so staging (and any non-production copy) disallows everything.
+Route::get('/robots.txt', function () {
+    $body = config('serverscope.noindex')
+        ? "User-agent: *\nDisallow: /\n"
+        : "User-agent: *\nDisallow: /admin\n";
+
+    return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('robots');

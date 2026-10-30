@@ -17,6 +17,9 @@
     <title>@yield('title', 'ServerScope')</title>
     <meta name="description" content="@yield('description', $defaultDescription)">
     <meta name="theme-color" content="#0b1220">
+    @if (config('serverscope.noindex'))
+        <meta name="robots" content="noindex, nofollow">
+    @endif
 
     <link rel="canonical" href="{{ $canonical }}">
     @foreach (['nl', 'en'] as $code)
@@ -33,13 +36,11 @@
     <meta property="og:locale:alternate" content="{{ $ogLocales[$other] }}">
     <meta name="twitter:card" content="summary">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        :root { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; }
+        :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
         body { background: #0b1220; }
         .ss-grid {
             background-image:
@@ -68,6 +69,8 @@
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-sky-400 focus:px-4 focus:py-2 focus:text-slate-950">
         {{ trans('site.skip', [], $locale) }}
     </a>
+
+    <x-staging-banner />
 
     <x-navbar :locale="$locale" :switch-url="$switchUrl" />
 

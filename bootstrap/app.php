@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Staging guard first, so Basic Auth also covers the admin panel.
+        $middleware->prepend(\App\Http\Middleware\StagingGuard::class);
+
         $middleware->alias([
             'set.locale' => \App\Http\Middleware\SetLocale::class,
         ]);
