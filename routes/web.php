@@ -13,6 +13,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitlistController;
 use App\Models\LegalDocument;
+use App\Support\Crawlers;
 use App\Support\OgImage;
 use Illuminate\Support\Facades\Route;
 
@@ -129,9 +130,5 @@ Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('sec
 
 // Dynamic so staging (and any non-production copy) disallows everything.
 Route::get('/robots.txt', function () {
-    $body = config('serverscope.noindex')
-        ? "User-agent: *\nDisallow: /\n"
-        : "User-agent: *\nDisallow: /admin\n\nSitemap: ".url('/sitemap.xml')."\n";
-
-    return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+    return response(Crawlers::robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');

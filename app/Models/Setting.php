@@ -35,6 +35,8 @@ class Setting extends Model
         'release_fingerprint' => null,
         // Cookieless page counter (aggregated per path per day).
         'pageview_counter' => true,
+        // robots.txt per AI crawler (App\Support\Crawlers): missing = allowed.
+        'crawlers' => [],
     ];
 
     /**
