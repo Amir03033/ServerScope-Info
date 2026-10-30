@@ -7,6 +7,7 @@ use App\Http\Controllers\DocFeedbackController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PricingController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,7 @@ Route::get('/admin-preview/docs/{token}', [DocumentationController::class, 'prev
 Route::pattern('locale', 'nl|en');
 
 Route::prefix('{locale}')
-    ->middleware('set.locale')
+    ->middleware(['set.locale', 'count.view'])
     ->group(function () {
         Route::get('/', [HomeController::class, 'index'])
             ->name('home');
@@ -71,11 +72,13 @@ Route::prefix('{locale}')
             ->name('status');
     });
 
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
 // Dynamic so staging (and any non-production copy) disallows everything.
 Route::get('/robots.txt', function () {
     $body = config('serverscope.noindex')
         ? "User-agent: *\nDisallow: /\n"
-        : "User-agent: *\nDisallow: /admin\n";
+        : "User-agent: *\nDisallow: /admin\n\nSitemap: ".url('/sitemap.xml')."\n";
 
     return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');
