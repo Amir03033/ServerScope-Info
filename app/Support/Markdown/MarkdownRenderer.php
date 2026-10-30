@@ -2,6 +2,7 @@
 
 namespace App\Support\Markdown;
 
+use App\Models\Setting;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
@@ -18,7 +19,8 @@ use Tempest\Highlight\Highlighter;
  * the admin preview and the import verification:
  *
  * - raw HTML is stripped and unsafe links are dropped;
- * - {app_url} becomes the ServerScope application URL;
+ * - {app_url} becomes the ServerScope application URL and
+ *   {release_fingerprint} the fingerprint from the site settings;
  * - h2/h3 get ids and a permalink;
  * - GitHub alerts (> [!NOTE] ...) become callouts;
  * - fenced code is highlighted on the server (tempest/highlight) and gets
@@ -31,6 +33,12 @@ class MarkdownRenderer
         'en' => ['NOTE' => 'Note', 'TIP' => 'Tip', 'IMPORTANT' => 'Important', 'WARNING' => 'Warning', 'CAUTION' => 'Caution'],
     ];
 
+    /** Shown until the owner fills in the release key fingerprint. */
+    public const FINGERPRINT_PLACEHOLDER = [
+        'nl' => '(volgt zodra de releasesleutel is aangemaakt)',
+        'en' => '(to follow once the release key has been created)',
+    ];
+
     private ?MarkdownConverter $converter = null;
 
     /**
@@ -38,7 +46,7 @@ class MarkdownRenderer
      */
     public function render(string $markdown, string $locale, bool $withoutTitle = true): array
     {
-        $markdown = $this->prepare($markdown);
+        $markdown = $this->prepare($markdown, $locale);
 
         if ($withoutTitle) {
             // The page template prints the title; render the body without it.
@@ -50,9 +58,15 @@ class MarkdownRenderer
         return ['html' => $html, 'toc' => $this->toc($html)];
     }
 
-    public function prepare(string $markdown): string
+    public function prepare(string $markdown, string $locale = 'nl'): string
     {
-        return str_replace(['{app_url}', "\r\n"], [(string) config('serverscope.app_url'), "\n"], $markdown);
+        $fingerprint = rescue(fn () => Setting::get('release_fingerprint'), null, report: false);
+
+        return str_replace(
+            ['{app_url}', '{release_fingerprint}', "\r\n"],
+            [(string) config('serverscope.app_url'), filled($fingerprint) ? (string) $fingerprint : (self::FINGERPRINT_PLACEHOLDER[$locale] ?? self::FINGERPRINT_PLACEHOLDER['en']), "\n"],
+            $markdown,
+        );
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Services\Docs;
 
 use App\Enums\PublishStatus;
 use App\Models\Doc;
+use App\Models\Feature;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -34,15 +35,16 @@ class DocImporter
     /**
      * @return array<int, array{locale: string, slug: string, action: string}>
      */
-    public function run(bool $force = false): array
+    public function run(bool $force = false, ?MarkdownFileSource $source = null): array
     {
         $report = [];
+        $source ??= $this->files;
 
-        DB::transaction(function () use (&$report, $force): void {
+        DB::transaction(function () use (&$report, $force, $source): void {
             $this->categories->ensure();
 
             foreach (MarkdownFileSource::LOCALES as $locale) {
-                foreach ($this->files->all($locale) as $page) {
+                foreach ($source->all($locale) as $page) {
                     $report[] = ['locale' => $locale, 'slug' => $page['slug'], 'action' => $this->import($page, $force)];
                 }
             }
@@ -73,8 +75,9 @@ class DocImporter
                 ...$attributes,
                 'locale' => $page['locale'],
                 'slug' => $page['slug'],
-                'status' => PublishStatus::Published, // these pages are live today
-                'doc_category_id' => $this->categories->id($page['locale'], DocCategories::ORIGINAL[$page['slug']] ?? 'start'),
+                'status' => PublishStatus::Published, // the original pages are live today; new ones follow their feature
+                'doc_category_id' => $this->categories->id($page['locale'], $page['meta']['category'] ?? DocCategories::ORIGINAL[$page['slug']] ?? 'start'),
+                'feature_id' => isset($page['meta']['feature']) ? Feature::query()->where('key', $page['meta']['feature'])->value('id') : null,
             ]);
             $this->stamp($doc, $page);
             $doc->save();

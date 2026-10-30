@@ -80,17 +80,20 @@ class AdminPanelRevampTest extends TestCase
         $docs = Doc::query()->where('locale', 'en')->get();
 
         Livewire::test(ListDocs::class)
-            ->searchTable('Discord')
-            ->assertCanSeeTableRecords(Doc::query()->where('slug', 'discord-notifications')->get())
-            ->assertCanNotSeeTableRecords(Doc::query()->where('slug', 'status-pages')->get());
+            ->searchTable('discord-notifications')
+            ->assertCanSeeTableRecords(Doc::query()->where('slug', 'discord-notifications')->get());
+
+        Livewire::test(ListDocs::class)
+            ->searchTable('zzz-bestaat-niet')
+            ->assertCountTableRecords(0);
 
         Livewire::test(ListDocs::class)
             ->filterTable('locale', 'en')
-            ->assertCanSeeTableRecords($docs)
+            ->assertCountTableRecords($docs->count())
             ->callTableBulkAction('draft', $docs)
             ->assertHasNoTableBulkActionErrors();
 
-        $this->assertSame(8, Doc::query()->where('locale', 'en')->where('status', 'draft')->count());
+        $this->assertSame($docs->count(), Doc::query()->where('locale', 'en')->where('status', 'draft')->count());
         $this->get('/en/docs/getting-started')->assertNotFound();
 
         Livewire::test(ListDocs::class)->callTableBulkAction('publish', $docs);

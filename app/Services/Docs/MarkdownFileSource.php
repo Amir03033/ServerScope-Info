@@ -14,9 +14,19 @@ class MarkdownFileSource
 {
     public const LOCALES = ['nl', 'en'];
 
+    public function __construct(private readonly string $base = 'content/docs') {}
+
+    /**
+     * The new pages written for the revamp (content/docs-revamp).
+     */
+    public static function revamp(): self
+    {
+        return new self('content/docs-revamp');
+    }
+
     public function directory(string $locale): string
     {
-        return base_path("content/docs/{$locale}");
+        return base_path("{$this->base}/{$locale}");
     }
 
     /**

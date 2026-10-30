@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\Docs\DocImporter;
+use App\Services\Docs\MarkdownFileSource;
 use App\Services\Site\ChangelogImporter;
 use App\Services\Site\SiteDefaults as Defaults;
 use Illuminate\Console\Command;
@@ -27,6 +28,11 @@ class SiteDefaults extends Command
         $this->components->info('Functies en abonnementen');
         $created = $defaults->run();
         $this->line('  '.collect($created)->map(fn ($n, $k) => "{$k}: {$n} nieuw")->implode(', '));
+
+        // After the features exist, so new pages can be linked to them.
+        $this->components->info('Nieuwe documentatie (content/docs-revamp)');
+        $counts = array_count_values(array_column($docs->run(source: MarkdownFileSource::revamp()), 'action'));
+        $this->line('  '.collect($counts)->map(fn ($n, $a) => "{$n} {$a}")->implode(', '));
 
         $this->components->info('Changelog');
         $this->table(['Taal', 'Bron', 'Resultaat'], array_map(fn ($r) => array_values($r), $changelog->run()));

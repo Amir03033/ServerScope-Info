@@ -147,7 +147,7 @@ class SiteRevampTest extends TestCase
 
         $index = $this->getJson('/en/docs/search.json')->assertOk()->json();
 
-        $this->assertCount(7, $index);
+        $this->assertCount(Doc::query()->visible()->where('locale', 'en')->count(), $index);
         $this->assertNotContains(url('/en/docs/status-pages'), array_column($index, 'u'));
         $this->assertSame(['t', 'd', 'u', 'c', 'x'], array_keys($index[0]));
     }
