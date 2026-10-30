@@ -27,9 +27,12 @@
                 <li data-reveal class="relative">
                     <span class="absolute -left-[2.45rem] top-1.5 h-3 w-3 rounded-full border-2 border-[#0b1220] bg-sky-400" aria-hidden="true"></span>
                     <div class="flex flex-wrap items-baseline gap-x-3">
-                        <h2 class="text-xl font-bold text-white">v{{ $entry['version'] }}</h2>
+                        <h2 class="text-xl font-bold text-white" id="{{ $entry['id'] ?? '' }}">{{ filled($entry['title'] ?? null) ? $entry['title'] : 'v'.$entry['version'] }}</h2>
                         <time class="text-sm text-slate-500" datetime="{{ $entry['date'] }}">{{ \Illuminate\Support\Carbon::parse($entry['date'])->locale($lang)->translatedFormat('j F Y') }}</time>
                     </div>
+                    @if (filled($entry['html'] ?? null))
+                        <x-prose :html="$entry['html']" class="ss-docs mt-4" />
+                    @endif
                     <ul class="mt-4 space-y-3">
                         @foreach ($entry['items'] as [$type, $text])
                             <li class="flex items-start gap-3">

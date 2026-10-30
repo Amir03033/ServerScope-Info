@@ -31,12 +31,34 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    public const ROLES = ['admin' => 'Beheerder', 'editor' => 'Redacteur'];
+
     /**
-     * Only explicit administrators (is_admin, not mass assignable) may use
-     * the admin panel. Grant it with `php artisan info:admin`.
+     * Only users with a role (not mass assignable) may use the admin panel:
+     * admin (everything) or editor (content and documentation only). Grant
+     * it with `php artisan info:admin` (--role=editor for editors).
+     * is_admin is kept as a mirror of the admin role.
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'admin' && $this->is_admin;
+        return $panel->getId() === 'admin' && ($this->isAdmin() || $this->isEditor());
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' || ($this->role === null && $this->is_admin);
+    }
+
+    public function isEditor(): bool
+    {
+        return $this->role === 'editor';
+    }
+
+    /**
+     * Sets the role (null = no panel access) and keeps is_admin in sync.
+     */
+    public function assignRole(?string $role): void
+    {
+        $this->forceFill(['role' => $role, 'is_admin' => $role === 'admin'])->save();
     }
 }
