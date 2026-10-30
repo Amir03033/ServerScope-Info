@@ -1,6 +1,6 @@
 # Revamp info.serverscope.nl — stap A: onderzoek en plan
 
-Status: **wacht op akkoord**. Er is nog geen applicatiecode gewijzigd.
+Status: **goedgekeurd en uitgevoerd** (zie [OPLEVERING.md](OPLEVERING.md)). Afwijkingen van dit plan: geen tabel voor veelgestelde vragen (idee niet goedgekeurd), geen `laravel/boost`, `tempest/highlight` vastgezet op 2.12.1 (PHP 8.3).
 Branch: `claude/relaxed-hypatia-rm4ddm`. Niets gaat naar `main` of live.
 
 ---
