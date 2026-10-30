@@ -58,6 +58,9 @@
                 </ol>
             </nav>
 
+            @if ($preview ?? false)
+                <p class="mb-4 rounded-lg border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm text-sky-100" role="note"><strong>Voorbeeld</strong> — niet opgeslagen en niet gepubliceerd.</p>
+            @endif
             @if (data_get($article ?? null, 'coming_soon'))
                 <p class="mb-4 rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100" role="note">
                     <strong>{{ $t('coming_soon') }}</strong> — {{ $t('coming_soon_text') }}

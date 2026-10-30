@@ -26,7 +26,7 @@ class PostResource extends Resource
 
     protected static ?string $navigationLabel = 'Blog';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
+    protected static string|\UnitEnum|null $navigationGroup = 'Inhoud';
 
     protected static ?int $navigationSort = 1;
 

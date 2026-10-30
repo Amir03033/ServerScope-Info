@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Feature;
 use App\Services\DocumentationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocumentationController extends Controller
@@ -36,5 +38,38 @@ class DocumentationController extends Controller
             'article' => $article,
             'articles' => $documentation->all($locale),
         ]);
+    }
+
+    /**
+     * Admin preview of unsaved form data (stored in the session by the
+     * "Voorbeeld" action). Only for panel users; never indexed.
+     */
+    public function preview(Request $request, DocumentationService $documentation, string $token): Response
+    {
+        abort_unless($request->user()?->canAccessPanel(filament()->getPanel('admin')), 403);
+
+        $data = $request->session()->get("doc-preview.{$token}");
+        abort_if(! is_array($data), 404);
+
+        $locale = ($data['locale'] ?? 'nl') === 'en' ? 'en' : 'nl';
+        app()->setLocale($locale);
+        $rendered = $documentation->render((string) ($data['body'] ?? ''), $locale);
+        $feature = filled($data['feature_id'] ?? null) ? Feature::query()->find($data['feature_id']) : null;
+
+        return response()->view('docs.article', [
+            'locale' => $locale,
+            'preview' => true,
+            'article' => [
+                'slug' => (string) ($data['slug'] ?? ''),
+                'title' => (string) ($data['title'] ?? ''),
+                'description' => $data['description'] ?? null,
+                'html' => $rendered['html'],
+                'toc' => $rendered['toc'],
+                'coming_soon' => $feature?->isComingSoon() ?? false,
+                'previous' => null,
+                'next' => null,
+            ],
+            'articles' => $documentation->all($locale),
+        ])->header('X-Robots-Tag', 'noindex, nofollow');
     }
 }

@@ -1,13 +1,18 @@
 <?php
 
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChangelogController;
 
 Route::redirect('/', '/nl');
+
+// Admin preview of unsaved documentation (session token, panel users only).
+Route::get('/admin-preview/docs/{token}', [DocumentationController::class, 'preview'])
+    ->where('token', '[A-Za-z0-9]{40}')
+    ->name('docs.preview');
 
 Route::pattern('locale', 'nl|en');
 

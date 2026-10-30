@@ -16,12 +16,13 @@ class ApplyRedirects
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->isMethod('GET') || $request->isMethod('HEAD')) {
-            $map = rescue(fn () => Redirect::map(), [], report: false);
             $path = '/'.trim($request->path(), '/');
+            // One indexed lookup; always current, also after bulk deletes.
+            $redirect = rescue(fn () => Redirect::query()->where('from_path', $path)->first(['id', 'to_path', 'status_code']), null, report: false);
 
-            if (isset($map[$path])) {
-                [$to, $status, $id] = $map[$path];
-                rescue(fn () => Redirect::query()->whereKey($id)->increment('hits'), report: false);
+            if ($redirect !== null) {
+                [$to, $status] = [$redirect->to_path, $redirect->status_code];
+                rescue(fn () => $redirect->newQuery()->whereKey($redirect->id)->increment('hits'), report: false);
 
                 $query = $request->getQueryString();
 
