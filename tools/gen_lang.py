@@ -425,6 +425,36 @@ REVAMP2 = {
  },
 }
 
+# --- Legal pages (November 2026).
+REVAMP3 = {
+ 'nl': {
+  'legal': {
+    'legal': 'Juridisch', 'version': 'Versie', 'effective': 'Geldt vanaf', 'earlier': 'Eerdere versies',
+    'print': 'Afdrukken of opslaan als PDF', 'changes': 'Wijzigingen in versie', 'all_versions': 'Alle versies en wijzigingen',
+    'versions': 'Versies', 'versions_intro': 'Alle gepubliceerde versies van dit document, nieuwste eerst.', 'in_force': 'Geldend',
+    'archived': 'Dit is een eerdere versie. Die geldt niet meer.', 'current': 'Naar de geldende versie',
+    'upcoming': 'Vanaf :date geldt een nieuwe versie.', 'read_upcoming': 'Lees de nieuwe versie',
+    'preview_draft': 'concept, niet gepubliceerd.', 'preview_published': 'gepubliceerde versie.',
+    'privacy_note': 'Hoe we met je gegevens omgaan, lees je in de',
+    'privacy_link': 'privacyverklaring',
+  },
+  'footer': {'legal_title': 'Juridisch'},
+ },
+ 'en': {
+  'legal': {
+    'legal': 'Legal', 'version': 'Version', 'effective': 'Effective from', 'earlier': 'Earlier versions',
+    'print': 'Print or save as PDF', 'changes': 'Changes in version', 'all_versions': 'All versions and changes',
+    'versions': 'Versions', 'versions_intro': 'All published versions of this document, newest first.', 'in_force': 'In force',
+    'archived': 'This is an earlier version. It no longer applies.', 'current': 'Go to the current version',
+    'upcoming': 'A new version applies from :date.', 'read_upcoming': 'Read the new version',
+    'preview_draft': 'draft, not published.', 'preview_published': 'published version.',
+    'privacy_note': 'How we handle your data is described in the',
+    'privacy_link': 'privacy statement',
+  },
+  'footer': {'legal_title': 'Legal'},
+ },
+}
+
 def _merge(dst, src):
     for k, v in src.items():
         if isinstance(v, dict) and isinstance(dst.get(k), dict):
@@ -435,6 +465,7 @@ def _merge(dst, src):
 for _l in SITE:
     _merge(SITE[_l], REVAMP[_l])
     _merge(SITE[_l], REVAMP2[_l])
+    _merge(SITE[_l], REVAMP3[_l])
     # The hard-coded "all systems operational" status is gone: /status shows
     # the real public ServerScope status page or "status unknown".
     for _k in ('all_ok', 'services', 'note'):

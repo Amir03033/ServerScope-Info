@@ -65,6 +65,7 @@
 
                 <x-button type="submit">{{ $t('submit') }}</x-button>
                 <p class="text-xs text-subtle">{{ $t('privacy') }}</p>
+                <x-privacy-note :locale="$lang" />
             </form>
         @endif
     </section>

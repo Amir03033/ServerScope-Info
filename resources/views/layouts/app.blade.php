@@ -6,6 +6,11 @@
     $switchUrl = url(implode('/', $segments));
     $canonical = url()->current();
     $alternates = [$locale => $canonical, $other => $switchUrl];
+    // Pages whose address differs per language (legal pages) pass their own.
+    if (isset($alternateUrls) && is_array($alternateUrls)) {
+        $alternates = $alternateUrls + [$locale => $canonical];
+        $switchUrl = $alternates[$other] ?? url($other);
+    }
     $ogLocales = ['nl' => 'nl_NL', 'en' => 'en_GB'];
     $defaultDescription = trans('site.meta.description', [], $locale);
     $noindex = config('serverscope.noindex') || $__env->hasSection('noindex');
@@ -36,9 +41,11 @@
 
     <link rel="canonical" href="{{ $canonical }}">
     @foreach (['nl', 'en'] as $code)
-        <link rel="alternate" hreflang="{{ $code }}" href="{{ $alternates[$code] }}">
+        @isset($alternates[$code])
+            <link rel="alternate" hreflang="{{ $code }}" href="{{ $alternates[$code] }}">
+        @endisset
     @endforeach
-    <link rel="alternate" hreflang="x-default" href="{{ $alternates['nl'] }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $alternates['nl'] ?? $canonical }}">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="ServerScope">

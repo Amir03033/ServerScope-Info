@@ -42,6 +42,7 @@
                 <x-form-field name="message" :label="$t('message')" rows="6" />
 
                 <x-button type="submit">{{ $t('send') }}</x-button>
+                <x-privacy-note :locale="$lang" />
             </form>
             @endunless
         </div>

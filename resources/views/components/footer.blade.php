@@ -3,13 +3,15 @@
     $locale = ($locale ?? app()->getLocale()) === 'en' ? 'en' : 'nl';
     $t = fn (string $key) => trans('site.' . $key, [], $locale);
     $app = config('serverscope.app_url');
+    // Only documents with a published version.
+    $legal = rescue(fn () => \App\Models\LegalDocument::query()->where('locale', $locale)->orderBy('sort')->get()->filter(fn ($d) => $d->currentVersion() !== null), collect(), report: false);
     $cols = [
         $t('footer.product')   => ['features', 'pricing', 'changelog', 'status'],
         $t('footer.resources') => ['docs', 'blog', 'contact'],
     ];
 @endphp
 <footer class="mt-28 border-t border-line">
-    <div class="ss-container grid gap-10 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <div class="ss-container grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
         <div>
             <a href="{{ url($locale) }}" class="flex items-center gap-2 text-fg">
                 <x-ss-icon name="pulse" class="h-5 w-5 text-accent" />
@@ -29,6 +31,17 @@
                 </ul>
             </div>
         @endforeach
+
+        @if ($legal->isNotEmpty())
+            <div>
+                <h2 class="text-sm font-semibold text-fg">{{ $t('footer.legal_title') }}</h2>
+                <ul class="mt-4 space-y-2.5">
+                    @foreach ($legal as $document)
+                        <li><a href="{{ url($document->path()) }}" class="text-sm text-muted transition-colors hover:text-fg">{{ $document->title }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div>
             <h2 class="text-sm font-semibold text-fg">{{ $t('footer.app') }}</h2>

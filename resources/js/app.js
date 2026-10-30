@@ -143,12 +143,30 @@ document.querySelectorAll('[data-copy-text]').forEach((button) => {
     });
 });
 
+/* Print / save as PDF (legal pages). */
+document.querySelectorAll('[data-print]').forEach((button) => {
+    button.addEventListener('click', () => window.print());
+});
+
 /* "Link to this section" on documentation headings. */
 document.querySelectorAll('[data-anchor-label] .heading-permalink').forEach((link) => {
     const label = link.closest('[data-anchor-label]').dataset.anchorLabel;
     link.removeAttribute('aria-hidden');
     link.setAttribute('aria-label', label);
     link.setAttribute('title', label);
+
+    // Legal pages: clicking the anchor also copies the full link.
+    if (link.closest('[data-anchor-copy]') && navigator.clipboard) {
+        link.addEventListener('click', async () => {
+            const prose = link.closest('[data-anchor-copy]');
+
+            if (await copy(new URL(link.getAttribute('href'), window.location.href).href)) {
+                link.dataset.copied = prose.dataset.copiedLabel;
+                link.classList.add('ss-anchor-copied');
+                setTimeout(() => link.classList.remove('ss-anchor-copied'), 1600);
+            }
+        });
+    }
 });
 
 /* ------------------------------------------------------------------ */

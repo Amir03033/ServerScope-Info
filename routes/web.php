@@ -6,10 +6,13 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocFeedbackController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\PricingController;
+use App\Http\Controllers\SecurityTxtController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitlistController;
+use App\Models\LegalDocument;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/nl');
@@ -89,9 +92,31 @@ Route::prefix('{locale}')
 
         Route::get('/status', [StatusController::class, 'show'])
             ->name('status');
+
+        // Legal pages; slugs differ per language (privacy, colofon/imprint …).
+        Route::get('/{legalSlug}', [LegalController::class, 'show'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->name('legal.show');
+
+        Route::get('/{legalSlug}/{versions}', [LegalController::class, 'versions'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->where('versions', 'versies|versions')
+            ->name('legal.versions');
+
+        Route::get('/{legalSlug}/{versionWord}/{version}', [LegalController::class, 'version'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->where('versionWord', 'versie|version')
+            ->where('version', '[0-9A-Za-z.\-]+')
+            ->name('legal.version');
     });
 
+// Preview of a legal version (also drafts), administrators only.
+Route::get('/admin-preview/legal/{version}', [LegalController::class, 'preview'])
+    ->name('legal.preview');
+
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security-txt');
 
 // Dynamic so staging (and any non-production copy) disallows everything.
 Route::get('/robots.txt', function () {
