@@ -118,6 +118,10 @@ class CompanyData
             'both' => $nl ? 'zakelijke klanten en consumenten' : 'business customers and consumers',
             default => '',
         };
+        // Facts from the configuration of this site.
+        $values['{cookie.session}'] = (string) config('session.cookie');
+        $values['{cookie.lifetime}'] = (string) config('session.lifetime');
+
         $values['{security_txt.expires}'] = filled($this->get('security_txt.expires')) ? (string) $this->get('security_txt.expires') : '';
 
         foreach (array_keys(self::FIELDS) as $key) {

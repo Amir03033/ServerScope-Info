@@ -29,8 +29,14 @@ use Tempest\Highlight\Highlighter;
 class MarkdownRenderer
 {
     public const CALLOUTS = [
-        'nl' => ['NOTE' => 'Opmerking', 'TIP' => 'Tip', 'IMPORTANT' => 'Belangrijk', 'WARNING' => 'Let op', 'CAUTION' => 'Pas op'],
-        'en' => ['NOTE' => 'Note', 'TIP' => 'Tip', 'IMPORTANT' => 'Important', 'WARNING' => 'Warning', 'CAUTION' => 'Caution'],
+        'nl' => ['NOTE' => 'Opmerking', 'TIP' => 'Tip', 'IMPORTANT' => 'Belangrijk', 'WARNING' => 'Let op', 'CAUTION' => 'Pas op', 'SUMMARY' => 'In het kort'],
+        'en' => ['NOTE' => 'Note', 'TIP' => 'Tip', 'IMPORTANT' => 'Important', 'WARNING' => 'Warning', 'CAUTION' => 'Caution', 'SUMMARY' => 'In short'],
+    ];
+
+    /** Added to every "In short" box (legal texts): the full text applies. */
+    public const SUMMARY_NOTE = [
+        'nl' => 'Dit is een samenvatting. De volledige tekst hieronder geldt.',
+        'en' => 'This is a summary. The full text below applies.',
     ];
 
     /** Shown until the owner fills in the release key fingerprint. */
@@ -89,7 +95,7 @@ class MarkdownRenderer
         $text = preg_replace('/```.*?```/s', ' ', $text) ?? $text;
         $text = preg_replace('/\[([^\]]*)\]\([^)]*\)/', '$1', $text) ?? $text;
         $text = preg_replace('/^#+\s.*$/m', ' ', $text, 1) ?? $text;
-        $text = preg_replace('/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]|[#>*_`|]/', ' ', $text) ?? $text;
+        $text = preg_replace('/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|SUMMARY)\]|[#>*_`|]/', ' ', $text) ?? $text;
 
         return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
     }
@@ -157,9 +163,17 @@ class MarkdownRenderer
     {
         $labels = self::CALLOUTS[$locale] ?? self::CALLOUTS['en'];
 
-        return preg_replace_callback(
-            '~<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*~',
+        $html = preg_replace_callback(
+            '~<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|SUMMARY)\]\s*~',
             fn (array $m) => '<blockquote class="callout callout-'.strtolower($m[1]).'"><p class="callout-title">'.e($labels[$m[1]]).'</p><p>',
+            $html,
+        ) ?? $html;
+
+        $note = self::SUMMARY_NOTE[$locale] ?? self::SUMMARY_NOTE['en'];
+
+        return preg_replace(
+            '~(<blockquote class="callout callout-summary">.*?)(</blockquote>)~s',
+            '$1<p class="callout-note">'.e($note).'</p>$2',
             $html,
         ) ?? $html;
     }
