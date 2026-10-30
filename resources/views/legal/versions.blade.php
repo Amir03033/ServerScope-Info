@@ -5,20 +5,13 @@
     $l = fn (string $key) => trans('site.legal.' . $key, [], $lang);
 @endphp
 
+@section('og_eyebrow', $l('legal'))
 @section('title', $document->title . ' — ' . $l('versions') . ' — ServerScope')
 @section('description', $l('versions') . ': ' . $document->title)
 
 @section('content')
     <section class="ss-container max-w-3xl pt-12 sm:pt-16">
-        <nav aria-label="Breadcrumb" class="mb-6 text-sm text-muted">
-            <ol class="flex flex-wrap items-center gap-2">
-                <li><a href="{{ url($lang) }}" class="hover:text-fg">{{ trans('site.docs.home', [], $lang) }}</a></li>
-                <li aria-hidden="true" class="text-subtle">/</li>
-                <li><a href="{{ url($document->path()) }}" class="hover:text-fg">{{ $document->title }}</a></li>
-                <li aria-hidden="true" class="text-subtle">/</li>
-                <li aria-current="page" class="text-fg">{{ $l('versions') }}</li>
-            </ol>
-        </nav>
+        <x-breadcrumbs class="mb-6" :items="[[trans('site.docs.home', [], $lang), url($lang)], [$document->title, url($document->path())], [$l('versions'), null]]" />
 
         <x-page-header :title="$document->title" :intro="$l('versions_intro')" />
 

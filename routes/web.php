@@ -13,6 +13,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitlistController;
 use App\Models\LegalDocument;
+use App\Support\OgImage;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/nl');
@@ -115,6 +116,14 @@ Route::get('/admin-preview/legal/{version}', [LegalController::class, 'preview']
     ->name('legal.preview');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Share images; only files drawn for a real page exist (see App\Support\OgImage).
+Route::get('/og/{hash}.png', function (string $hash) {
+    $path = OgImage::directory()."/{$hash}.png";
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path, ['Content-Type' => 'image/png', 'Cache-Control' => 'public, max-age=604800']);
+})->where('hash', '[a-f0-9]{32}')->name('og-image');
 
 Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security-txt');
 

@@ -7,6 +7,7 @@
     $versionsUrl = url($document->path() . '/' . ($lang === 'en' ? 'versions' : 'versies'));
 @endphp
 
+@section('og_eyebrow', $l('legal'))
 @section('title', $document->title . ' — ServerScope')
 @section('description', $document->seo_description ?: $document->title)
 @if (($preview ?? false) || ($archived ?? false))
@@ -29,15 +30,7 @@
 
     <div class="ss-container grid gap-12 pt-12 xl:grid-cols-[minmax(0,1fr)_14rem]">
         <article class="ss-legal mx-auto w-full min-w-0 max-w-[44rem]" data-article>
-            <nav aria-label="Breadcrumb" class="mb-6 text-sm text-muted ss-noprint">
-                <ol class="flex flex-wrap items-center gap-2">
-                    <li><a href="{{ url($lang) }}" class="hover:text-fg">{{ trans('site.docs.home', [], $lang) }}</a></li>
-                    <li aria-hidden="true" class="text-subtle">/</li>
-                    <li class="text-muted">{{ $l('legal') }}</li>
-                    <li aria-hidden="true" class="text-subtle">/</li>
-                    <li aria-current="page" class="text-fg">{{ $document->title }}</li>
-                </ol>
-            </nav>
+            <x-breadcrumbs class="mb-6 ss-noprint" :items="[[trans('site.docs.home', [], $lang), url($lang)], [$l('legal'), null], [$document->title, null]]" />
 
             <p class="ss-eyebrow ss-rise">{{ $l('legal') }}</p>
             <h1 class="ss-rise mt-2 text-4xl font-semibold tracking-[-0.03em] text-fg sm:text-[2.75rem]">{{ $document->title }}</h1>

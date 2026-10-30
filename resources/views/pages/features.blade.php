@@ -14,6 +14,8 @@
     @section('noindex', '1')
 @endif
 
+@php \App\Support\StructuredData::push(\App\Support\StructuredData::software($lang)); @endphp
+
 @section('content')
     <section class="relative border-b border-line">
         <div class="ss-grid-bg pointer-events-none absolute inset-0" aria-hidden="true"></div>

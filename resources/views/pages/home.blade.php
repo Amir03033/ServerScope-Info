@@ -28,6 +28,8 @@
     @section('noindex', '1')
 @endif
 
+@php \App\Support\StructuredData::push(\App\Support\StructuredData::software($lang)); @endphp
+
 @section('content')
     {{-- Hero --}}
     <section class="relative overflow-hidden border-b border-line">

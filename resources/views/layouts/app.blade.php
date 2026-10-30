@@ -58,7 +58,20 @@
     <meta property="og:url" content="{{ $canonical }}">
     <meta property="og:locale" content="{{ $ogLocales[$locale] }}">
     <meta property="og:locale:alternate" content="{{ $ogLocales[$other] }}">
-    <meta name="twitter:card" content="summary">
+    @php
+        $pageTitle = trim($__env->yieldContent('title', 'ServerScope'));
+        $shareTitle = \Illuminate\Support\Str::endsWith($pageTitle, ' — ServerScope') ? \Illuminate\Support\Str::beforeLast($pageTitle, ' — ServerScope') : $pageTitle;
+        $shareImage = \App\Support\OgImage::url(html_entity_decode($shareTitle, ENT_QUOTES), $__env->hasSection('og_eyebrow') ? html_entity_decode(trim($__env->yieldContent('og_eyebrow')), ENT_QUOTES) : null, $locale);
+    @endphp
+    <meta property="og:image" content="{{ $shareImage }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ html_entity_decode($shareTitle, ENT_QUOTES) }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'ServerScope')">
+    <meta name="twitter:description" content="@yield('description', $defaultDescription)">
+    <meta name="twitter:image" content="{{ $shareImage }}">
 
     @php $interFont = rescue(fn () => \Illuminate\Support\Facades\Vite::asset('resources/fonts/inter-latin-wght.woff2'), null, report: false); @endphp
     @if (filled($interFont))
@@ -66,6 +79,7 @@
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
+    {!! \App\Support\StructuredData::script([\App\Support\StructuredData::organization(), \App\Support\StructuredData::website($locale), ...\App\Support\StructuredData::collected()]) !!}
 </head>
 <body class="min-h-screen bg-bg font-sans text-fg antialiased" data-locale="{{ $locale }}">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent">
