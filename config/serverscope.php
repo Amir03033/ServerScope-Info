@@ -42,4 +42,10 @@ return [
 
     'noindex' => (bool) env('STAGING', false) || env('APP_ENV', 'production') !== 'production',
 
+    /*
+    | Share images per page, drawn with GD (storage/app/og). Without GD, or
+    | with OG_IMAGES=false, every page uses public/images/og-default.png.
+    */
+    'og_images' => (bool) env('OG_IMAGES', true),
+
 ];

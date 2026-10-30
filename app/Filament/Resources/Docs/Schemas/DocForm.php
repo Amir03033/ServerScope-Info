@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Docs\Schemas;
 use App\Enums\FeatureStatus;
 use App\Enums\PublishStatus;
 use App\Filament\Locales;
+use App\Filament\Resources\PageMeta\PageMetaResource;
 use App\Models\DocCategory;
 use App\Models\Feature;
 use Filament\Forms\Components\DateTimePicker;
@@ -51,6 +52,11 @@ class DocForm
                             ->helperText('Eén zin. Verschijnt in het overzicht, in de zoekresultaten en als meta-omschrijving.')
                             ->rows(2)
                             ->maxLength(300),
+                        Textarea::make('summary')
+                            ->label('In het kort')
+                            ->helperText('Optioneel. Twee of drie zinnen met het directe antwoord, bovenaan de pagina in een kader "In het kort" (met de vermelding dat de volledige tekst geldt). Leeg = geen kader.')
+                            ->rows(3)
+                            ->maxLength(600),
                         MarkdownEditor::make('body')
                             ->label('Tekst (Markdown)')
                             ->helperText('Codeblokken met ```sh, ```json, ```php enz. krijgen kleur. Callouts: > [!NOTE], > [!TIP], > [!WARNING], > [!IMPORTANT]. {app_url} wordt de ServerScope-URL. Een eerste regel "# Titel" wordt niet getoond: de titel komt uit het veld hierboven.')
@@ -112,8 +118,8 @@ class DocForm
                         Section::make('SEO')
                             ->collapsed()
                             ->schema([
-                                TextInput::make('seo_title')->label('SEO-titel')->helperText('Leeg = de titel.')->maxLength(200),
-                                Textarea::make('seo_description')->label('Meta-omschrijving')->helperText('Leeg = de korte omschrijving.')->rows(2)->maxLength(300),
+                                PageMetaResource::titleField('seo_title')->label('SEO-titel')->helperText('Leeg = de titel. " — ServerScope" komt er altijd achter.'),
+                                PageMetaResource::descriptionField('seo_description')->label('Meta-omschrijving')->helperText('Leeg = de korte omschrijving.')->rows(2),
                                 Toggle::make('noindex')->label('Niet laten indexeren (noindex)'),
                             ]),
                     ]),

@@ -7,7 +7,11 @@
     $articles = collect($articles ?? [])->filter(fn ($article) => filled(data_get($article, 'slug')));
 @endphp
 
-@section('title', $t('title'))
+@section('title', \App\Support\Seo::title('blog', $lang))
+@section('description', \App\Support\Seo::description('blog', $lang))
+@if (\App\Support\Seo::noindex('blog', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="ss-container pt-16 sm:pt-24">

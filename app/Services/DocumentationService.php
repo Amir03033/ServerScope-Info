@@ -65,13 +65,14 @@ class DocumentationService
         if ($this->usesDatabase()) {
             $doc = Doc::query()->with(['feature', 'category'])->find($articles[$index]['id']);
             $body = $doc->body;
-            $seo = ['seo_title' => $doc->seo_title, 'seo_description' => $doc->seo_description, 'noindex' => $doc->noindex];
+            $seo = ['seo_title' => $doc->seo_title, 'seo_description' => $doc->seo_description, 'noindex' => $doc->noindex, 'summary' => $doc->summary];
         } else {
             $page = collect($this->files->all($locale))->firstWhere('slug', $slug);
             $body = $page['body'];
-            $seo = ['seo_title' => null, 'seo_description' => null, 'noindex' => false];
+            $seo = ['seo_title' => null, 'seo_description' => null, 'noindex' => false, 'summary' => null];
         }
 
+        $body = MarkdownRenderer::withSummary($body, $seo['summary']);
         $rendered = $this->renderer->render($body, $locale);
         $neighbour = fn (int $offset): ?array => isset($articles[$index + $offset])
             ? ['slug' => $articles[$index + $offset]['slug'], 'title' => $articles[$index + $offset]['title']]

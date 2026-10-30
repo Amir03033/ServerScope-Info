@@ -10,20 +10,22 @@
     $results = $results ?? null;
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('intro'))
+@section('title', \App\Support\Seo::title('docs', $lang))
+@section('description', \App\Support\Seo::description('docs', $lang))
+@if (\App\Support\Seo::noindex('docs', $lang))
+    @section('noindex', '1')
+@endif
+
+{{-- Search results are useful to visitors, not as separate pages in search engines. --}}
+@if ($query !== '')
+    @section('robots', 'noindex, follow')
+@endif
 
 @section('content')
     <section class="relative border-b border-line">
         <div class="ss-grid-bg pointer-events-none absolute inset-0" aria-hidden="true"></div>
         <div class="ss-container relative pb-14 pt-12 sm:pt-16">
-            <nav aria-label="Breadcrumb" class="mb-8 text-sm text-muted">
-                <ol class="flex flex-wrap items-center gap-2">
-                    <li><a href="{{ url($lang) }}" class="hover:text-fg">{{ $t('home') }}</a></li>
-                    <li aria-hidden="true" class="text-subtle">/</li>
-                    <li aria-current="page" class="text-fg">{{ $t('headline') }}</li>
-                </ol>
-            </nav>
+            <x-breadcrumbs :items="[[$t('home'), url($lang)], [$t('headline'), null]]" />
 
             <x-page-header :title="$t('headline')" :intro="$t('intro')" />
 

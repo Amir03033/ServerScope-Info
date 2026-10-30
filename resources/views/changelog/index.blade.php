@@ -11,8 +11,11 @@
     $badgeLabels = $t('badges');
 @endphp
 
-@section('title', $t('title'))
-@section('description', $t('intro'))
+@section('title', \App\Support\Seo::title('changelog', $lang))
+@section('description', \App\Support\Seo::description('changelog', $lang))
+@if (\App\Support\Seo::noindex('changelog', $lang))
+    @section('noindex', '1')
+@endif
 
 @section('content')
     <section class="ss-container max-w-4xl pt-16 sm:pt-24">

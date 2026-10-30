@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Services\Docs\DocImporter;
 use App\Services\Docs\DraftRevisionImporter;
 use App\Services\Docs\MarkdownFileSource;
+use App\Services\Legal\LegalImporter;
+use App\Services\PageImporter;
 use App\Services\Site\ChangelogImporter;
 use App\Services\Site\SiteDefaults as Defaults;
 use Illuminate\Console\Command;
@@ -37,6 +39,14 @@ class SiteDefaults extends Command
 
         $this->components->info('Concept-revisies (content/docs-drafts)');
         $counts = array_count_values(array_column(app(DraftRevisionImporter::class)->run(), 'action'));
+        $this->line('  '.collect($counts)->map(fn ($n, $a) => "{$n} {$a}")->implode(', '));
+
+        $this->components->info('Juridische concepten (content/legal)');
+        $counts = array_count_values(array_column(app(LegalImporter::class)->run(), 'action'));
+        $this->line('  '.collect($counts)->map(fn ($n, $a) => "{$n} {$a}")->implode(', '));
+
+        $this->components->info('Pagina\'s en landingspagina\'s (content/pages)');
+        $counts = array_count_values(array_column(app(PageImporter::class)->run(), 'action'));
         $this->line('  '.collect($counts)->map(fn ($n, $a) => "{$n} {$a}")->implode(', '));
 
         $this->components->info('Changelog');

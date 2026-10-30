@@ -6,10 +6,18 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocFeedbackController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegalController;
+use App\Http\Controllers\MarkdownController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PricingController;
+use App\Http\Controllers\SecurityTxtController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitlistController;
+use App\Models\LegalDocument;
+use App\Models\Page;
+use App\Support\Crawlers;
+use App\Support\OgImage;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/nl');
@@ -20,6 +28,9 @@ Route::get('/status.json', [StatusController::class, 'badge'])
     ->name('status.badge');
 
 // Admin preview of unsaved documentation (session token, panel users only).
+Route::get('/admin-preview/page/{page}', [PageController::class, 'preview'])
+    ->name('page.preview');
+
 Route::get('/admin-preview/docs/{token}', [DocumentationController::class, 'preview'])
     ->where('token', '[A-Za-z0-9]{40}')
     ->name('docs.preview');
@@ -40,6 +51,13 @@ Route::prefix('{locale}')
 
         Route::get('/docs/search.json', [DocumentationController::class, 'searchIndex'])
             ->name('docs.search');
+
+        Route::get('/docs/{slug}.md', [MarkdownController::class, 'doc'])
+            ->where('slug', '[a-zA-Z0-9_-]+')
+            ->name('docs.markdown');
+
+        Route::get('/llms.txt', [MarkdownController::class, 'llms'])->name('llms.locale');
+        Route::get('/llms-full.txt', [MarkdownController::class, 'llmsFull'])->name('llms-full.locale');
 
         Route::get('/docs/{slug}', [DocumentationController::class, 'show'])
             ->where('slug', '[a-zA-Z0-9_-]+')
@@ -89,15 +107,57 @@ Route::prefix('{locale}')
 
         Route::get('/status', [StatusController::class, 'show'])
             ->name('status');
+
+        // Legal pages; slugs differ per language (privacy, colofon/imprint …).
+        Route::get('/{pageSlug}.md', [MarkdownController::class, 'page'])
+            ->where('pageSlug', Page::slugPattern())
+            ->name('page.markdown');
+
+        Route::get('/{pageSlug}', [PageController::class, 'show'])
+            ->where('pageSlug', Page::slugPattern())
+            ->name('page.show');
+
+        Route::get('/{legalSlug}.md', [MarkdownController::class, 'legal'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->name('legal.markdown');
+
+        Route::get('/{legalSlug}', [LegalController::class, 'show'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->name('legal.show');
+
+        Route::get('/{legalSlug}/{versions}', [LegalController::class, 'versions'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->where('versions', 'versies|versions')
+            ->name('legal.versions');
+
+        Route::get('/{legalSlug}/{versionWord}/{version}', [LegalController::class, 'version'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->where('versionWord', 'versie|version')
+            ->where('version', '[0-9A-Za-z.\-]+')
+            ->name('legal.version');
     });
+
+// Preview of a legal version (also drafts), administrators only.
+Route::get('/admin-preview/legal/{version}', [LegalController::class, 'preview'])
+    ->name('legal.preview');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
-// Dynamic so staging (and any non-production copy) disallows everything.
-Route::get('/robots.txt', function () {
-    $body = config('serverscope.noindex')
-        ? "User-agent: *\nDisallow: /\n"
-        : "User-agent: *\nDisallow: /admin\n\nSitemap: ".url('/sitemap.xml')."\n";
+// Share images; only files drawn for a real page exist (see App\Support\OgImage).
+Route::get('/og/{hash}.png', function (string $hash) {
+    $path = OgImage::directory()."/{$hash}.png";
+    abort_unless(is_file($path), 404);
 
-    return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+    return response()->file($path, ['Content-Type' => 'image/png', 'Cache-Control' => 'public, max-age=604800']);
+})->where('hash', '[a-f0-9]{32}')->name('og-image');
+
+Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security-txt');
+
+// Dynamic so staging (and any non-production copy) disallows everything.
+// llms.txt (https://llmstxt.org): English at the root, Dutch under /nl.
+Route::get('/llms.txt', [MarkdownController::class, 'llms'])->name('llms');
+Route::get('/llms-full.txt', [MarkdownController::class, 'llmsFull'])->name('llms-full');
+
+Route::get('/robots.txt', function () {
+    return response(Crawlers::robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');

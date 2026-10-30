@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'locale', 'translation_key', 'doc_category_id', 'feature_id', 'slug', 'title', 'description', 'body',
+    'locale', 'translation_key', 'doc_category_id', 'feature_id', 'slug', 'title', 'description', 'summary', 'body',
     'icon', 'sort', 'status', 'published_at', 'seo_title', 'seo_description', 'noindex',
 ])]
 class Doc extends Model

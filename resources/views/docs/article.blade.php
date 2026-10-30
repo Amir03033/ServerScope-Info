@@ -19,6 +19,7 @@
     $seoDescription = data_get($article ?? null, 'seo_description') ?: $description;
 @endphp
 
+@section('og_eyebrow', $t('headline'))
 @section('title', $seoTitle . ' — ServerScope')
 @if (filled($seoDescription))
     @section('description', \Illuminate\Support\Str::limit(strip_tags((string) $seoDescription), 160))
@@ -26,6 +27,13 @@
 @if (data_get($article ?? null, 'noindex') || ($preview ?? false))
     @section('noindex', '1')
 @endif
+
+@unless ($preview ?? false)
+    @push('head')
+        <link rel="alternate" type="text/markdown" href="{{ url($lang . '/docs/' . $current . '.md') }}" title="Markdown">
+    @endpush
+    @php \App\Support\StructuredData::push(\App\Support\StructuredData::techArticle($title, $seoDescription ? strip_tags((string) $seoDescription) : null, $lang, $updated)); @endphp
+@endunless
 
 @section('content')
     <div class="ss-progress" data-reading-progress aria-hidden="true"></div>
@@ -56,15 +64,7 @@
 
         {{-- Article --}}
         <article class="min-w-0" data-article>
-            <nav aria-label="Breadcrumb" class="mb-5 text-sm text-muted">
-                <ol class="flex flex-wrap items-center gap-2">
-                    <li><a href="{{ url($lang) }}" class="hover:text-fg">{{ $t('home') }}</a></li>
-                    <li aria-hidden="true" class="text-subtle">/</li>
-                    <li><a href="{{ url($lang . '/docs') }}" class="hover:text-fg">{{ $t('headline') }}</a></li>
-                    <li aria-hidden="true" class="text-subtle">/</li>
-                    <li aria-current="page" class="text-fg">{{ $title }}</li>
-                </ol>
-            </nav>
+            <x-breadcrumbs class="mb-5" :items="[[$t('home'), url($lang)], [$t('headline'), url($lang . '/docs')], [$title, null]]" />
 
             @if ($preview ?? false)
                 <p class="mb-5 rounded-xl border border-accent-line bg-accent-soft px-4 py-3 text-sm text-fg" role="note"><strong>{{ trans('site.common.example', [], $lang) }}</strong> — niet opgeslagen en niet gepubliceerd.</p>

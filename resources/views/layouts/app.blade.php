@@ -6,9 +6,18 @@
     $switchUrl = url(implode('/', $segments));
     $canonical = url()->current();
     $alternates = [$locale => $canonical, $other => $switchUrl];
+    // Pages whose address differs per language (legal pages) pass their own.
+    if (isset($alternateUrls) && is_array($alternateUrls)) {
+        $alternates = $alternateUrls + [$locale => $canonical];
+        $switchUrl = $alternates[$other] ?? url($other);
+    }
     $ogLocales = ['nl' => 'nl_NL', 'en' => 'en_GB'];
     $defaultDescription = trans('site.meta.description', [], $locale);
-    $noindex = config('serverscope.noindex') || $__env->hasSection('noindex');
+    $robots = match (true) {
+        (bool) config('serverscope.noindex'), $__env->hasSection('noindex') => 'noindex, nofollow',
+        $__env->hasSection('robots') => trim($__env->yieldContent('robots')),
+        default => null,
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}">
@@ -20,8 +29,8 @@
     <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
     <meta name="color-scheme" content="light dark">
-    @if ($noindex)
-        <meta name="robots" content="noindex, nofollow">
+    @if ($robots)
+        <meta name="robots" content="{{ $robots }}">
     @endif
 
     {{-- Apply the saved theme before the first paint (no flash). --}}
@@ -36,9 +45,11 @@
 
     <link rel="canonical" href="{{ $canonical }}">
     @foreach (['nl', 'en'] as $code)
-        <link rel="alternate" hreflang="{{ $code }}" href="{{ $alternates[$code] }}">
+        @isset($alternates[$code])
+            <link rel="alternate" hreflang="{{ $code }}" href="{{ $alternates[$code] }}">
+        @endisset
     @endforeach
-    <link rel="alternate" hreflang="x-default" href="{{ $alternates['nl'] }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $alternates['nl'] ?? $canonical }}">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="ServerScope">
@@ -47,7 +58,20 @@
     <meta property="og:url" content="{{ $canonical }}">
     <meta property="og:locale" content="{{ $ogLocales[$locale] }}">
     <meta property="og:locale:alternate" content="{{ $ogLocales[$other] }}">
-    <meta name="twitter:card" content="summary">
+    @php
+        $pageTitle = trim($__env->yieldContent('title', 'ServerScope'));
+        $shareTitle = \Illuminate\Support\Str::endsWith($pageTitle, ' — ServerScope') ? \Illuminate\Support\Str::beforeLast($pageTitle, ' — ServerScope') : $pageTitle;
+        $shareImage = \App\Support\OgImage::url(html_entity_decode($shareTitle, ENT_QUOTES), $__env->hasSection('og_eyebrow') ? html_entity_decode(trim($__env->yieldContent('og_eyebrow')), ENT_QUOTES) : null, $locale);
+    @endphp
+    <meta property="og:image" content="{{ $shareImage }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ html_entity_decode($shareTitle, ENT_QUOTES) }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'ServerScope')">
+    <meta name="twitter:description" content="@yield('description', $defaultDescription)">
+    <meta name="twitter:image" content="{{ $shareImage }}">
 
     @php $interFont = rescue(fn () => \Illuminate\Support\Facades\Vite::asset('resources/fonts/inter-latin-wght.woff2'), null, report: false); @endphp
     @if (filled($interFont))
@@ -55,6 +79,7 @@
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
+    {!! \App\Support\StructuredData::script([\App\Support\StructuredData::organization(), \App\Support\StructuredData::website($locale), ...\App\Support\StructuredData::collected()]) !!}
 </head>
 <body class="min-h-screen bg-bg font-sans text-fg antialiased" data-locale="{{ $locale }}">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent">

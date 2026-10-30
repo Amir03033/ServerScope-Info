@@ -425,6 +425,60 @@ REVAMP2 = {
  },
 }
 
+# --- Legal pages (November 2026).
+REVAMP3 = {
+ 'nl': {
+  'legal': {
+    'legal': 'Juridisch', 'version': 'Versie', 'effective': 'Geldt vanaf', 'earlier': 'Eerdere versies',
+    'print': 'Afdrukken of opslaan als PDF', 'changes': 'Wijzigingen in versie', 'all_versions': 'Alle versies en wijzigingen',
+    'versions': 'Versies', 'versions_intro': 'Alle gepubliceerde versies van dit document, nieuwste eerst.', 'in_force': 'Geldend',
+    'archived': 'Dit is een eerdere versie. Die geldt niet meer.', 'current': 'Naar de geldende versie',
+    'upcoming': 'Vanaf :date geldt een nieuwe versie.', 'read_upcoming': 'Lees de nieuwe versie',
+    'preview_draft': 'concept, niet gepubliceerd.', 'preview_published': 'gepubliceerde versie.',
+    'privacy_note': 'Hoe we met je gegevens omgaan, lees je in de',
+    'privacy_link': 'privacyverklaring',
+  },
+  'footer': {'legal_title': 'Juridisch', 'use_cases': 'Toepassingen'},
+  'pages': {
+    'about': 'Over ServerScope', 'landing': 'Toepassing', 'faq': 'Veelgestelde vragen',
+    'coming_soon': 'Deze functionaliteit is nog niet beschikbaar.', 'more_title': 'Verder lezen',
+    'docs': 'Naar de documentatie', 'waitlist': 'Op de wachtlijst', 'cta_title': 'ServerScope proberen?',
+    'cta_text': 'Lees in de documentatie hoe het werkt, of meld je aan voor de wachtlijst.',
+    'preview': 'Voorbeeld', 'draft': 'concept, niet gepubliceerd.', 'published': 'gepubliceerde pagina.',
+  },
+  'errors': {
+    'title': 'Pagina niet gevonden — ServerScope', 'eyebrow': 'Fout 404', 'headline': 'Deze pagina bestaat niet (meer)',
+    'text': 'Het adres klopt niet, of de pagina is verplaatst. Zoek in de documentatie of ga verder via een van de links hieronder.',
+    'search_label': 'Zoek in de documentatie', 'search_button': 'Zoeken', 'links': 'Misschien zoek je',
+  },
+ },
+ 'en': {
+  'legal': {
+    'legal': 'Legal', 'version': 'Version', 'effective': 'Effective from', 'earlier': 'Earlier versions',
+    'print': 'Print or save as PDF', 'changes': 'Changes in version', 'all_versions': 'All versions and changes',
+    'versions': 'Versions', 'versions_intro': 'All published versions of this document, newest first.', 'in_force': 'In force',
+    'archived': 'This is an earlier version. It no longer applies.', 'current': 'Go to the current version',
+    'upcoming': 'A new version applies from :date.', 'read_upcoming': 'Read the new version',
+    'preview_draft': 'draft, not published.', 'preview_published': 'published version.',
+    'privacy_note': 'How we handle your data is described in the',
+    'privacy_link': 'privacy statement',
+  },
+  'footer': {'legal_title': 'Legal', 'use_cases': 'Use cases'},
+  'pages': {
+    'about': 'About ServerScope', 'landing': 'Use case', 'faq': 'Frequently asked questions',
+    'coming_soon': 'This functionality is not available yet.', 'more_title': 'Read more',
+    'docs': 'Go to the documentation', 'waitlist': 'Join the waiting list', 'cta_title': 'Want to try ServerScope?',
+    'cta_text': 'Read how it works in the documentation, or join the waiting list.',
+    'preview': 'Preview', 'draft': 'draft, not published.', 'published': 'published page.',
+  },
+  'errors': {
+    'title': 'Page not found — ServerScope', 'eyebrow': 'Error 404', 'headline': 'This page does not exist (any more)',
+    'text': 'The address is wrong, or the page has moved. Search the documentation or continue via one of the links below.',
+    'search_label': 'Search the documentation', 'search_button': 'Search', 'links': 'You may be looking for',
+  },
+ },
+}
+
 def _merge(dst, src):
     for k, v in src.items():
         if isinstance(v, dict) and isinstance(dst.get(k), dict):
@@ -435,6 +489,7 @@ def _merge(dst, src):
 for _l in SITE:
     _merge(SITE[_l], REVAMP[_l])
     _merge(SITE[_l], REVAMP2[_l])
+    _merge(SITE[_l], REVAMP3[_l])
     # The hard-coded "all systems operational" status is gone: /status shows
     # the real public ServerScope status page or "status unknown".
     for _k in ('all_ok', 'services', 'note'):

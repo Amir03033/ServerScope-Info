@@ -724,6 +724,65 @@ a.ss-card:hover,
 .ss-copy svg { transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
 .ss-copy.is-done svg { transform: scale(1.15); }
 
+
+/* ------------------------------------------------------------------ */
+/* Legal pages: narrow column, numbered chapters, "In short" boxes      */
+/* ------------------------------------------------------------------ */
+
+.ss-legal-body {
+    max-width: 68ch;
+    font-size: 1.0125rem;
+    line-height: 1.8;
+}
+
+.ss-legal-body h2 {
+    font-size: 1.25rem;
+    margin-top: 3rem;
+}
+
+.ss-legal-body h3 {
+    font-size: 1.0625rem;
+}
+
+.ss-legal-body ol > li::marker {
+    color: var(--ss-subtle);
+    font-weight: 600;
+}
+
+.ss-prose .callout-summary {
+    border: 1px solid var(--ss-accent-line);
+    border-left: 3px solid var(--ss-accent);
+    background: var(--ss-accent-soft);
+    border-radius: 12px;
+    padding: 1rem 1.125rem;
+    margin: .75rem 0 1.5rem;
+}
+
+.ss-prose .callout-summary .callout-title {
+    color: var(--ss-accent);
+}
+
+.ss-prose .callout-note {
+    margin-top: .5rem !important;
+    font-size: .8125rem;
+    color: var(--ss-muted);
+}
+
+.ss-anchor-copied {
+    position: relative;
+}
+
+.ss-anchor-copied::after {
+    content: attr(data-copied);
+    position: absolute;
+    left: 1.25rem;
+    top: -.15rem;
+    white-space: nowrap;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--ss-ok);
+}
+
 /* ------------------------------------------------------------------ */
 /* Search dialog (⌘K)                                                  */
 /* ------------------------------------------------------------------ */
@@ -813,6 +872,7 @@ a.ss-card:hover,
     *::before,
     *::after {
         animation-duration: .01ms !important;
+        animation-delay: 0s !important;
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
     }
@@ -823,8 +883,14 @@ a.ss-card:hover,
 }
 
 @media print {
-    header, footer, .ss-progress, .ss-copy, .ss-noprint { display: none !important; }
-    body { background: #fff; color: #000; }
-    .ss-prose { max-width: none; }
-    .ss-prose a::after { content: " (" attr(href) ")"; font-size: .8em; }
+    header, footer, dialog, .ss-progress, .ss-copy, .ss-noprint, .heading-permalink { display: none !important; }
+    :root { color-scheme: light; }
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .ss-prose { max-width: none; color: #000; }
+    .ss-prose a { color: #000; text-decoration: underline; }
+    .ss-prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .8em; }
+    .ss-prose h2 { break-after: avoid; border-top-color: #ccc; }
+    .ss-prose .callout, .ss-prose table, .ss-prose pre { break-inside: avoid; }
+    .ss-prose .callout-summary { background: #f4f4f5; border-color: #999; }
+    .ss-reveal { opacity: 1 !important; transform: none !important; }
 }

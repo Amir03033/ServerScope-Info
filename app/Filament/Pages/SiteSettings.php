@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Concerns\AdminOnly;
 use App\Models\Setting;
+use App\Support\Crawlers;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -40,7 +41,10 @@ class SiteSettings extends Page
 
     public function mount(): void
     {
-        $this->form->fill(collect(Setting::DEFAULTS)->keys()->mapWithKeys(fn (string $key) => [$key => Setting::get($key)])->all());
+        $this->form->fill([
+            ...collect(Setting::DEFAULTS)->keys()->mapWithKeys(fn (string $key) => [$key => Setting::get($key)])->all(),
+            'crawlers' => collect(Crawlers::LIST)->keys()->mapWithKeys(fn (string $agent) => [$agent => Crawlers::allowed($agent)])->all(),
+        ]);
     }
 
     public function form(Schema $schema): Schema
@@ -65,6 +69,16 @@ class SiteSettings extends Page
                     ->helperText('Verschijnt in de documentatie over agent-updates. Leeg = een duidelijke plaatshouder.')
                     ->regex('/^[0-9a-fA-F:\s]{64,95}$/')->validationMessages(['regex' => 'Vul de SHA-256 in als 64 hexadecimale tekens (met of zonder dubbele punten).']),
             ]),
+            Section::make('AI-crawlers')
+                ->description('Welke AI-crawlers robots.txt toelaat. Standaard staan ze allemaal aan, ook de trainingscrawlers, zodat AI-modellen ServerScope kennen. '
+                    .'Een uitgezette crawler krijgt "Disallow: /". robots.txt is een verzoek: nette crawlers volgen het, het is geen afscherming. '
+                    .'Zoekmachines zoals Google en Bing staan hier niet tussen en blijven altijd toegestaan. Het beheerpaneel en persoonlijke links zijn voor iedereen uitgesloten.')
+                ->collapsible()
+                ->schema(collect(Crawlers::KINDS)->map(fn (string $label, string $kind) => Grid::make(2)->schema(
+                    collect(Crawlers::LIST)->filter(fn ($c) => $c[1] === $kind)
+                        ->map(fn ($c, string $agent) => Toggle::make("crawlers.{$agent}")->label("{$agent} ({$c[0]})")->helperText($label.': '.$c[2]))
+                        ->values()->all()
+                ))->values()->all()),
             Section::make('Privacy')->schema([
                 Toggle::make('pageview_counter')->label('Eigen bezoekersteller zonder cookies')
                     ->helperText('Telt alleen weergaven per pagina per dag. Geen IP-adressen, geen cookies, geen browsergegevens.'),
