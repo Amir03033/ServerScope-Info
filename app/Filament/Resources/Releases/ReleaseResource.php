@@ -26,11 +26,11 @@ class ReleaseResource extends Resource
 
     protected static ?string $navigationLabel = 'Changelog';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Website';
+    protected static string|\UnitEnum|null $navigationGroup = 'Product';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
-    protected static ?string $recordTitleAttribute = 'version';
+    protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
     {

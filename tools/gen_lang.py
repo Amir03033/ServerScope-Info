@@ -107,6 +107,7 @@ SITE = {
     'search_label': 'Zoek in de documentatie', 'search_placeholder': 'Zoek, bijv. agent, SSL of Discord',
     'search_button': 'Zoeken', 'results': 'Zoekresultaten voor', 'no_results': 'Geen resultaten. Probeer een ander woord.',
     'clear': 'Wis zoekopdracht', 'home': 'Home', 'on_this_page': 'Op deze pagina',
+    'coming_soon': 'Binnenkort', 'coming_soon_text': 'Deze functie is nog niet beschikbaar. Deze handleiding beschrijft hoe ze gaat werken.',
     'previous': 'Vorige', 'next': 'Volgende', 'copy': 'Kopiëren', 'copied': 'Gekopieerd',
     'guides': 'Handleidingen', 'step': 'Stap',
     'app_title': 'Klaar om te beginnen?', 'app_text': 'Log in op ServerScope en volg de stappen in je eigen omgeving.',
@@ -201,6 +202,7 @@ SITE = {
     'search_label': 'Search the documentation', 'search_placeholder': 'Search, e.g. agent, SSL or Discord',
     'search_button': 'Search', 'results': 'Search results for', 'no_results': 'No results. Try another word.',
     'clear': 'Clear search', 'home': 'Home', 'on_this_page': 'On this page',
+    'coming_soon': 'Coming soon', 'coming_soon_text': 'This feature is not available yet. This guide describes how it will work.',
     'previous': 'Previous', 'next': 'Next', 'copy': 'Copy', 'copied': 'Copied',
     'guides': 'Guides', 'step': 'Step',
     'app_title': 'Ready to start?', 'app_text': 'Log in to ServerScope and follow the steps in your own environment.',
@@ -277,6 +279,166 @@ HOME_EXTRA = {
 for _l in SITE:
     SITE[_l]['home'].pop('features', None)
     SITE[_l]['home'].update(HOME_EXTRA[_l])
+
+# --- Revamp (October 2026): new sections and labels. Only facts from the
+# ServerScope repository; numbers on the site come from the database.
+REVAMP = {
+ 'nl': {
+  'nav': {'pricing': 'Prijzen', 'search': 'Zoeken', 'search_hint': 'Zoek in de documentatie',
+          'theme': 'Thema', 'theme_light': 'Licht', 'theme_dark': 'Donker', 'theme_system': 'Systeem',
+          'close': 'Sluiten'},
+  'footer': {'status': 'Status', 'legal': 'Deze site gebruikt geen cookies voor tracking.'},
+  'home': {
+    'v2_headline': 'Weet wat je servers en websites doen.',
+    'v2_intro': 'ServerScope bewaakt je servers via een lichte agent en je websites en domeinen van buitenaf. Problemen worden incidenten met een tijdlijn, en meldingen komen waar jij ze wilt hebben.',
+    'v2_primary': 'Bekijk de functies', 'v2_secondary': 'Lees de documentatie',
+    'terminal_title': 'Een server koppelen', 'terminal_label': 'Installatiecommando',
+    'terminal_points': ['Ubuntu 22.04+ en Debian 12+, amd64 en arm64', 'Eenmalig koppeltoken, 60 minuten geldig; het script vraagt erom, het staat niet in het commando', 'Opnieuw draaien is veilig; --uninstall ruimt alles op'],
+    'terminal_manual': 'Liever handmatig? Lees de installatiehandleiding.',
+    'counters_title': 'In cijfers', 'count_features': 'functies beschikbaar', 'count_docs': 'handleidingen',
+    'count_distros': 'Linux-distributies (Ubuntu, Debian)', 'count_arch': 'architecturen (amd64, arm64)',
+    'features_title': 'Alles op één plek',
+    'features_text': 'Elke functie hieronder bestaat in ServerScope. Wat nog niet beschikbaar is, staat gemarkeerd als binnenkort.',
+    'features_all': 'Alle functies',
+    'preview_title': 'Zo ziet het dashboard eruit', 'sample': 'Voorbeeld met fictieve gegevens',
+    'cta2_title': 'Begin met de documentatie.', 'cta2_text': 'Van het koppelen van je eerste server tot meldingen in Discord: de handleidingen leggen elke stap uit.',
+  },
+  'features': {'v2_intro': 'Servers, websites, domeinen, incidenten en meldingen in één omgeving. Functies met het label binnenkort zijn nog niet beschikbaar.'},
+  'common': {'coming_soon': 'Binnenkort', 'example': 'Voorbeeld', 'read_more': 'Lees meer', 'last_updated': 'Laatst bijgewerkt'},
+  'status2': {
+    'operational': 'Alle systemen operationeel', 'degraded': 'Verminderde prestaties', 'partial_outage': 'Gedeeltelijke storing',
+    'major_outage': 'Grote storing', 'maintenance': 'Onderhoud', 'unknown': 'Status momenteel onbekend',
+    'unknown_text': 'De statuspagina van ServerScope is nu niet bereikbaar. Bekijk de actuele status rechtstreeks.',
+    'open': 'Open de statuspagina', 'components': 'Onderdelen', 'incidents': 'Incidenten (laatste 7 dagen)',
+    'no_incidents': 'Geen incidenten in de laatste 7 dagen.', 'updated': 'Bijgewerkt', 'source': 'Bron: de openbare statuspagina van ServerScope.',
+    'resolved': 'Opgelost', 'ongoing': 'Actief', 'state_operational': 'Operationeel',
+  },
+  'pricing': {
+    'title': 'Prijzen — ServerScope', 'headline': 'Abonnementen',
+    'intro': 'Free, Pro en Ultra. Vergelijk wat er in elk abonnement zit.',
+    'monthly': 'Maandelijks', 'yearly': 'Jaarlijks', 'per_month': 'per maand', 'per_year': 'per jaar',
+    'price_follows': 'Prijs volgt', 'recommended': 'Aanbevolen', 'follows': 'Volgt', 'yes': 'Ja', 'no': 'Nee',
+    'compare': 'Vergelijk de abonnementen', 'feature': 'Functie', 'billing': 'Betaalperiode',
+    'waitlist_note': 'Registratie is nog niet open. De knoppen brengen je naar de wachtlijst.',
+    'waitlist_subject': 'Wachtlijst',
+  },
+  'docs2': {
+    'search_open': 'Zoeken in de documentatie', 'shortcut': 'Sneltoets', 'categories': 'Onderwerpen', 'other': 'Overig',
+    'no_results': 'Niets gevonden voor deze zoekterm.', 'type_to_search': 'Typ om te zoeken in alle handleidingen.',
+    'navigate': 'navigeren', 'open': 'openen', 'close': 'sluiten', 'progress': 'Leesvoortgang',
+    'helpful': 'Was dit nuttig?', 'yes': 'Ja', 'no': 'Nee', 'thanks': 'Bedankt voor je reactie.',
+    'comment': 'Wat kunnen we verbeteren? (optioneel)', 'send': 'Versturen', 'privacy': 'We bewaren alleen je antwoord en je eventuele opmerking: geen IP-adres en geen gegevens over jou.',
+    'guides_count': 'handleidingen', 'copy_link': 'Link naar deze sectie',
+  },
+ },
+ 'en': {
+  'nav': {'pricing': 'Pricing', 'search': 'Search', 'search_hint': 'Search the documentation',
+          'theme': 'Theme', 'theme_light': 'Light', 'theme_dark': 'Dark', 'theme_system': 'System',
+          'close': 'Close'},
+  'footer': {'status': 'Status', 'legal': 'This site uses no tracking cookies.'},
+  'home': {
+    'v2_headline': 'Know what your servers and websites are doing.',
+    'v2_intro': 'ServerScope monitors your servers through a lightweight agent and your websites and domains from the outside. Problems become incidents with a timeline, and notifications go where you want them.',
+    'v2_primary': 'See the features', 'v2_secondary': 'Read the documentation',
+    'terminal_title': 'Connect a server', 'terminal_label': 'Install command',
+    'terminal_points': ['Ubuntu 22.04+ and Debian 12+, amd64 and arm64', 'One-time enrollment token, valid for 60 minutes; the script asks for it, it is not part of the command', 'Running it again is safe; --uninstall removes everything'],
+    'terminal_manual': 'Prefer to do it by hand? Read the installation guide.',
+    'counters_title': 'In numbers', 'count_features': 'features available', 'count_docs': 'guides',
+    'count_distros': 'Linux distributions (Ubuntu, Debian)', 'count_arch': 'architectures (amd64, arm64)',
+    'features_title': 'Everything in one place',
+    'features_text': 'Every feature below exists in ServerScope. Anything not available yet is marked as coming soon.',
+    'features_all': 'All features',
+    'preview_title': 'What the dashboard looks like', 'sample': 'Example with fictional data',
+    'cta2_title': 'Start with the documentation.', 'cta2_text': 'From connecting your first server to notifications in Discord: the guides explain every step.',
+  },
+  'features': {'v2_intro': 'Servers, websites, domains, incidents and notifications in one environment. Features labelled coming soon are not available yet.'},
+  'common': {'coming_soon': 'Coming soon', 'example': 'Example', 'read_more': 'Read more', 'last_updated': 'Last updated'},
+  'status2': {
+    'operational': 'All systems operational', 'degraded': 'Degraded performance', 'partial_outage': 'Partial outage',
+    'major_outage': 'Major outage', 'maintenance': 'Maintenance', 'unknown': 'Status currently unknown',
+    'unknown_text': 'The ServerScope status page cannot be reached right now. Check the current status directly.',
+    'open': 'Open the status page', 'components': 'Components', 'incidents': 'Incidents (last 7 days)',
+    'no_incidents': 'No incidents in the last 7 days.', 'updated': 'Updated', 'source': 'Source: the public ServerScope status page.',
+    'resolved': 'Resolved', 'ongoing': 'Ongoing', 'state_operational': 'Operational',
+  },
+  'pricing': {
+    'title': 'Pricing — ServerScope', 'headline': 'Plans',
+    'intro': 'Free, Pro and Ultra. Compare what each plan includes.',
+    'monthly': 'Monthly', 'yearly': 'Yearly', 'per_month': 'per month', 'per_year': 'per year',
+    'price_follows': 'Price to follow', 'recommended': 'Recommended', 'follows': 'To follow', 'yes': 'Yes', 'no': 'No',
+    'compare': 'Compare the plans', 'feature': 'Feature', 'billing': 'Billing period',
+    'waitlist_note': 'Registration is not open yet. The buttons take you to the waiting list.',
+    'waitlist_subject': 'Waiting list',
+  },
+  'docs2': {
+    'search_open': 'Search the documentation', 'shortcut': 'Shortcut', 'categories': 'Topics', 'other': 'Other',
+    'no_results': 'Nothing found for this search.', 'type_to_search': 'Type to search all guides.',
+    'navigate': 'navigate', 'open': 'open', 'close': 'close', 'progress': 'Reading progress',
+    'helpful': 'Was this helpful?', 'yes': 'Yes', 'no': 'No', 'thanks': 'Thanks for your feedback.',
+    'comment': 'What can we improve? (optional)', 'send': 'Send', 'privacy': 'We only store your answer and optional comment: no IP address and no data about you.',
+    'guides_count': 'guides', 'copy_link': 'Link to this section',
+  },
+ },
+}
+
+# --- Waiting list and contact delivery (October 2026).
+REVAMP2 = {
+ 'nl': {
+  'contact': {'unavailable': 'Het contactformulier is op dit moment niet beschikbaar. Probeer het later opnieuw.',
+              'send_failed': 'Je bericht kon niet worden verstuurd. Probeer het later opnieuw.'},
+  'pricing': {'waitlist_note': 'Registratie is nog niet open. De knoppen brengen je naar de wachtlijst.'},
+  'waitlist': {
+    'title': 'Wachtlijst — ServerScope', 'headline': 'Wachtlijst',
+    'intro': 'Registratie voor ServerScope is nog niet open. Laat je e-mailadres achter, dan laten we je weten wanneer het zover is.',
+    'email': 'E-mailadres', 'plan': 'Abonnement', 'plan_none': 'Nog geen voorkeur',
+    'consent_label': 'toestemming',
+    'consent': 'Ik geef toestemming dat ServerScope mijn e-mailadres, taal en gekozen abonnement bewaart om mij te laten weten wanneer registratie opengaat. Ik kan mijn aanmelding altijd laten verwijderen.',
+    'submit': 'Aanmelden',
+    'privacy': 'We bewaren alleen je e-mailadres, taal, gekozen abonnement en het moment van je toestemming. We delen niets met anderen.',
+    'done': 'Je staat op de wachtlijst.',
+    'remove_link': 'Bewaar deze link als je je aanmelding later wilt laten verwijderen:',
+    'remove_contact': 'Link kwijt? Neem contact op, dan verwijderen we je aanmelding.',
+    'removed': 'Je aanmelding is verwijderd.',
+    'remove_title': 'Aanmelding verwijderen', 'remove_text': 'Wil je je aanmelding voor de wachtlijst verwijderen? Dit kan niet ongedaan worden gemaakt.',
+    'remove_button': 'Verwijder mijn aanmelding', 'remove_invalid': 'Deze link is ongeldig, of de aanmelding bestaat niet meer.',
+  },
+ },
+ 'en': {
+  'contact': {'unavailable': 'The contact form is not available at the moment. Please try again later.',
+              'send_failed': 'Your message could not be sent. Please try again later.'},
+  'pricing': {'waitlist_note': 'Registration is not open yet. The buttons take you to the waiting list.'},
+  'waitlist': {
+    'title': 'Waiting list — ServerScope', 'headline': 'Waiting list',
+    'intro': 'Registration for ServerScope is not open yet. Leave your e-mail address and we will let you know when it is.',
+    'email': 'E-mail address', 'plan': 'Plan', 'plan_none': 'No preference yet',
+    'consent_label': 'consent',
+    'consent': 'I agree that ServerScope stores my e-mail address, language and chosen plan to let me know when registration opens. I can have my entry removed at any time.',
+    'submit': 'Sign up',
+    'privacy': 'We only store your e-mail address, language, chosen plan and the moment you gave consent. We share nothing with others.',
+    'done': 'You are on the waiting list.',
+    'remove_link': 'Keep this link if you want to have your entry removed later:',
+    'remove_contact': 'Lost the link? Get in touch and we will remove your entry.',
+    'removed': 'Your entry has been removed.',
+    'remove_title': 'Remove entry', 'remove_text': 'Do you want to remove your entry from the waiting list? This cannot be undone.',
+    'remove_button': 'Remove my entry', 'remove_invalid': 'This link is invalid, or the entry no longer exists.',
+  },
+ },
+}
+
+def _merge(dst, src):
+    for k, v in src.items():
+        if isinstance(v, dict) and isinstance(dst.get(k), dict):
+            _merge(dst[k], v)
+        else:
+            dst[k] = v
+
+for _l in SITE:
+    _merge(SITE[_l], REVAMP[_l])
+    _merge(SITE[_l], REVAMP2[_l])
+    # The hard-coded "all systems operational" status is gone: /status shows
+    # the real public ServerScope status page or "status unknown".
+    for _k in ('all_ok', 'services', 'note'):
+        SITE[_l]['status'].pop(_k, None)
 
 root = os.path.join(os.path.dirname(__file__), '..', 'lang')
 for loc in ('nl', 'en'):

@@ -1,0 +1,34 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-CBKAtPX-.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "assets": [
+      "assets/inter-latin-wght-Dx4kXJAl.woff2",
+      "assets/inter-latin-ext-wght-DO1Apj_S.woff2",
+      "assets/jetbrains-mono-latin-wght-B9CIFXIH.woff2"
+    ]
+  },
+  "resources/fonts/inter-latin-ext-wght.woff2": {
+    "file": "assets/inter-latin-ext-wght-DO1Apj_S.woff2",
+    "src": "resources/fonts/inter-latin-ext-wght.woff2"
+  },
+  "resources/fonts/inter-latin-wght.woff2": {
+    "file": "assets/inter-latin-wght-Dx4kXJAl.woff2",
+    "src": "resources/fonts/inter-latin-wght.woff2"
+  },
+  "resources/fonts/jetbrains-mono-latin-wght.woff2": {
+    "file": "assets/jetbrains-mono-latin-wght-B9CIFXIH.woff2",
+    "src": "resources/fonts/jetbrains-mono-latin-wght.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DrsDTgqs.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

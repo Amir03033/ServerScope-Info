@@ -166,4 +166,26 @@ class AdminPanelTest extends TestCase
         $this->get('/nl')->assertOk();
         $this->get('/en/docs')->assertOk();
     }
+
+    public function test_existing_administrators_become_admins_and_editors_get_panel_access(): void
+    {
+        $editor = User::factory()->create();
+        $editor->assignRole('editor');
+
+        $this->assertTrue($editor->fresh()->isEditor());
+        $this->assertFalse($editor->fresh()->isAdmin());
+        $this->assertFalse($editor->fresh()->is_admin);
+        $this->actingAs($editor)->get('/admin')->assertOk();
+
+        $legacy = User::factory()->create();
+        $legacy->forceFill(['is_admin' => true])->save();
+        $this->assertTrue($legacy->fresh()->isAdmin());
+
+        $this->artisan('info:admin', ['email' => $editor->email, '--revoke' => true])->assertSuccessful();
+        $this->actingAs($editor->fresh())->get('/admin')->assertForbidden();
+
+        $this->artisan('info:admin', ['email' => $editor->email, '--role' => 'editor'])->assertSuccessful();
+        $this->assertSame('editor', $editor->fresh()->role);
+        $this->artisan('info:admin', ['email' => $editor->email, '--role' => 'owner'])->assertFailed();
+    }
 }

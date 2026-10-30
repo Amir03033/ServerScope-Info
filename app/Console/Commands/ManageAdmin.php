@@ -14,9 +14,9 @@ use Illuminate\Validation\Rules\Password;
  */
 class ManageAdmin extends Command
 {
-    protected $signature = 'info:admin {email : E-mail address of the administrator} {--revoke : Remove administrator rights}';
+    protected $signature = 'info:admin {email : E-mail address of the user} {--role=admin : admin or editor} {--revoke : Remove panel access}';
 
-    protected $description = 'Create or promote an administrator for the admin panel, or revoke the role';
+    protected $description = 'Create or promote an administrator or editor for the admin panel, or revoke access';
 
     public function handle(): int
     {
@@ -28,24 +28,33 @@ class ManageAdmin extends Command
             return self::FAILURE;
         }
 
+        $role = (string) $this->option('role');
+
+        if (! array_key_exists($role, User::ROLES)) {
+            $this->error('Role must be admin or editor.');
+
+            return self::FAILURE;
+        }
+
+        $label = $role === 'admin' ? 'an administrator' : 'an editor';
         $user = User::query()->where('email', $email)->first();
 
         if ($this->option('revoke')) {
-            if ($user === null || ! $user->is_admin) {
-                $this->warn("{$email} is not an administrator.");
+            if ($user === null || ! $user->canAccessPanel(filament()->getPanel('admin'))) {
+                $this->warn("{$email} has no access to the admin panel.");
 
                 return self::SUCCESS;
             }
 
-            $user->forceFill(['is_admin' => false])->save();
-            $this->info("Administrator rights removed from {$email}.");
+            $user->assignRole(null);
+            $this->info("Panel access removed from {$email}.");
 
             return self::SUCCESS;
         }
 
         if ($user !== null) {
-            $user->forceFill(['is_admin' => true])->save();
-            $this->info("{$email} is now an administrator.");
+            $user->assignRole($role);
+            $this->info("{$email} is now {$label}.");
 
             return self::SUCCESS;
         }
@@ -73,9 +82,9 @@ class ManageAdmin extends Command
         }
 
         $user = new User(['name' => $name, 'email' => $email, 'password' => $password]);
-        $user->forceFill(['is_admin' => true])->save();
+        $user->assignRole($role);
 
-        $this->info("Administrator {$email} created. Log in at ".url('/admin').'.');
+        $this->info(ucfirst(User::ROLES[$role])." {$email} created. Log in at ".url('/admin').'.');
 
         return self::SUCCESS;
     }

@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Services\Site;
+
+use App\Models\Doc;
+use App\Models\Feature;
+use App\Models\Plan;
+use App\Models\PlanRow;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Creates the starting content that is missing: features (with their
+ * starting status), the Free/Pro/Ultra plans with empty placeholders and
+ * the rows of the comparison table. Existing records are never changed.
+ */
+class SiteDefaults
+{
+    /** Imported guides that describe one feature (pages follow its status). */
+    public const DOC_FEATURES = [
+        'discord-notifications' => 'discord',
+        'status-pages' => 'status-pages',
+    ];
+
+    /** Limit rows of the comparison table; values are filled in by the owner. */
+    public const LIMIT_ROWS = [
+        ['Servers', 'Servers'],
+        ['Domeinen', 'Domains'],
+        ['Pagina\'s per website', 'Pages per website'],
+        ['Statuspagina\'s', 'Status pages'],
+        ['Teamleden', 'Team members'],
+        ['Controle-interval', 'Check interval'],
+        ['Gegevens bewaren', 'Data retention'],
+    ];
+
+    /**
+     * @return array<string, int> created per type
+     */
+    public function run(): array
+    {
+        $created = ['features' => 0, 'plans' => 0, 'plan_rows' => 0, 'doc_links' => 0];
+
+        DB::transaction(function () use (&$created): void {
+            $sort = 0;
+
+            foreach (FeatureCatalog::FEATURES as $key => [$status, $category, $icon, $name, $summary]) {
+                $feature = Feature::query()->firstOrCreate(['key' => $key], [
+                    'status' => $status,
+                    'category' => $category,
+                    'icon' => $icon,
+                    'name' => ['nl' => $name[0], 'en' => $name[1]],
+                    'summary' => ['nl' => $summary[0], 'en' => $summary[1]],
+                    'sort' => $sort += 10,
+                ]);
+                $created['features'] += (int) $feature->wasRecentlyCreated;
+            }
+
+            foreach ([['free', 'Free', 'Gratis starten', 'Start for free'], ['pro', 'Pro', 'Kies Pro', 'Choose Pro'], ['ultra', 'Ultra', 'Kies Ultra', 'Choose Ultra']] as $i => [$key, $name, $nl, $en]) {
+                $plan = Plan::query()->firstOrCreate(['key' => $key], [
+                    'name' => ['nl' => $name, 'en' => $name],
+                    'cta_label' => ['nl' => $nl, 'en' => $en],
+                    'sort' => ($i + 1) * 10,
+                ]);
+                $created['plans'] += (int) $plan->wasRecentlyCreated;
+            }
+
+            if (! PlanRow::query()->exists()) {
+                $sort = 0;
+
+                foreach (self::LIMIT_ROWS as [$nl, $en]) {
+                    PlanRow::query()->create(['group' => ['nl' => 'Limieten', 'en' => 'Limits'], 'label' => ['nl' => $nl, 'en' => $en], 'type' => 'limit', 'sort' => $sort += 10]);
+                    $created['plan_rows']++;
+                }
+
+                foreach (Feature::query()->orderBy('sort')->get() as $feature) {
+                    PlanRow::query()->create([
+                        'group' => ['nl' => FeatureCatalog::CATEGORIES[$feature->category][0] ?? 'Functies', 'en' => FeatureCatalog::CATEGORIES[$feature->category][1] ?? 'Features'],
+                        'label' => $feature->name,
+                        'feature_id' => $feature->id,
+                        'type' => 'boolean',
+                        'sort' => $sort += 10,
+                    ]);
+                    $created['plan_rows']++;
+                }
+            }
+
+            foreach (self::DOC_FEATURES as $slug => $key) {
+                $created['doc_links'] += Doc::query()->where('slug', $slug)->whereNull('feature_id')
+                    ->update(['feature_id' => Feature::query()->where('key', $key)->value('id')]);
+            }
+        });
+
+        return $created;
+    }
+}

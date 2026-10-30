@@ -2,119 +2,51 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\File;
+use App\Models\Doc;
+use App\Services\Docs\MarkdownFileSource;
+use App\Support\Markdown\MarkdownRenderer;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use League\CommonMark\Environment\Environment;
-use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
-use League\CommonMark\MarkdownConverter;
 
 /**
- * Markdown tutorials in content/docs/{locale}/{slug}.md.
+ * Documentation for the public site.
  *
- * Each file may start with a small front matter block:
+ * Source: the `docs` table (managed in the admin panel). Until the import
+ * has run (no rows at all), the original Markdown files in
+ * content/docs/{locale} are used, so the site never shows an empty
+ * documentation section.
  *
- *     ---
- *     order: 2
- *     description: One sentence for the index and meta description.
- *     ---
- *
- * The placeholder {app_url} is replaced with the ServerScope application
- * URL, so links into the app follow config('serverscope.app_url').
- * GitHub-style alerts (> [!NOTE], > [!TIP], > [!WARNING], > [!IMPORTANT])
- * are rendered as callouts.
+ * Only visible pages are returned: published, due (scheduled publishing)
+ * and not tied to a hidden feature. Pages of a "coming soon" feature are
+ * returned with coming_soon = true.
  */
 class DocumentationService
 {
-    private const CALLOUTS = [
-        'nl' => ['NOTE' => 'Opmerking', 'TIP' => 'Tip', 'IMPORTANT' => 'Belangrijk', 'WARNING' => 'Let op', 'CAUTION' => 'Pas op'],
-        'en' => ['NOTE' => 'Note', 'TIP' => 'Tip', 'IMPORTANT' => 'Important', 'WARNING' => 'Warning', 'CAUTION' => 'Caution'],
-    ];
-
     /** @var array<string, array<int, array>> */
     private array $cache = [];
 
-    private function directory(string $locale): string
+    private ?bool $database = null;
+
+    public function __construct(
+        private readonly MarkdownRenderer $renderer,
+        private readonly MarkdownFileSource $files,
+    ) {}
+
+    public function usesDatabase(): bool
     {
-        abort_unless(in_array($locale, ['nl', 'en'], true), 404);
-
-        return base_path("content/docs/{$locale}");
-    }
-
-    private function converter(): MarkdownConverter
-    {
-        $environment = new Environment([
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false,
-            'heading_permalink' => [
-                'apply_id_to_heading' => true,
-                'id_prefix' => '',
-                'fragment_prefix' => '',
-                'insert' => 'after',
-                'symbol' => '#',
-                'aria_hidden' => true,
-                'min_heading_level' => 2,
-                'max_heading_level' => 3,
-                'html_class' => 'heading-permalink',
-                'title' => '',
-            ],
-        ]);
-
-        $environment->addExtension(new CommonMarkCoreExtension);
-        $environment->addExtension(new GithubFlavoredMarkdownExtension);
-        $environment->addExtension(new HeadingPermalinkExtension);
-
-        return new MarkdownConverter($environment);
+        return $this->database ??= (bool) rescue(fn () => Doc::withTrashed()->exists(), false, report: false);
     }
 
     /**
-     * All articles of a locale in reading order.
+     * All visible articles of a locale in reading order (category, then page).
      *
-     * @return array<int, array{slug: string, title: string, description: ?string, order: int, icon: string, excerpt: string, text: string}>
+     * @return array<int, array{id: ?int, slug: string, title: string, description: ?string, order: int, icon: string, excerpt: string, text: string, category: ?array{key: string, name: string, sort: int}, coming_soon: bool, updated_at: ?Carbon}>
      */
     public function all(string $locale): array
     {
-        if (isset($this->cache[$locale])) {
-            return $this->cache[$locale];
-        }
+        abort_unless(in_array($locale, MarkdownFileSource::LOCALES, true), 404);
 
-        $directory = $this->directory($locale);
-
-        if (! File::isDirectory($directory)) {
-            return $this->cache[$locale] = [];
-        }
-
-        $articles = [];
-
-        foreach (File::files($directory) as $file) {
-            if ($file->getExtension() !== 'md') {
-                continue;
-            }
-
-            $slug = $file->getFilenameWithoutExtension();
-
-            if (! preg_match('/\A[a-zA-Z0-9_-]+\z/', $slug)) {
-                continue;
-            }
-
-            [$meta, $body] = $this->parse(File::get($file->getPathname()));
-            $text = $this->plainText($body);
-
-            $articles[] = [
-                'slug' => $slug,
-                'title' => $this->title($body, $slug),
-                'description' => $meta['description'] ?? null,
-                'order' => (int) ($meta['order'] ?? 1000),
-                'icon' => $meta['icon'] ?? 'book',
-                'excerpt' => Str::limit($meta['description'] ?? $text, 180),
-                'text' => $text,
-            ];
-        }
-
-        usort($articles, fn (array $a, array $b): int => [$a['order'], $a['title']] <=> [$b['order'], $b['title']]);
-
-        return $this->cache[$locale] = $articles;
+        return $this->cache[$locale] ??= $this->usesDatabase() ? $this->fromDatabase($locale) : $this->fromFiles($locale);
     }
 
     public function find(string $locale, string $slug): ?array
@@ -123,33 +55,47 @@ class DocumentationService
             return null;
         }
 
-        $path = $this->directory($locale).DIRECTORY_SEPARATOR.$slug.'.md';
+        $articles = $this->all($locale);
+        $index = array_search($slug, array_column($articles, 'slug'), true);
 
-        if (! File::exists($path)) {
+        if ($index === false) {
             return null;
         }
 
-        [$meta, $body] = $this->parse(File::get($path));
-        // The page template prints the title; render the body without it.
-        $withoutTitle = preg_replace('/\A\s*# .*\R/', '', $body, 1) ?? $body;
-        $html = $this->callouts($this->converter()->convert($withoutTitle)->getContent(), $locale);
+        if ($this->usesDatabase()) {
+            $doc = Doc::query()->with(['feature', 'category'])->find($articles[$index]['id']);
+            $body = $doc->body;
+            $seo = ['seo_title' => $doc->seo_title, 'seo_description' => $doc->seo_description, 'noindex' => $doc->noindex];
+        } else {
+            $page = collect($this->files->all($locale))->firstWhere('slug', $slug);
+            $body = $page['body'];
+            $seo = ['seo_title' => null, 'seo_description' => null, 'noindex' => false];
+        }
 
-        $articles = $this->all($locale);
-        $index = array_search($slug, array_column($articles, 'slug'), true);
-        $neighbour = fn (int $offset): ?array => $index !== false && isset($articles[$index + $offset])
+        $rendered = $this->renderer->render($body, $locale);
+        $neighbour = fn (int $offset): ?array => isset($articles[$index + $offset])
             ? ['slug' => $articles[$index + $offset]['slug'], 'title' => $articles[$index + $offset]['title']]
             : null;
 
         return [
-            'slug' => $slug,
-            'title' => $this->title($body, $slug),
-            'description' => $meta['description'] ?? null,
+            ...$articles[$index],
+            ...$seo,
             'content' => $body,
-            'html' => $html,
-            'toc' => $this->toc($html),
+            'html' => $rendered['html'],
+            'toc' => $rendered['toc'],
             'previous' => $neighbour(-1),
             'next' => $neighbour(1),
         ];
+    }
+
+    /**
+     * Rendering of any page (also drafts) for the admin preview.
+     *
+     * @return array{html: string, toc: array<int, array{id: string, title: string}>}
+     */
+    public function render(string $body, string $locale): array
+    {
+        return $this->renderer->render($body, $locale);
     }
 
     /**
@@ -198,58 +144,75 @@ class DocumentationService
     }
 
     /**
-     * @return array{0: array<string, string>, 1: string}
+     * Compact index for the ⌘K search dialog.
+     *
+     * @return array<int, array{t: string, d: string, u: string, c: string, x: string}>
      */
-    private function parse(string $content): array
+    public function searchIndex(string $locale): array
     {
-        $content = str_replace("\r\n", "\n", $content);
-        $meta = [];
-
-        if (preg_match('/\A---\n(.*?)\n---\n/s', $content, $m) === 1) {
-            foreach (explode("\n", $m[1]) as $line) {
-                if (preg_match('/\A([a-z_]+):\s*(.*)\z/', trim($line), $kv) === 1) {
-                    $meta[$kv[1]] = trim($kv[2], " \"'");
-                }
-            }
-
-            $content = substr($content, strlen($m[0]));
-        }
-
-        return [$meta, str_replace('{app_url}', (string) config('serverscope.app_url'), $content)];
+        return array_map(fn (array $a): array => [
+            't' => $a['title'],
+            'd' => (string) $a['description'],
+            'u' => url("{$locale}/docs/{$a['slug']}"),
+            'c' => (string) ($a['category']['name'] ?? ''),
+            'x' => Str::limit($a['text'], 6000, ''),
+        ], $this->all($locale));
     }
 
-    private function callouts(string $html, string $locale): string
+    public function flush(): void
     {
-        $labels = self::CALLOUTS[$locale] ?? self::CALLOUTS['en'];
-
-        return preg_replace_callback(
-            '~<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*~',
-            fn (array $m) => '<blockquote class="callout callout-'.strtolower($m[1]).'"><p class="callout-title">'.e($labels[$m[1]]).'</p><p>',
-            $html,
-        ) ?? $html;
+        $this->cache = [];
+        $this->database = null;
     }
 
-    /**
-     * @return array<int, array{id: string, title: string}>
-     */
-    private function toc(string $html): array
+    private function fromDatabase(string $locale): array
     {
-        preg_match_all('~<h2 id="([^"]+)">(.*?)</h2>~s', $html, $matches, PREG_SET_ORDER);
+        return Doc::query()
+            ->visible()
+            ->where('locale', $locale)
+            ->with(['category', 'feature'])
+            ->get()
+            ->sortBy(fn (Doc $doc) => [$doc->category?->sort ?? PHP_INT_MAX, $doc->sort, $doc->title])
+            ->values()
+            ->map(function (Doc $doc): array {
+                $text = $this->renderer->plainText($doc->body);
 
-        return array_map(fn (array $m) => [
-            'id' => $m[1],
-            'title' => trim(html_entity_decode(strip_tags(preg_replace('~<a [^>]*class="heading-permalink".*?</a>~s', '', $m[2]) ?? ''), ENT_QUOTES)),
-        ], $matches);
+                return [
+                    'id' => $doc->id,
+                    'slug' => $doc->slug,
+                    'title' => $doc->title,
+                    'description' => $doc->description,
+                    'order' => $doc->sort,
+                    'icon' => $doc->icon,
+                    'excerpt' => Str::limit($doc->description ?: $text, 180),
+                    'text' => $text,
+                    'category' => $doc->category ? ['key' => $doc->category->translation_key, 'name' => $doc->category->name, 'sort' => $doc->category->sort] : null,
+                    'coming_soon' => $doc->isComingSoon(),
+                    'updated_at' => $doc->updated_at,
+                ];
+            })
+            ->all();
     }
 
-    private function plainText(string $markdown): string
+    private function fromFiles(string $locale): array
     {
-        $text = preg_replace('/```.*?```/s', ' ', $markdown) ?? $markdown;
-        $text = preg_replace('/\[([^\]]*)\]\([^)]*\)/', '$1', $text) ?? $text;
-        $text = preg_replace('/^#+\s.*$/m', ' ', $text, 1) ?? $text;
-        $text = preg_replace('/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]|[#>*_`|]/', ' ', $text) ?? $text;
+        return array_map(function (array $page): array {
+            $text = $this->renderer->plainText($page['body']);
 
-        return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+            return [
+                'id' => null,
+                'slug' => $page['slug'],
+                'title' => $page['title'],
+                'description' => $page['meta']['description'] ?? null,
+                'order' => (int) ($page['meta']['order'] ?? 1000),
+                'icon' => $page['meta']['icon'] ?? 'book',
+                'excerpt' => Str::limit($page['meta']['description'] ?? $text, 180),
+                'text' => $text,
+                'category' => null,
+                'coming_soon' => false,
+                'updated_at' => null,
+            ];
+        }, $this->files->all($locale));
     }
 
     private function snippet(string $text, string $term): string
@@ -263,16 +226,5 @@ class DocumentationService
         $start = max(0, $position - 60);
 
         return ($start > 0 ? '…' : '').trim(mb_substr($text, $start, 180)).(mb_strlen($text) > $start + 180 ? '…' : '');
-    }
-
-    private function title(string $content, string $fallback): string
-    {
-        foreach (preg_split('/\r\n|\r|\n/', $content) ?: [] as $line) {
-            if (str_starts_with(trim($line), '# ')) {
-                return trim(substr(trim($line), 2));
-            }
-        }
-
-        return Str::headline($fallback);
     }
 }

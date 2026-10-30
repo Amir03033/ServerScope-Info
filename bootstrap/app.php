@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\ApplyRedirects;
+use App\Http\Middleware\CountPageView;
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\StagingGuard;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,8 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Staging guard first, so Basic Auth also covers the admin panel.
+        $middleware->prepend(StagingGuard::class);
+
+        // Global (before routing), so redirects also work for paths without a route.
+        $middleware->append(ApplyRedirects::class);
+
         $middleware->alias([
-            'set.locale' => \App\Http\Middleware\SetLocale::class,
+            'set.locale' => SetLocale::class,
+            'count.view' => CountPageView::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

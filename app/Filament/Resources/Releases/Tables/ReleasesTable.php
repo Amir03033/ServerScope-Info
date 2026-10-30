@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Releases\Tables;
 
+use App\Enums\PublishStatus;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -15,10 +17,14 @@ class ReleasesTable
     {
         return $table
             ->columns([
-                TextColumn::make('version')
-                    ->label('Versie')
-                    ->formatStateUsing(fn (string $state): string => 'v'.$state)
-                    ->searchable(),
+                TextColumn::make('title')
+                    ->label('Titel')
+                    ->state(fn ($record): string => $record->title ?: 'v'.$record->version)
+                    ->description(fn ($record): ?string => filled($record->version) ? 'v'.$record->version : null)
+                    ->searchable(['title', 'version', 'body']),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge(),
                 TextColumn::make('locale')
                     ->label('Taal')
                     ->badge()
@@ -46,12 +52,25 @@ class ReleasesTable
                 SelectFilter::make('locale')
                     ->label('Taal')
                     ->options(['nl' => 'Nederlands', 'en' => 'English']),
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(PublishStatus::class),
             ])
             ->recordActions([
                 EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('publish')
+                        ->label('Publiceren')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['status' => PublishStatus::Published]))
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('draft')
+                        ->label('Concept maken')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['status' => PublishStatus::Draft]))
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make(),
                 ]),
             ]);
