@@ -39,13 +39,12 @@ class AdminPanelProvider extends PanelProvider
                 // buttons are pinned so white text and links pass WCAG AA:
                 // 600 #2F5FD0 (5.7:1 on white), 500 #3366DD (5.1:1 with white
                 // text, dark mode buttons), 400 #7AA2F7 (7.5:1 on dark).
-                'primary' => [
-                    ...Color::hex('#2F5FD0'),
+                'primary' => array_replace(Color::hex('#2F5FD0'), [
                     400 => '#7AA2F7',
                     500 => '#3366DD',
                     600 => '#2F5FD0',
                     700 => '#274FB0',
-                ],
+                ]),
                 'gray' => Color::Zinc,
             ])
             ->brandLogo(fn () => view('filament.brand'))
