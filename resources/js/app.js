@@ -548,6 +548,10 @@ if (dialog && typeof dialog.showModal === 'function') {
         } else if (event.key === 'Enter' && results[selected]) {
             event.preventDefault();
             window.location.href = results[selected].u;
+        } else if (event.key === 'Escape') {
+            // A search field would only clear itself on the first Escape.
+            event.preventDefault();
+            close();
         }
     });
 

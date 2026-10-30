@@ -379,8 +379,10 @@ a.ss-card:hover,
 }
 
 /* Entry animation for the hero (on load, not on scroll). */
+/* Starts at .01 instead of 0: text that is fully transparent does not
+   count as painted, which would delay First/Largest Contentful Paint. */
 @keyframes ss-rise {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: .01; transform: translateY(10px); }
     to { opacity: 1; transform: none; }
 }
 

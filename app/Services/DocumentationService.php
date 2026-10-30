@@ -155,7 +155,7 @@ class DocumentationService
             'd' => (string) $a['description'],
             'u' => url("{$locale}/docs/{$a['slug']}"),
             'c' => (string) ($a['category']['name'] ?? ''),
-            'x' => Str::limit($a['text'], 600, ''),
+            'x' => Str::limit($a['text'], 6000, ''),
         ], $this->all($locale));
     }
 
