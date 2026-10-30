@@ -39,9 +39,11 @@
             <p class="ss-eyebrow ss-rise">{{ $l('legal') }}</p>
             <h1 class="ss-rise mt-2 text-4xl font-semibold tracking-[-0.03em] text-fg sm:text-[2.75rem]">{{ $document->title }}</h1>
 
-            <dl class="ss-rise ss-rise-2 mt-6 flex flex-wrap gap-x-6 gap-y-2 border-y border-line py-4 text-sm">
-                <div class="flex gap-1.5"><dt class="text-muted">{{ $l('version') }}</dt><dd class="font-medium text-fg">{{ $version->version }}</dd></div>
-                <div class="flex gap-1.5"><dt class="text-muted">{{ $l('effective') }}</dt><dd class="font-medium text-fg">{{ $version->effective_at ? $date($version->effective_at) : '—' }}</dd></div>
+            <div class="ss-rise ss-rise-2 mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-line py-4 text-sm">
+                <dl class="flex flex-wrap gap-x-6 gap-y-2">
+                    <div class="flex gap-1.5"><dt class="text-muted">{{ $l('version') }}</dt><dd class="font-medium text-fg">{{ $version->version }}</dd></div>
+                    <div class="flex gap-1.5"><dt class="text-muted">{{ $l('effective') }}</dt><dd class="font-medium text-fg">{{ $version->effective_at ? $date($version->effective_at) : '—' }}</dd></div>
+                </dl>
                 @if ($hasVersions ?? false)
                     <div class="ss-noprint"><a href="{{ $versionsUrl }}" class="text-accent hover:underline">{{ $l('earlier') }}</a></div>
                 @endif
@@ -51,7 +53,7 @@
                         {{ $l('print') }}
                     </button>
                 </div>
-            </dl>
+            </div>
 
             @if ($archived ?? false)
                 <p class="mt-6 rounded-xl border border-line bg-surface p-4 text-sm text-fg" role="note">{{ $l('archived') }} <a href="{{ url($document->path()) }}" class="text-accent underline">{{ $l('current') }}</a></p>
