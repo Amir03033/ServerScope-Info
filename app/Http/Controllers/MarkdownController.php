@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LegalDocument;
+use App\Models\Page;
 use App\Services\MarkdownExport;
 use Illuminate\Http\Response;
 
@@ -27,6 +28,13 @@ class MarkdownController extends Controller
         abort_if($markdown === null, 404);
 
         return $this->respond($markdown, url($document->path()));
+    }
+
+    public function page(MarkdownExport $export, string $locale, string $pageSlug): Response
+    {
+        $page = Page::query()->visible()->where('locale', $locale)->where('slug', $pageSlug)->first() ?? abort(404);
+
+        return $this->respond($export->page($page), url($page->path()));
     }
 
     public function llms(MarkdownExport $export, ?string $locale = null): Response

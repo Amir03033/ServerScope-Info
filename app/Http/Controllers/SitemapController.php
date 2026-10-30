@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doc;
 use App\Models\LegalDocument;
+use App\Models\Page;
 use App\Models\PageMeta;
 use App\Models\Post;
 use Illuminate\Http\Response;
@@ -41,6 +42,15 @@ class SitemapController extends Controller
             foreach ($docs->groupBy('translation_key') as $translations) {
                 $alternates = $translations->mapWithKeys(fn (Doc $d) => [$d->locale => url($d->path())])->all();
                 $entries[] = ['alternates' => $alternates, 'lastmod' => $translations->max('updated_at')];
+            }
+
+            $pages = rescue(fn () => Page::query()->visible()->get(['key', 'locale', 'slug', 'updated_at']), collect(), report: false);
+
+            foreach ($pages->groupBy('key') as $translations) {
+                $entries[] = [
+                    'alternates' => $translations->mapWithKeys(fn (Page $p) => [$p->locale => url($p->path())])->all(),
+                    'lastmod' => $translations->max('updated_at'),
+                ];
             }
 
             $legal = rescue(fn () => LegalDocument::query()->get(), collect(), report: false);

@@ -438,7 +438,14 @@ REVAMP3 = {
     'privacy_note': 'Hoe we met je gegevens omgaan, lees je in de',
     'privacy_link': 'privacyverklaring',
   },
-  'footer': {'legal_title': 'Juridisch'},
+  'footer': {'legal_title': 'Juridisch', 'use_cases': 'Toepassingen'},
+  'pages': {
+    'about': 'Over ServerScope', 'landing': 'Toepassing', 'faq': 'Veelgestelde vragen',
+    'coming_soon': 'Deze functionaliteit is nog niet beschikbaar.', 'more_title': 'Verder lezen',
+    'docs': 'Naar de documentatie', 'waitlist': 'Op de wachtlijst', 'cta_title': 'ServerScope proberen?',
+    'cta_text': 'Lees in de documentatie hoe het werkt, of meld je aan voor de wachtlijst.',
+    'preview': 'Voorbeeld', 'draft': 'concept, niet gepubliceerd.', 'published': 'gepubliceerde pagina.',
+  },
   'errors': {
     'title': 'Pagina niet gevonden — ServerScope', 'eyebrow': 'Fout 404', 'headline': 'Deze pagina bestaat niet (meer)',
     'text': 'Het adres klopt niet, of de pagina is verplaatst. Zoek in de documentatie of ga verder via een van de links hieronder.',
@@ -456,7 +463,14 @@ REVAMP3 = {
     'privacy_note': 'How we handle your data is described in the',
     'privacy_link': 'privacy statement',
   },
-  'footer': {'legal_title': 'Legal'},
+  'footer': {'legal_title': 'Legal', 'use_cases': 'Use cases'},
+  'pages': {
+    'about': 'About ServerScope', 'landing': 'Use case', 'faq': 'Frequently asked questions',
+    'coming_soon': 'This functionality is not available yet.', 'more_title': 'Read more',
+    'docs': 'Go to the documentation', 'waitlist': 'Join the waiting list', 'cta_title': 'Want to try ServerScope?',
+    'cta_text': 'Read how it works in the documentation, or join the waiting list.',
+    'preview': 'Preview', 'draft': 'draft, not published.', 'published': 'published page.',
+  },
   'errors': {
     'title': 'Page not found — ServerScope', 'eyebrow': 'Error 404', 'headline': 'This page does not exist (any more)',
     'text': 'The address is wrong, or the page has moved. Search the documentation or continue via one of the links below.',

@@ -8,12 +8,14 @@ use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\MarkdownController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SecurityTxtController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\WaitlistController;
 use App\Models\LegalDocument;
+use App\Models\Page;
 use App\Support\Crawlers;
 use App\Support\OgImage;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,9 @@ Route::get('/status.json', [StatusController::class, 'badge'])
     ->name('status.badge');
 
 // Admin preview of unsaved documentation (session token, panel users only).
+Route::get('/admin-preview/page/{page}', [PageController::class, 'preview'])
+    ->name('page.preview');
+
 Route::get('/admin-preview/docs/{token}', [DocumentationController::class, 'preview'])
     ->where('token', '[A-Za-z0-9]{40}')
     ->name('docs.preview');
@@ -104,6 +109,14 @@ Route::prefix('{locale}')
             ->name('status');
 
         // Legal pages; slugs differ per language (privacy, colofon/imprint …).
+        Route::get('/{pageSlug}.md', [MarkdownController::class, 'page'])
+            ->where('pageSlug', Page::slugPattern())
+            ->name('page.markdown');
+
+        Route::get('/{pageSlug}', [PageController::class, 'show'])
+            ->where('pageSlug', Page::slugPattern())
+            ->name('page.show');
+
         Route::get('/{legalSlug}.md', [MarkdownController::class, 'legal'])
             ->where('legalSlug', LegalDocument::slugPattern())
             ->name('legal.markdown');

@@ -64,6 +64,22 @@ class MarkdownRenderer
         return ['html' => $html, 'toc' => $this->toc($html)];
     }
 
+    /**
+     * Put a "In het kort" summary right below the title (or at the top).
+     */
+    public static function withSummary(string $markdown, ?string $summary): string
+    {
+        if (blank($summary)) {
+            return $markdown;
+        }
+
+        $block = "> [!SUMMARY]\n> ".preg_replace('/\R/', "\n> ", trim($summary))."\n\n";
+
+        return preg_match('/\A(\s*# [^\n]*\n)/', $markdown, $m) === 1
+            ? $m[1]."\n".$block.ltrim(substr($markdown, strlen($m[1])))
+            : $block.$markdown;
+    }
+
     public function prepare(string $markdown, string $locale = 'nl'): string
     {
         $fingerprint = rescue(fn () => Setting::get('release_fingerprint'), null, report: false);

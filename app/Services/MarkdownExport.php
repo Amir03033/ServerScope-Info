@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\FeatureStatus;
 use App\Models\Feature;
 use App\Models\LegalDocument;
+use App\Models\Page;
 use App\Services\Legal\LegalRenderer;
 use App\Support\Markdown\MarkdownRenderer;
 
@@ -70,6 +71,34 @@ class MarkdownExport
         return $this->withSource("# {$document->title}\n\n{$meta}\n\n".trim($this->legal->markdown($version)), url($document->path()), $document->locale);
     }
 
+    public function page(Page $page): string
+    {
+        $body = trim($this->markdown->prepare(MarkdownRenderer::withSummary($page->body, $page->summary), $page->locale));
+
+        if (! str_starts_with($body, '# ')) {
+            $body = "# {$page->title}\n\n{$body}";
+        }
+
+        if (filled($page->faq)) {
+            $body .= "\n\n## ".($page->locale === 'en' ? 'Frequently asked questions' : 'Veelgestelde vragen');
+            foreach ($page->faq as $item) {
+                $body .= "\n\n### {$item['question']}\n\n".$this->markdown->prepare($item['answer'], $page->locale);
+            }
+        }
+
+        return $this->withSource($body, url($page->path()), $page->locale);
+    }
+
+    /**
+     * Visible content pages: about pages first, then the landing pages.
+     *
+     * @return list<Page>
+     */
+    public function pages(string $locale): array
+    {
+        return rescue(fn () => Page::query()->visible()->with('feature')->where('locale', $locale)->orderBy('sort')->get()->reject(fn (Page $page) => $page->isComingSoon())->values()->all(), [], report: false);
+    }
+
     /**
      * @return list<Feature>
      */
@@ -90,6 +119,14 @@ class MarkdownExport
         $out .= "\n## ".($en ? 'Available functionality' : 'Beschikbare functionaliteit')."\n\n";
         foreach ($this->availableFeatures() as $feature) {
             $out .= '- '.($feature->name[$locale] ?? $feature->name['en'] ?? $feature->key).': '.($feature->summary[$locale] ?? '')."\n";
+        }
+
+        $pages = $this->pages($locale);
+        if ($pages !== []) {
+            $out .= "\n## ".($en ? 'About ServerScope' : 'Over ServerScope')."\n\n";
+            foreach ($pages as $page) {
+                $out .= "- [{$page->title}](".url($page->path().'.md').')'.(filled($page->seo_description) ? ": {$page->seo_description}" : '')."\n";
+            }
         }
 
         $docs = $this->docs($locale);
@@ -113,6 +150,9 @@ class MarkdownExport
         $out .= '- ['.($en ? 'Dutch version' : 'English version').']('.url($en ? 'nl/llms.txt' : 'llms.txt').")\n";
 
         if ($full) {
+            foreach ($pages as $page) {
+                $out .= "\n\n---\n\n".$this->page($page);
+            }
             foreach ($docs as $doc) {
                 $out .= "\n\n---\n\n".$this->doc($locale, $doc['slug']);
             }

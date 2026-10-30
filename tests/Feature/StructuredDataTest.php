@@ -141,7 +141,7 @@ class StructuredDataTest extends TestCase
             }
         }
 
-        $this->assertEqualsCanonicalizing(['Organization', 'WebSite', 'SoftwareApplication', 'BreadcrumbList', 'TechArticle'], array_keys($types));
+        $this->assertEqualsCanonicalizing(['Organization', 'WebSite', 'SoftwareApplication', 'BreadcrumbList', 'TechArticle', 'FAQPage'], array_keys($types));
     }
 
     public function test_the_validator_itself_rejects_wrong_markup(): void

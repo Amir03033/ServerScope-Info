@@ -39,6 +39,7 @@ return [
         'status' => 'Status',
         'legal' => 'Deze site gebruikt geen cookies voor tracking.',
         'legal_title' => 'Juridisch',
+        'use_cases' => 'Toepassingen',
     ],
     'home' => [
         'title' => 'ServerScope — Krijg inzicht in je servers',
@@ -350,6 +351,20 @@ return [
         'preview_published' => 'gepubliceerde versie.',
         'privacy_note' => 'Hoe we met je gegevens omgaan, lees je in de',
         'privacy_link' => 'privacyverklaring',
+    ],
+    'pages' => [
+        'about' => 'Over ServerScope',
+        'landing' => 'Toepassing',
+        'faq' => 'Veelgestelde vragen',
+        'coming_soon' => 'Deze functionaliteit is nog niet beschikbaar.',
+        'more_title' => 'Verder lezen',
+        'docs' => 'Naar de documentatie',
+        'waitlist' => 'Op de wachtlijst',
+        'cta_title' => 'ServerScope proberen?',
+        'cta_text' => 'Lees in de documentatie hoe het werkt, of meld je aan voor de wachtlijst.',
+        'preview' => 'Voorbeeld',
+        'draft' => 'concept, niet gepubliceerd.',
+        'published' => 'gepubliceerde pagina.',
     ],
     'errors' => [
         'title' => 'Pagina niet gevonden — ServerScope',

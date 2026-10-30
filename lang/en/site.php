@@ -39,6 +39,7 @@ return [
         'status' => 'Status',
         'legal' => 'This site uses no tracking cookies.',
         'legal_title' => 'Legal',
+        'use_cases' => 'Use cases',
     ],
     'home' => [
         'title' => 'ServerScope — Understand your infrastructure',
@@ -350,6 +351,20 @@ return [
         'preview_published' => 'published version.',
         'privacy_note' => 'How we handle your data is described in the',
         'privacy_link' => 'privacy statement',
+    ],
+    'pages' => [
+        'about' => 'About ServerScope',
+        'landing' => 'Use case',
+        'faq' => 'Frequently asked questions',
+        'coming_soon' => 'This functionality is not available yet.',
+        'more_title' => 'Read more',
+        'docs' => 'Go to the documentation',
+        'waitlist' => 'Join the waiting list',
+        'cta_title' => 'Want to try ServerScope?',
+        'cta_text' => 'Read how it works in the documentation, or join the waiting list.',
+        'preview' => 'Preview',
+        'draft' => 'draft, not published.',
+        'published' => 'published page.',
     ],
     'errors' => [
         'title' => 'Page not found — ServerScope',

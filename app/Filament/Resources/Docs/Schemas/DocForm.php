@@ -52,6 +52,11 @@ class DocForm
                             ->helperText('Eén zin. Verschijnt in het overzicht, in de zoekresultaten en als meta-omschrijving.')
                             ->rows(2)
                             ->maxLength(300),
+                        Textarea::make('summary')
+                            ->label('In het kort')
+                            ->helperText('Optioneel. Twee of drie zinnen met het directe antwoord, bovenaan de pagina in een kader "In het kort" (met de vermelding dat de volledige tekst geldt). Leeg = geen kader.')
+                            ->rows(3)
+                            ->maxLength(600),
                         MarkdownEditor::make('body')
                             ->label('Tekst (Markdown)')
                             ->helperText('Codeblokken met ```sh, ```json, ```php enz. krijgen kleur. Callouts: > [!NOTE], > [!TIP], > [!WARNING], > [!IMPORTANT]. {app_url} wordt de ServerScope-URL. Een eerste regel "# Titel" wordt niet getoond: de titel komt uit het veld hierboven.')
