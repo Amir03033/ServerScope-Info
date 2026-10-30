@@ -15,7 +15,7 @@ Voor hosts en containers **zonder Python of systemd** is er een Bash-agent. Hij 
 ## Installeren
 
 1. Registreer de server in ServerScope met **Servers → Server toevoegen → Handmatig registreren** en kopieer het agenttoken. Het wordt één keer getoond.
-2. Zet het script `agent.sh` (uit de map `agent/bash` van de ServerScope-agent) in een map **buiten de webroot**.
+2. Vraag het script `agent.sh` aan via het [contactformulier](/nl/contact). Er is nog geen openbare download. Zet het script daarna in een map **buiten de webroot**.
 3. Maak in dezelfde map een bestand `.env`:
 
    ```sh

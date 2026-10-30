@@ -48,13 +48,13 @@ class AdminPanelRevampTest extends TestCase
 
         foreach (['/admin', '/admin/docs', '/admin/docs/create', "/admin/docs/{$doc->id}/edit", '/admin/doc-categories', '/admin/doc-feedback',
             '/admin/features', '/admin/plans', "/admin/plans/{$plan->id}/edit", '/admin/plan-rows', '/admin/releases', '/admin/releases/create',
-            '/admin/posts', '/admin/redirects', '/admin/users', '/admin/site-settings'] as $url) {
+            '/admin/posts', '/admin/redirects', '/admin/users', '/admin/site-settings', '/admin/waitlist'] as $url) {
             $this->actingAs($admin)->get($url)->assertOk();
         }
 
         $this->actingAs($admin)->get('/admin')
             ->assertSee('Recent gewijzigde pagina')
-            ->assertSee('Concepten en geplande pagina')
+            ->assertSee('Concepten, concept-revisies en geplande pagina')
             ->assertSee('Functies per status')
             ->assertSee('Was dit nuttig?');
     }
@@ -67,7 +67,7 @@ class AdminPanelRevampTest extends TestCase
             $this->actingAs($editor)->get($url)->assertOk();
         }
 
-        foreach (['/admin/features', '/admin/plans', '/admin/plan-rows', '/admin/users', '/admin/site-settings'] as $url) {
+        foreach (['/admin/features', '/admin/plans', '/admin/plan-rows', '/admin/users', '/admin/site-settings', '/admin/waitlist'] as $url) {
             $this->actingAs($editor)->get($url)->assertForbidden();
         }
 

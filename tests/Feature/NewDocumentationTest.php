@@ -52,6 +52,10 @@ class NewDocumentationTest extends TestCase
 
     public function test_coming_soon_pages_are_labelled_and_hidden_pages_disappear(): void
     {
+        // Every feature starts as available; the owner sets coming soon per feature.
+        $this->get('/nl/docs/agent-updates')->assertOk()->assertDontSee('Deze functie is nog niet beschikbaar');
+        Feature::query()->whereIn('key', ['agent-updates', 'one-command-install'])->update(['status' => 'coming_soon']);
+
         $this->get('/nl/docs/agent-updates')->assertOk()->assertSee('Binnenkort')->assertSee('Deze functie is nog niet beschikbaar');
         $this->get('/en/docs/connect-server')->assertOk()->assertSee('Coming soon');
         $this->get('/nl/docs/agent-security')->assertOk()->assertDontSee('Deze functie is nog niet beschikbaar');

@@ -97,6 +97,25 @@ class Doc extends Model
         return $this->hasMany(DocRevision::class)->latest('id');
     }
 
+    /**
+     * Draft revisions waiting to be published.
+     */
+    public function pendingDrafts(): HasMany
+    {
+        return $this->hasMany(DocRevision::class)->where('is_draft', true)->whereNull('applied_at')->latest('id');
+    }
+
+    /**
+     * Makes a draft revision the live content (a normal revision is written
+     * for it, so it can be rolled back like any other change).
+     */
+    public function publishDraft(DocRevision $draft): void
+    {
+        $this->revisionReason = 'Concept gepubliceerd: '.$draft->reason;
+        $this->update(['title' => $draft->title, 'description' => $draft->description, 'body' => $draft->body]);
+        $draft->update(['applied_at' => now()]);
+    }
+
     public function feedback(): HasMany
     {
         return $this->hasMany(DocFeedback::class);
@@ -140,7 +159,7 @@ class Doc extends Model
      */
     public function editedSinceImport(): bool
     {
-        return $this->revisions()->where('reason', 'not like', 'Import%')->where('reason', '!=', 'Aangemaakt')->exists()
+        return $this->revisions()->where('is_draft', false)->where('reason', 'not like', 'Import%')->where('reason', '!=', 'Aangemaakt')->exists()
             || ($this->imported_body_sha256 !== null && hash('sha256', $this->body) !== $this->imported_body_sha256);
     }
 }
