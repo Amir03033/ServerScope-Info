@@ -7,6 +7,7 @@ use App\Http\Controllers\DocFeedbackController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\MarkdownController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SecurityTxtController;
 use App\Http\Controllers\SitemapController;
@@ -45,6 +46,13 @@ Route::prefix('{locale}')
 
         Route::get('/docs/search.json', [DocumentationController::class, 'searchIndex'])
             ->name('docs.search');
+
+        Route::get('/docs/{slug}.md', [MarkdownController::class, 'doc'])
+            ->where('slug', '[a-zA-Z0-9_-]+')
+            ->name('docs.markdown');
+
+        Route::get('/llms.txt', [MarkdownController::class, 'llms'])->name('llms.locale');
+        Route::get('/llms-full.txt', [MarkdownController::class, 'llmsFull'])->name('llms-full.locale');
 
         Route::get('/docs/{slug}', [DocumentationController::class, 'show'])
             ->where('slug', '[a-zA-Z0-9_-]+')
@@ -96,6 +104,10 @@ Route::prefix('{locale}')
             ->name('status');
 
         // Legal pages; slugs differ per language (privacy, colofon/imprint …).
+        Route::get('/{legalSlug}.md', [MarkdownController::class, 'legal'])
+            ->where('legalSlug', LegalDocument::slugPattern())
+            ->name('legal.markdown');
+
         Route::get('/{legalSlug}', [LegalController::class, 'show'])
             ->where('legalSlug', LegalDocument::slugPattern())
             ->name('legal.show');
@@ -129,6 +141,10 @@ Route::get('/og/{hash}.png', function (string $hash) {
 Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security-txt');
 
 // Dynamic so staging (and any non-production copy) disallows everything.
+// llms.txt (https://llmstxt.org): English at the root, Dutch under /nl.
+Route::get('/llms.txt', [MarkdownController::class, 'llms'])->name('llms');
+Route::get('/llms-full.txt', [MarkdownController::class, 'llmsFull'])->name('llms-full');
+
 Route::get('/robots.txt', function () {
     return response(Crawlers::robots(), 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');

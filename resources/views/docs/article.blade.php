@@ -29,6 +29,9 @@
 @endif
 
 @unless ($preview ?? false)
+    @push('head')
+        <link rel="alternate" type="text/markdown" href="{{ url($lang . '/docs/' . $current . '.md') }}" title="Markdown">
+    @endpush
     @php \App\Support\StructuredData::push(\App\Support\StructuredData::techArticle($title, $seoDescription ? strip_tags((string) $seoDescription) : null, $lang, $updated)); @endphp
 @endunless
 

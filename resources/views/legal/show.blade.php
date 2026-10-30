@@ -12,6 +12,10 @@
 @section('description', $document->seo_description ?: $document->title)
 @if (($preview ?? false) || ($archived ?? false))
     @section('noindex', '1')
+@else
+    @push('head')
+        <link rel="alternate" type="text/markdown" href="{{ url($document->path() . '.md') }}" title="Markdown">
+    @endpush
 @endif
 
 @section('content')

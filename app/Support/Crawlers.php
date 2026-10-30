@@ -57,6 +57,6 @@ class Crawlers
             $out .= self::allowed($agent) ? $rules : "Disallow: /\n";
         }
 
-        return $out."\nSitemap: ".url('/sitemap.xml')."\n";
+        return $out."\n# Summary for AI tools: ".url('/llms.txt')."\nSitemap: ".url('/sitemap.xml')."\n";
     }
 }
