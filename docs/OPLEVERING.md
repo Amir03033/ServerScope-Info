@@ -49,9 +49,25 @@ Schermafbeeldingen: map [oplevering/](oplevering/).
   - een schakelaar maandelijks/jaarlijks;
   - het label "Aanbevolen";
   - een vergelijkingstabel.
-  - Zolang registratie uit staat, gaan de knoppen naar de wachtlijst. Is er
-    geen wachtlijst-URL ingevuld, dan gaan ze naar het contactformulier,
-    met het onderwerp al ingevuld (bijvoorbeeld "Wachtlijst Pro").
+  - Zolang registratie uit staat, gaan de knoppen naar de **eigen
+    wachtlijst** van de site, met het gekozen abonnement al ingevuld. Vul je
+    in de instellingen een externe wachtlijst-URL in, dan gaan ze daarheen.
+- **Wachtlijst** `/nl/waitlist` en `/en/waitlist`, zonder diensten van
+  derden:
+  - bewaart alleen het e-mailadres, de taal, het gekozen abonnement, de
+    getoonde toestemmingstekst en het tijdstip van toestemming;
+  - een verplicht vinkje voor toestemming, een honeypot tegen spam en
+    maximaal 5 aanmeldingen per minuut;
+  - verwijderen op verzoek: na het aanmelden krijgt iemand een
+    persoonlijke verwijderlink (alleen de hash wordt bewaard), en jij kunt
+    een aanmelding in Filament verwijderen;
+  - in Filament onder **Inhoud → Wachtlijst** (alleen beheerders): bekijken,
+    filteren, verwijderen en exporteren als CSV.
+- **Contactformulier** mailt nu echt naar `CONTACT_MAIL_TO` uit `.env`, met
+  de afzender als antwoordadres, een honeypot en de bestaande limiet van 5
+  berichten per minuut. Ontbreekt het adres, dan zegt de pagina dat het
+  formulier niet beschikbaar is. Lukt het versturen niet, dan krijgt de
+  bezoeker een foutmelding. Berichten worden niet op de site bewaard.
 - **Echte status.** De vaste tekst "Alle systemen operationeel" is weg.
   - `/status` en het statusbadge in de hero en de footer halen
     `https://serverscope.nl/status/serverscope.json` op via onze eigen
@@ -80,15 +96,26 @@ Schermafbeeldingen: map [oplevering/](oplevering/).
   `docs/API.md`, `docs/AUDIT.md` §5–6, `docs/RELEASE_KEYS.md` en de
   foutmeldingen van `install.sh`.
 
-  | Pagina | Functie in Filament | Startstatus |
-  |---|---|---|
-  | Teams en rollen | Teams en rollen | binnenkort |
-  | Een server koppelen met één commando | Koppelen met één commando | binnenkort |
-  | Diensten bewaken | Diensten bewaken | beschikbaar |
-  | De Bash-agent | Bash-agent | binnenkort |
-  | Agent-updates via het dashboard | Agent-updates | binnenkort |
-  | Beveiliging van de agent en je account | — | altijd zichtbaar |
-  | API v1: overzicht | REST API v1 | beschikbaar |
+  | Pagina | Functie in Filament |
+  |---|---|
+  | Teams en rollen | Teams en rollen |
+  | Een server koppelen met één commando | Koppelen met één commando |
+  | Diensten bewaken | Diensten bewaken |
+  | De Bash-agent | Bash-agent |
+  | Agent-updates via het dashboard | Agent-updates |
+  | Beveiliging van de agent en je account | — (altijd zichtbaar) |
+  | API v1: overzicht | REST API v1 |
+
+  Alle functies starten op **beschikbaar**.
+- **De Bash-agent:** tot er een download is, vraagt de handleiding klanten
+  om het script via het contactformulier aan te vragen. Er staat geen
+  download-URL in.
+- **Concept-revisies** voor "Aan de slag" en "Beveiliging en
+  accountbeheer" (NL en EN). Ze kloppen met de nieuwe functies: de rollen
+  eigenaar, beheerder en lid, en "er zijn nog geen abonnementen actief".
+  De gepubliceerde tekst blijft ongewijzigd tot je in Filament bij de
+  revisies op **Concept publiceren** klikt. `docs:verify` blijft dus
+  slagen.
 
 - De vingerafdruk van de releasesleutel is een plaatshouder. Vul hem in
   onder **Instellingen → Site-instellingen**; daarna verschijnt hij
@@ -225,7 +252,7 @@ en/status-pages             9e74cf9e23625bee = 9e74cf9e23625bee published
 RESULTAAT: alles identiek
 ```
 
-**Controle 3, de testsuite.** Alle 97 tests slagen. Ze bewijzen onder meer:
+**Controle 3, de testsuite.** Alle 110 tests slagen. Ze bewijzen onder meer:
 
 - elk bestand staat byte voor byte in de database;
 - de import is herhaalbaar;
@@ -247,9 +274,8 @@ verplaatst, dus er waren geen redirects nodig.
 
 ## 4. Op staging zetten en controleren
 
-Je noemde het adres `staginfinfo.serverscope.nl`. Bedoel je
-`staginginfo.serverscope.nl`? De code gebruikt geen vast adres; dat komt
-uit `APP_URL`.
+Staging-adres: `staginginfo.serverscope.nl`. De code gebruikt geen vast
+adres; dat komt uit `APP_URL`.
 
 1. **Plesk → Websites & Domains → het staging-subdomein:**
    - Documentroot: `/httpdocs/public` (de map `public` van het project).
@@ -260,14 +286,16 @@ uit `APP_URL`.
    ```
    APP_ENV=staging
    APP_DEBUG=false
-   APP_URL=https://<staging-adres>
+   APP_URL=https://staginginfo.serverscope.nl
    STAGING=true
    STAGING_USER=<kies een naam>
    STAGING_PASSWORD=<lang wachtwoord>
    SERVERSCOPE_APP_URL=https://serverscope.nl
+   CONTACT_MAIL_TO=<adres dat contactberichten ontvangt>
    ```
 
-   Vul ook je databasegegevens in, en daarna `php artisan key:generate`.
+   Vul ook je databasegegevens en de `MAIL_*`-instellingen (SMTP) in, en
+   draai daarna `php artisan key:generate`.
 
 4. **Deploy-acties** in Plesk Git ("Enable additional deployment actions"):
 
@@ -276,13 +304,14 @@ uit `APP_URL`.
    /opt/plesk/php/8.4/bin/php artisan migrate --force
    /opt/plesk/php/8.4/bin/php artisan site:defaults
    /opt/plesk/php/8.4/bin/php artisan docs:verify
-   npm ci && npm run build
+   /opt/plesk/php/8.4/bin/php artisan docs:check-links
    /opt/plesk/php/8.4/bin/php artisan optimize
    ```
 
-   `public/build` staat niet in git, dus `npm run build` moet op de server
-   draaien (Node 20 of hoger). Kan dat niet in Plesk, laat het me weten,
-   dan bouw ik de bestanden apart mee.
+   Op de server is **geen npm nodig**: `public/build` staat in git, net als
+   bij de ServerScope-app. Wie CSS of JavaScript wijzigt, draait lokaal
+   `npm run build` en commit `public/build` mee; een test bewaakt dat de
+   build compleet is.
 
 5. **Beheerder aanmaken:** `php artisan info:admin jij@voorbeeld.nl`. Een
    redacteur maak je met `--role=editor`, of in Filament onder
@@ -290,6 +319,11 @@ uit `APP_URL`.
 6. **Controleren:**
    - Open de site: de browser vraagt om gebruiker en wachtwoord, en
      bovenaan staat een rode balk "STAGING".
+   - Stuur een bericht via het contactformulier en controleer of het
+     aankomt op `CONTACT_MAIL_TO`.
+   - Meld je aan op de wachtlijst, bekijk de aanmelding in Filament
+     (**Inhoud → Wachtlijst**), exporteer de CSV en verwijder de aanmelding
+     met de persoonlijke link.
    - `curl -I https://<staging>/nl` toont `X-Robots-Tag: noindex, nofollow`.
    - `https://<staging>/robots.txt` geeft `Disallow: /`.
    - `php artisan docs:verify` en `php artisan docs:check-links` zijn
@@ -297,7 +331,7 @@ uit `APP_URL`.
    - `php artisan about` toont onder "ServerScope Info" dat Staging aan
      staat.
    - Loop de pagina's door: desktop en mobiel, licht en donker, Ctrl+K,
-     een handleiding, Prijzen, Status, en `/admin`.
+     een handleiding, Prijzen, Wachtlijst, Status, en `/admin`.
 
 **Veiligheidsnet:**
 
@@ -325,33 +359,35 @@ Je kunt ook meerdere functies tegelijk aanvinken en een bulkactie
 "Status: …" kiezen. Handleidingen, regels in de prijstabel en
 changelog-items die bij een functie horen, volgen die status automatisch.
 
-Startwaarden: alles wat de huidige site al beschrijft en wat in de
-changelog van 26 oktober staat, is **beschikbaar**. Deze vier staan op
-**binnenkort**:
-
-- Teams en rollen
-- Koppelen met één commando
-- Bash-agent
-- Agent-updates
+Startwaarden: alle functies staan op **beschikbaar**, ook teams, koppelen
+met één commando, de Bash-agent en agent-updates. Zet een functie op
+"binnenkort" of "verborgen" als die nog niet live gaat.
 
 Checklist voor de livegang:
 
 1. Zet de functies op de juiste status.
 2. **Product → Changelog:** publiceer de concepten "Teams en rollen" en
    "Een server koppelen met één commando" als die functies live gaan.
-3. **Product → Abonnementen:** vul prijzen en limieten in en kies welk
+3. **Documentatie → Pagina's → "Aan de slag" en "Beveiliging en
+   accountbeheer"** (NL en EN): open het tabblad Revisiegeschiedenis en
+   klik bij de concept-revisie op **Concept publiceren** zodra teams live
+   zijn. Pas de tekst eerst aan als abonnementen dan al live zijn.
+4. **Product → Abonnementen:** vul prijzen en limieten in en kies welk
    abonnement "Aanbevolen" is. Lege velden tonen "Prijs volgt" of
    "Volgt".
-4. **Instellingen → Site-instellingen:**
+5. **Instellingen → Site-instellingen:**
    - registratie open of dicht;
-   - registratie- en wachtlijst-URL;
+   - registratie-URL, en eventueel een externe wachtlijst-URL (leeg = de
+     eigen wachtlijst);
    - schakelaar maandelijks/jaarlijks;
    - de URL van de statuspagina;
    - de vingerafdruk van de releasesleutel;
    - de bezoekersteller aan of uit.
-5. Draai `php artisan docs:check-links`. Heb je een functie verborgen, dan
+6. Zet `CONTACT_MAIL_TO` en de `MAIL_*`-instellingen in de `.env` van
+   productie.
+7. Draai `php artisan docs:check-links`. Heb je een functie verborgen, dan
    ziet dit commando links ernaartoe vanuit andere pagina's.
-6. Zet in productie `STAGING=false` (of laat het weg) en `APP_ENV=production`.
+8. Zet in productie `STAGING=false` (of laat het weg) en `APP_ENV=production`.
 
 ---
 
@@ -359,27 +395,16 @@ Checklist voor de livegang:
 
 **Aandachtspunten voor jou:**
 
-- **Het contactformulier verstuurt niets.** Dat was al zo: het logt
-  alleen het onderwerp. Omdat de prijsknoppen er nu naartoe kunnen
-  leiden, komen wachtlijst-aanmeldingen dus nergens aan. Vul een
-  wachtlijst-URL in, of laat mij een afleveradres koppelen; daarvoor heb
-  ik jouw keuze nodig.
-- **Bestaande teksten die botsen met nieuwe functies.** Die heb ik niet
-  aangepast, omdat bestaande inhoud gelijk moest blijven.
-  - "Beveiliging en accountbeheer" zegt "ServerScope heeft geen
-    abonnementen of pakketten". Dat botst met de prijspagina.
-  - "Aan de slag" beschrijft twee rollen (gebruiker en beheerder). Met
-    teams zijn dat er drie (eigenaar, beheerder, lid).
-
-  Pas dit in Filament aan zodra die functies live gaan.
 - **Het statusbadge is niet live getest.** Deze omgeving kan
   serverscope.nl niet bereiken. Getest is het met nagebootste antwoorden:
   operationeel, verminderd, onzin en time-out. Controleer op staging dat
   `https://serverscope.nl/status/serverscope.json` openbaar en bereikbaar
   is.
-- **Bash-agent:** de handleiding zegt dat `agent.sh` in de map
-  `agent/bash` van de ServerScope-agent staat. Hoe klanten dat bestand
-  precies krijgen, staat niet in de bronnen. Controleer of dat klopt.
+- **E-mail is niet echt verstuurd.** Het contactformulier is getest met een
+  nagebootste mailer; het echte versturen hangt af van je SMTP-instellingen
+  op staging.
+- **Wachtlijst-aanmelders krijgen geen bevestigingsmail.** De site mailt ze
+  ook niet als registratie opengaat. Dat doe je zelf met de CSV-export.
 
 **Niet getest:**
 
@@ -396,18 +421,25 @@ Checklist voor de livegang:
 - **Tracking en cookies:**
   - Laravel zet een functionele sessiecookie. Dat was al zo, en die is
     nodig voor formulieren.
-  - De beperking op het aantal feedback- en contactverzoeken gebruikt het
+  - De beperking op het aantal feedback-, contact- en wachtlijstverzoeken gebruikt het
     IP-adres maximaal één minuut in de cache. Er wordt niets opgeslagen in
     de database.
 - **Code:**
   - `composer audit` meldt een bestaande kwetsbaarheid in `symfony/mime`
-    (e-mailheaders). Die heb ik niet bijgewerkt, omdat dat buiten deze
-    revamp valt. Voorstel: een aparte kleine update.
+    (CVE-2026-45070, e-mailheaders). Die is bewust niet in deze branch
+    bijgewerkt; zie de vervolgstappen.
   - `tempest/highlight` staat vast op 2.12.1 (MIT). Nieuwere versies
     vragen PHP 8.4, en het project belooft PHP 8.3. Er is geen kleur voor
     shell-code ingebouwd, daarom heb ik een kleine eigen shell-kleuring
     geschreven.
   - Laravel Boost is niet geïnstalleerd, zoals afgesproken.
+
+**Vervolgstappen:**
+
+- **symfony/mime bijwerken** (CVE-2026-45070) in een aparte, kleine branch
+  en pull request: `composer update symfony/mime --with-dependencies`, de
+  tests draaien, en het contactformulier op staging controleren. Nu het
+  contactformulier mailt, is dit belangrijker geworden.
 
 **Suggesties voor later** (niet gebouwd, conform je akkoord):
 
