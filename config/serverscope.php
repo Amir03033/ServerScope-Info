@@ -16,6 +16,14 @@ return [
     'app_url' => rtrim((string) env('SERVERSCOPE_APP_URL', 'https://serverscope.nl'), '/'),
 
     /*
+    | Timezone used to show times coming from the ServerScope status page
+    | (the JSON carries UTC). Keep identical to ServerScope's
+    | SERVERSCOPE_DISPLAY_TIMEZONE so both status pages show the same time.
+    */
+
+    'display_timezone' => env('SERVERSCOPE_DISPLAY_TIMEZONE', 'Europe/Amsterdam'),
+
+    /*
     | Where the contact form is delivered. Without an address the contact
     | page says the form is unavailable instead of silently dropping messages.
     */
