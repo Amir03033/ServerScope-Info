@@ -328,6 +328,9 @@ return [
         'remove_title' => 'Remove entry',
         'remove_text' => 'Do you want to remove your entry from the waiting list? This cannot be undone.',
         'remove_button' => 'Remove my entry',
+        'opened_subject' => 'ServerScope: registration is open',
+        'opened_body' => 'Good news: registration for ServerScope is open. You can now create an account:',
+        'opened_footer' => 'You get this once because you were on the waiting list. Want your sign-up removed?',
         'remove_invalid' => 'This link is invalid, or the entry no longer exists.',
     ],
 ];

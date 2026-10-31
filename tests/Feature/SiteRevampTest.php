@@ -103,7 +103,7 @@ class SiteRevampTest extends TestCase
         $pro = Plan::query()->where('key', 'pro')->sole();
         $pro->update(['price_monthly' => 19, 'price_yearly' => 190, 'is_recommended' => true]);
         $servers = PlanRow::query()->where('type', 'limit')->orderBy('sort')->first();
-        PlanRowValue::query()->create(['plan_id' => $pro->id, 'plan_row_id' => $servers->id, 'value' => '10']);
+        PlanRowValue::query()->updateOrCreate(['plan_id' => $pro->id, 'plan_row_id' => $servers->id], ['value' => '10']);
 
         $this->get('/nl/pricing')
             ->assertSee('href="https://serverscope.nl/register?plan=pro"', false)

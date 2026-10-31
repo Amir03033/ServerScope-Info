@@ -47,7 +47,7 @@ class WaitlistAndContactTest extends TestCase
         $this->assertSame(['klant@example.com', 'nl', 'pro'], [$entry->email, $entry->locale, $entry->plan]);
         $this->assertTrue($entry->consented_at->equalTo(now()));
         $this->assertSame(trans('site.waitlist.consent', [], 'nl'), $entry->consent_text);
-        $this->assertSame(['id', 'email', 'locale', 'plan', 'consent_text', 'consented_at', 'removal_token_hash', 'created_at', 'updated_at'], Schema::getColumnListing('waitlist_entries'));
+        $this->assertSame(['id', 'email', 'locale', 'plan', 'consent_text', 'consented_at', 'removal_token_hash', 'created_at', 'updated_at', 'notified_at'], Schema::getColumnListing('waitlist_entries'));
 
         $removeUrl = $response->getSession()->get('waitlist-remove-url');
         $this->assertStringStartsWith(url('/nl/waitlist/remove/'.$entry->id.'/'), $removeUrl);

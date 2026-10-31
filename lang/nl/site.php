@@ -328,6 +328,9 @@ return [
         'remove_title' => 'Aanmelding verwijderen',
         'remove_text' => 'Wil je je aanmelding voor de wachtlijst verwijderen? Dit kan niet ongedaan worden gemaakt.',
         'remove_button' => 'Verwijder mijn aanmelding',
+        'opened_subject' => 'ServerScope: registratie is open',
+        'opened_body' => 'Goed nieuws: registratie voor ServerScope is open. Je kunt nu een account aanmaken:',
+        'opened_footer' => 'Je ontvangt dit eenmalig omdat je op de wachtlijst stond. Wil je je aanmelding verwijderen?',
         'remove_invalid' => 'Deze link is ongeldig, of de aanmelding bestaat niet meer.',
     ],
 ];
