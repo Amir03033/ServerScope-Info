@@ -29,7 +29,7 @@
                 @if ($state === 'unknown')
                     <p class="mt-1 text-sm text-muted">{{ $s('unknown_text') }}</p>
                 @elseif ($status['generated_at'])
-                    <p class="mt-1 text-sm text-muted">{{ $s('updated') }}: <time datetime="{{ $status['generated_at'] }}">{{ \Illuminate\Support\Carbon::parse($status['generated_at'])->timezone(config('app.timezone'))->locale($lang)->translatedFormat('j F Y, H:i') }}</time></p>
+                    <p class="mt-1 text-sm text-muted">{{ $s('updated') }}: <time datetime="{{ $status['generated_at'] }}">{{ \Illuminate\Support\Carbon::parse($status['generated_at'])->timezone(config('serverscope.display_timezone'))->locale($lang)->translatedFormat('j F Y, H:i') }}</time></p>
                 @endif
             </div>
             @if (filled($pageUrl))
@@ -65,7 +65,7 @@
                                 <span class="ss-badge"><span class="ss-dot {{ $incident['resolved'] ? 'ss-dot-ok' : 'ss-dot-warn' }}" aria-hidden="true"></span>{{ $incident['resolved'] ? $s('resolved') : $s('ongoing') }}</span>
                             </div>
                             @if ($incident['started_at'])
-                                <p class="mt-1 text-sm text-muted"><time datetime="{{ $incident['started_at'] }}">{{ \Illuminate\Support\Carbon::parse($incident['started_at'])->timezone(config('app.timezone'))->locale($lang)->translatedFormat('j F Y, H:i') }}</time></p>
+                                <p class="mt-1 text-sm text-muted"><time datetime="{{ $incident['started_at'] }}">{{ \Illuminate\Support\Carbon::parse($incident['started_at'])->timezone(config('serverscope.display_timezone'))->locale($lang)->translatedFormat('j F Y, H:i') }}</time></p>
                             @endif
                         </li>
                     @endforeach

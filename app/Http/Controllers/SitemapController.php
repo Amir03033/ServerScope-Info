@@ -13,7 +13,7 @@ use Illuminate\Http\Response;
  */
 class SitemapController extends Controller
 {
-    public const PAGES = ['', '/features', '/docs', '/pricing', '/changelog', '/blog', '/contact', '/status'];
+    public const PAGES = ['', '/features', '/docs', '/pricing', '/changelog', '/blog', '/contact', '/status', '/terms', '/privacy'];
 
     public function __invoke(): Response
     {

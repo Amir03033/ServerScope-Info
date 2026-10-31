@@ -47,15 +47,15 @@ class WaitlistAndContactTest extends TestCase
         $this->assertSame(['klant@example.com', 'nl', 'pro'], [$entry->email, $entry->locale, $entry->plan]);
         $this->assertTrue($entry->consented_at->equalTo(now()));
         $this->assertSame(trans('site.waitlist.consent', [], 'nl'), $entry->consent_text);
-        $this->assertSame(['id', 'email', 'locale', 'plan', 'consent_text', 'consented_at', 'removal_token_hash', 'created_at', 'updated_at'], Schema::getColumnListing('waitlist_entries'));
+        $this->assertSame(['id', 'email', 'locale', 'plan', 'consent_text', 'consented_at', 'removal_token_hash', 'created_at', 'updated_at', 'notified_at'], Schema::getColumnListing('waitlist_entries'));
 
         $removeUrl = $response->getSession()->get('waitlist-remove-url');
         $this->assertStringStartsWith(url('/nl/waitlist/remove/'.$entry->id.'/'), $removeUrl);
         $this->get('/nl/waitlist')->assertSee('Je staat op de wachtlijst.');
 
         // Signing up again updates the entry instead of adding a second one.
-        $this->post('/en/waitlist', ['email' => 'klant@example.com', 'plan' => 'ultra', 'consent' => '1']);
-        $this->assertSame(['en', 'ultra'], [WaitlistEntry::query()->sole()->locale, WaitlistEntry::query()->sole()->plan]);
+        $this->post('/en/waitlist', ['email' => 'klant@example.com', 'plan' => 'premium', 'consent' => '1']);
+        $this->assertSame(['en', 'premium'], [WaitlistEntry::query()->sole()->locale, WaitlistEntry::query()->sole()->plan]);
     }
 
     public function test_entry_can_be_removed_with_the_personal_link_only(): void

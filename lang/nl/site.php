@@ -38,6 +38,8 @@ return [
         'app' => 'Applicatie',
         'status' => 'Status',
         'legal' => 'Deze site gebruikt geen cookies voor tracking.',
+        'terms' => 'Algemene voorwaarden',
+        'privacy' => 'Privacy',
     ],
     'home' => [
         'title' => 'ServerScope — Krijg inzicht in je servers',
@@ -246,6 +248,18 @@ return [
             'fixed' => 'Opgelost',
         ],
     ],
+    'legal' => [
+        'terms' => [
+            'title' => 'Algemene voorwaarden',
+            'intro' => 'De afspraken voor het gebruik van ServerScope: wat je van ons mag verwachten en wat wij van jou.',
+        ],
+        'privacy' => [
+            'title' => 'Privacyverklaring',
+            'intro' => 'Welke gegevens ServerScope verwerkt, waarom, hoe lang, en wat jouw rechten zijn.',
+        ],
+        'updated' => 'Laatst bijgewerkt op :date.',
+        'draft_warning' => 'Concept: de bedrijfsgegevens zijn nog niet volledig ingevuld. Deze pagina is nog niet definitief en wordt niet door zoekmachines geïndexeerd.',
+    ],
     'common' => [
         'coming_soon' => 'Binnenkort',
         'example' => 'Voorbeeld',
@@ -273,7 +287,7 @@ return [
     'pricing' => [
         'title' => 'Prijzen — ServerScope',
         'headline' => 'Abonnementen',
-        'intro' => 'Free, Pro en Ultra. Vergelijk wat er in elk abonnement zit.',
+        'intro' => 'Free, Pro en Premium. Vergelijk wat er in elk abonnement zit.',
         'monthly' => 'Maandelijks',
         'yearly' => 'Jaarlijks',
         'per_month' => 'per maand',
@@ -329,5 +343,8 @@ return [
         'remove_text' => 'Wil je je aanmelding voor de wachtlijst verwijderen? Dit kan niet ongedaan worden gemaakt.',
         'remove_button' => 'Verwijder mijn aanmelding',
         'remove_invalid' => 'Deze link is ongeldig, of de aanmelding bestaat niet meer.',
+        'opened_subject' => 'ServerScope: registratie is open',
+        'opened_body' => 'Goed nieuws: registratie voor ServerScope is open. Je kunt nu een account aanmaken:',
+        'opened_footer' => 'Je ontvangt dit eenmalig omdat je op de wachtlijst stond. Wil je je aanmelding verwijderen?',
     ],
 ];

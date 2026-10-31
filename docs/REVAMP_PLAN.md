@@ -76,7 +76,7 @@ volgen op staging (vóór en na met dezelfde methode).
   `--disable-updates`. De vingerafdruk van de releasesleutel is daar nog
   niet ingevuld; daarom komt er op de site een plaatshouder die jij in
   Filament invult.
-- ServerScope kent **geen** abonnementen; Free/Pro/Ultra zijn volledig
+- ServerScope kent **geen** abonnementen; Free/Pro/Premium zijn volledig
   plaatshouders.
 
 ---
@@ -200,7 +200,7 @@ doc_feedback     id, doc_id, helpful (bool), comment? (max 500), locale, created
                  (geen IP, geen user agent, geen cookies)
 features         id, key, name (json nl/en), summary (json), icon, category,
                  status (available|coming_soon|hidden), sort, timestamps
-plans            id, key (free|pro|ultra), name (json), tagline (json),
+plans            id, key (free|pro|premium), name (json), tagline (json),
                  price_monthly?, price_yearly?, currency, price_note (json)?,
                  is_recommended, cta_label (json), cta_url?, sort, is_visible, timestamps
 plan_rows        id, group (json), label (json), feature_id?, type (limit|boolean|text), sort

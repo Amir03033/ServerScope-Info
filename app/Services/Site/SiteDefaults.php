@@ -6,11 +6,12 @@ use App\Models\Doc;
 use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\PlanRow;
+use App\Models\PlanRowValue;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Creates the starting content that is missing: features (with their
- * starting status), the Free/Pro/Ultra plans with empty placeholders and
+ * starting status), the Free/Pro/Premium plans with empty placeholders and
  * the rows of the comparison table. Existing records are never changed.
  */
 class SiteDefaults
@@ -22,6 +23,17 @@ class SiteDefaults
     ];
 
     /** Limit rows of the comparison table; values are filled in by the owner. */
+    /**
+     * Starting limits per plan, in the order of LIMIT_ROWS. They mirror
+     * config('serverscope.plans') in ServerScope (the application enforces
+     * those; keep both in sync). Only seeded while no limit value exists.
+     */
+    public const LIMIT_VALUES = [
+        'free' => ['3', '5', '25', '1', null, '5 min', '30 d'],
+        'pro' => ['25', '50', '250', '5', null, '1 min', '365 d'],
+        'premium' => ['250', '1000', '1000', '25', null, '1 min', '∞'],
+    ];
+
     public const LIMIT_ROWS = [
         ['Servers', 'Servers'],
         ['Domeinen', 'Domains'],
@@ -54,7 +66,7 @@ class SiteDefaults
                 $created['features'] += (int) $feature->wasRecentlyCreated;
             }
 
-            foreach ([['free', 'Free', 'Gratis starten', 'Start for free'], ['pro', 'Pro', 'Kies Pro', 'Choose Pro'], ['ultra', 'Ultra', 'Kies Ultra', 'Choose Ultra']] as $i => [$key, $name, $nl, $en]) {
+            foreach ([['free', 'Free', 'Gratis starten', 'Start for free'], ['pro', 'Pro', 'Kies Pro', 'Choose Pro'], ['premium', 'Premium', 'Kies Premium', 'Choose Premium']] as $i => [$key, $name, $nl, $en]) {
                 $plan = Plan::query()->firstOrCreate(['key' => $key], [
                     'name' => ['nl' => $name, 'en' => $name],
                     'cta_label' => ['nl' => $nl, 'en' => $en],
@@ -80,6 +92,20 @@ class SiteDefaults
                         'sort' => $sort += 10,
                     ]);
                     $created['plan_rows']++;
+                }
+            }
+
+            if (! PlanRowValue::query()->exists()) {
+                $rows = PlanRow::query()->where('type', 'limit')->orderBy('sort')->get()->values();
+
+                foreach (self::LIMIT_VALUES as $planKey => $values) {
+                    $plan = Plan::query()->where('key', $planKey)->first();
+
+                    foreach ($rows as $i => $row) {
+                        if ($plan && ($values[$i] ?? null) !== null) {
+                            PlanRowValue::query()->create(['plan_id' => $plan->id, 'plan_row_id' => $row->id, 'value' => $values[$i]]);
+                        }
+                    }
                 }
             }
 

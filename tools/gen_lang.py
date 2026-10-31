@@ -287,7 +287,13 @@ REVAMP = {
   'nav': {'pricing': 'Prijzen', 'search': 'Zoeken', 'search_hint': 'Zoek in de documentatie',
           'theme': 'Thema', 'theme_light': 'Licht', 'theme_dark': 'Donker', 'theme_system': 'Systeem',
           'close': 'Sluiten'},
-  'footer': {'status': 'Status', 'legal': 'Deze site gebruikt geen cookies voor tracking.'},
+  'footer': {'status': 'Status', 'legal': 'Deze site gebruikt geen cookies voor tracking.', 'terms': 'Algemene voorwaarden', 'privacy': 'Privacy'},
+  'legal': {
+    'terms': {'title': 'Algemene voorwaarden', 'intro': 'De afspraken voor het gebruik van ServerScope: wat je van ons mag verwachten en wat wij van jou.'},
+    'privacy': {'title': 'Privacyverklaring', 'intro': 'Welke gegevens ServerScope verwerkt, waarom, hoe lang, en wat jouw rechten zijn.'},
+    'updated': 'Laatst bijgewerkt op :date.',
+    'draft_warning': 'Concept: de bedrijfsgegevens zijn nog niet volledig ingevuld. Deze pagina is nog niet definitief en wordt niet door zoekmachines geïndexeerd.',
+  },
   'home': {
     'v2_headline': 'Weet wat je servers en websites doen.',
     'v2_intro': 'ServerScope bewaakt je servers via een lichte agent en je websites en domeinen van buitenaf. Problemen worden incidenten met een tijdlijn, en meldingen komen waar jij ze wilt hebben.',
@@ -315,7 +321,7 @@ REVAMP = {
   },
   'pricing': {
     'title': 'Prijzen — ServerScope', 'headline': 'Abonnementen',
-    'intro': 'Free, Pro en Ultra. Vergelijk wat er in elk abonnement zit.',
+    'intro': 'Free, Pro en Premium. Vergelijk wat er in elk abonnement zit.',
     'monthly': 'Maandelijks', 'yearly': 'Jaarlijks', 'per_month': 'per maand', 'per_year': 'per jaar',
     'price_follows': 'Prijs volgt', 'recommended': 'Aanbevolen', 'follows': 'Volgt', 'yes': 'Ja', 'no': 'Nee',
     'compare': 'Vergelijk de abonnementen', 'feature': 'Functie', 'billing': 'Betaalperiode',
@@ -335,7 +341,13 @@ REVAMP = {
   'nav': {'pricing': 'Pricing', 'search': 'Search', 'search_hint': 'Search the documentation',
           'theme': 'Theme', 'theme_light': 'Light', 'theme_dark': 'Dark', 'theme_system': 'System',
           'close': 'Close'},
-  'footer': {'status': 'Status', 'legal': 'This site uses no tracking cookies.'},
+  'footer': {'status': 'Status', 'legal': 'This site uses no tracking cookies.', 'terms': 'Terms and conditions', 'privacy': 'Privacy'},
+  'legal': {
+    'terms': {'title': 'Terms and conditions', 'intro': 'The agreements for using ServerScope: what you can expect from us and what we expect from you.'},
+    'privacy': {'title': 'Privacy statement', 'intro': 'Which data ServerScope processes, why, for how long, and what your rights are.'},
+    'updated': 'Last updated on :date.',
+    'draft_warning': 'Draft: the company details have not been completed yet. This page is not final and is not indexed by search engines.',
+  },
   'home': {
     'v2_headline': 'Know what your servers and websites are doing.',
     'v2_intro': 'ServerScope monitors your servers through a lightweight agent and your websites and domains from the outside. Problems become incidents with a timeline, and notifications go where you want them.',
@@ -363,7 +375,7 @@ REVAMP = {
   },
   'pricing': {
     'title': 'Pricing — ServerScope', 'headline': 'Plans',
-    'intro': 'Free, Pro and Ultra. Compare what each plan includes.',
+    'intro': 'Free, Pro and Premium. Compare what each plan includes.',
     'monthly': 'Monthly', 'yearly': 'Yearly', 'per_month': 'per month', 'per_year': 'per year',
     'price_follows': 'Price to follow', 'recommended': 'Recommended', 'follows': 'To follow', 'yes': 'Yes', 'no': 'No',
     'compare': 'Compare the plans', 'feature': 'Feature', 'billing': 'Billing period',
@@ -401,6 +413,7 @@ REVAMP2 = {
     'removed': 'Je aanmelding is verwijderd.',
     'remove_title': 'Aanmelding verwijderen', 'remove_text': 'Wil je je aanmelding voor de wachtlijst verwijderen? Dit kan niet ongedaan worden gemaakt.',
     'remove_button': 'Verwijder mijn aanmelding', 'remove_invalid': 'Deze link is ongeldig, of de aanmelding bestaat niet meer.',
+    'opened_subject': 'ServerScope: registratie is open', 'opened_body': 'Goed nieuws: registratie voor ServerScope is open. Je kunt nu een account aanmaken:', 'opened_footer': 'Je ontvangt dit eenmalig omdat je op de wachtlijst stond. Wil je je aanmelding verwijderen?',
   },
  },
  'en': {
@@ -421,6 +434,7 @@ REVAMP2 = {
     'removed': 'Your entry has been removed.',
     'remove_title': 'Remove entry', 'remove_text': 'Do you want to remove your entry from the waiting list? This cannot be undone.',
     'remove_button': 'Remove my entry', 'remove_invalid': 'This link is invalid, or the entry no longer exists.',
+    'opened_subject': 'ServerScope: registration is open', 'opened_body': 'Good news: registration for ServerScope is open. You can now create an account:', 'opened_footer': 'You get this once because you were on the waiting list. Want your sign-up removed?',
   },
  },
 }
