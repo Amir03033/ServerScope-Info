@@ -62,7 +62,7 @@ The Service deliberately refuses checks of internal or private addresses. In cas
 
 ## 9. Right of withdrawal for consumers
 
-The Service is intended for businesses and organisations. If you act as a consumer, you have 14 days to withdraw from a paid subscription without giving a reason. If you ask us to start immediately, you pay for the part of the Service delivered up to the moment of withdrawal. Send your withdrawal to {company_email}.
+The Service is for businesses and organisations as well as for private individuals. If you act as a consumer, meaning not for a trade or business, you have 14 days to withdraw from a paid subscription without giving a reason. That period starts on the day you take out the subscription. If you ask us to start immediately, which you do by paying and activating the subscription, you pay for the part of the Service delivered up to the moment of withdrawal. Send your withdrawal by e-mail to {company_email}, with your name and the e-mail address of your account.
 
 ## 10. Your data
 

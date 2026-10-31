@@ -32,7 +32,7 @@
 
 We do not sell personal data. We only share it with parties we need to provide the Service:
 
-- our hosting provider ({hosting_provider}), where the servers run;
+- our hosting provider ({hosting_provider}), where our servers in the Netherlands run;
 - Mollie B.V., to process payments. Mollie is itself responsible for its own legal obligations;
 - services you connect yourself, such as Discord or your own webhook addresses;
 - our accountant, for bookkeeping.
@@ -43,7 +43,8 @@ You decide what the data you enter about your own servers, domains and team memb
 
 ## 6. How long we keep data
 
-- **Account and team data:** as long as your account exists. After you cancel and delete your account we delete it, except what we are legally required to keep.
+- **Account and team data:** as long as your account exists. You can have your account deleted by e-mailing {company_email}. After that we delete your data, except what we are legally required to keep.
+- **Backups:** we keep backups for at most one month. Data you had deleted can therefore remain in a backup for up to a month and then disappears automatically.
 - **Monitoring history:** according to your plan, as stated on the pricing page. Older history is deleted.
 - **Invoices and payment data:** 7 years, because tax law requires it.
 - **Waiting list:** until you unsubscribe, or until we have told you registration is open and you have yourself removed.

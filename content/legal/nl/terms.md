@@ -62,7 +62,7 @@ De Dienst weigert bewust controles op interne of privéadressen. Bij misbruik mo
 
 ## 9. Herroepingsrecht voor consumenten
 
-De Dienst is bedoeld voor ondernemers en organisaties. Handel je als consument, dan heb je 14 dagen om zonder opgave van reden af te zien van een betaald abonnement. Vraag je ons om direct te beginnen, dan betaal je het deel van de Dienst dat tot het moment van herroeping is geleverd. Stuur je herroeping naar {company_email}.
+De Dienst is er voor zowel ondernemers en organisaties als voor particulieren. Handel je als consument, dus niet voor een beroep of bedrijf, dan heb je 14 dagen om zonder opgave van reden af te zien van een betaald abonnement. Die termijn gaat in op de dag dat je het abonnement afsluit. Vraag je ons om direct te beginnen, wat je doet door te betalen en het abonnement te activeren, dan betaal je het deel van de Dienst dat tot het moment van herroeping is geleverd. Stuur je herroeping per e-mail naar {company_email}, met je naam en het e-mailadres van je account.
 
 ## 10. Jouw gegevens
 

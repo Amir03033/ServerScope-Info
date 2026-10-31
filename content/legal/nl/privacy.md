@@ -32,7 +32,7 @@
 
 We verkopen geen persoonsgegevens. We delen ze alleen met partijen die we nodig hebben om de Dienst te leveren:
 
-- onze hostingprovider ({hosting_provider}), waar de servers draaien;
+- onze hostingprovider ({hosting_provider}), waar onze servers in Nederland draaien;
 - Mollie B.V., voor het afhandelen van betalingen. Mollie is voor eigen wettelijke verplichtingen zelf verantwoordelijk;
 - diensten die je zelf koppelt, zoals Discord of je eigen webhook-adressen;
 - onze boekhouder, voor de administratie.
@@ -43,7 +43,8 @@ De gegevens die je over je eigen servers, domeinen en teamleden invoert, bepaal 
 
 ## 6. Hoe lang we gegevens bewaren
 
-- **Account en teamgegevens:** zolang je account bestaat. Na opzegging en verwijdering van je account verwijderen we ze, behalve wat we wettelijk moeten bewaren.
+- **Account en teamgegevens:** zolang je account bestaat. Je kunt je account laten verwijderen door te mailen naar {company_email}. Daarna verwijderen we je gegevens, behalve wat we wettelijk moeten bewaren.
+- **Back-ups:** we bewaren back-ups maximaal één maand. Gegevens die je hebt laten verwijderen, kunnen daarom nog tot een maand in een back-up staan, en verdwijnen daarna vanzelf.
 - **Monitoringhistorie:** volgens je abonnement, zoals vermeld op de prijspagina. Oudere historie wordt verwijderd.
 - **Facturen en betaalgegevens:** 7 jaar, omdat de belastingwet dat vraagt.
 - **Wachtlijst:** tot je je afmeldt of we je hebben laten weten dat registratie open is en je je laat verwijderen.
