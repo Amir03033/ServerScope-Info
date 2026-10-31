@@ -26,12 +26,25 @@ class SiteDefaults
     /**
      * Starting limits per plan, in the order of LIMIT_ROWS. They mirror
      * config('serverscope.plans') in ServerScope (the application enforces
-     * those; keep both in sync). Only seeded while no limit value exists.
+     * those; keep both in sync). Only empty cells are filled: a value you set
+     * in the admin panel is never changed.
      */
     public const LIMIT_VALUES = [
-        'free' => ['3', '5', '25', '1', null, '5 min', '30 d'],
-        'pro' => ['25', '50', '250', '5', null, '1 min', '365 d'],
-        'premium' => ['250', '1000', '1000', '25', null, '1 min', '∞'],
+        'free' => ['3', '5', '25', '1', '∞', '5 min', '30 d'],
+        'pro' => ['25', '50', '250', '5', '∞', '1 min', '365 d'],
+        'premium' => ['250', '1000', '1000', '25', '∞', '1 min', '∞'],
+    ];
+
+    /**
+     * Which features each plan includes (free, pro, premium), as ServerScope
+     * enforces it (config 'plans' > 'features'): API tokens and webhooks (and
+     * with them Discord notifications) need Pro or Premium. Everything else is
+     * in every plan; the limits above differ. Keep in sync with ServerScope.
+     */
+    public const FEATURE_MATRIX = [
+        'webhooks' => [false, true, true],
+        'discord' => [false, true, true],
+        'api' => [false, true, true],
     ];
 
     public const LIMIT_ROWS = [
@@ -95,17 +108,28 @@ class SiteDefaults
                 }
             }
 
-            if (! PlanRowValue::query()->exists()) {
-                $rows = PlanRow::query()->where('type', 'limit')->orderBy('sort')->get()->values();
+            // Fill empty cells only (limits and feature yes/no); never overwrite.
+            $limitRows = PlanRow::query()->where('type', 'limit')->orderBy('sort')->get()->values();
+            $featureRows = PlanRow::query()->where('type', 'boolean')->whereNotNull('feature_id')->with('feature')->get();
 
-                foreach (self::LIMIT_VALUES as $planKey => $values) {
-                    $plan = Plan::query()->where('key', $planKey)->first();
+            foreach (['free', 'pro', 'premium'] as $index => $planKey) {
+                $plan = Plan::query()->where('key', $planKey)->first();
 
-                    foreach ($rows as $i => $row) {
-                        if ($plan && ($values[$i] ?? null) !== null) {
-                            PlanRowValue::query()->create(['plan_id' => $plan->id, 'plan_row_id' => $row->id, 'value' => $values[$i]]);
-                        }
+                if ($plan === null) {
+                    continue;
+                }
+
+                foreach ($limitRows as $i => $row) {
+                    $value = self::LIMIT_VALUES[$planKey][$i] ?? null;
+
+                    if ($value !== null) {
+                        PlanRowValue::query()->firstOrCreate(['plan_id' => $plan->id, 'plan_row_id' => $row->id], ['value' => $value]);
                     }
+                }
+
+                foreach ($featureRows as $row) {
+                    $included = self::FEATURE_MATRIX[$row->feature->key][$index] ?? true;
+                    PlanRowValue::query()->firstOrCreate(['plan_id' => $plan->id, 'plan_row_id' => $row->id], ['value' => $included ? '1' : '0']);
                 }
             }
 
