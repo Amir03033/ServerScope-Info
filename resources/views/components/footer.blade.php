@@ -42,7 +42,11 @@
     <div class="border-t border-line">
         <div class="ss-container flex flex-wrap items-center justify-between gap-3 py-6 text-xs text-subtle">
             <p>© {{ date('Y') }} ServerScope. {{ $t('footer.rights') }}</p>
-            <p>{{ $t('footer.legal') }}</p>
+            <p class="flex flex-wrap items-center gap-4">
+                <a href="{{ url($locale . '/terms') }}" class="transition-colors hover:text-fg">{{ $t('footer.terms') }}</a>
+                <a href="{{ url($locale . '/privacy') }}" class="transition-colors hover:text-fg">{{ $t('footer.privacy') }}</a>
+                <span>{{ $t('footer.legal') }}</span>
+            </p>
         </div>
     </div>
 </footer>

@@ -16,6 +16,25 @@ return [
     'app_url' => rtrim((string) env('SERVERSCOPE_APP_URL', 'https://serverscope.nl'), '/'),
 
     /*
+    | The company behind ServerScope, printed in the terms and the privacy
+    | statement (content/legal). Use the same values as SERVERSCOPE_COMPANY_*
+    | in the application. While name, KvK number, address or e-mail is
+    | missing, the legal pages show a draft warning and are not indexed.
+    */
+
+    'company' => [
+        'name' => env('SERVERSCOPE_COMPANY_NAME'),
+        'kvk' => env('SERVERSCOPE_COMPANY_KVK'),
+        'vat_id' => env('SERVERSCOPE_COMPANY_VAT_ID'),
+        'address' => env('SERVERSCOPE_COMPANY_ADDRESS'),
+        'email' => env('SERVERSCOPE_COMPANY_EMAIL'),
+        'hosting_provider' => env('SERVERSCOPE_HOSTING_PROVIDER'),
+    ],
+
+    // Date of the current version of the terms and privacy statement (YYYY-MM-DD).
+    'legal_updated' => env('SERVERSCOPE_LEGAL_UPDATED', '2026-11-01'),
+
+    /*
     | Timezone used to show times coming from the ServerScope status page
     | (the JSON carries UTC). Keep identical to ServerScope's
     | SERVERSCOPE_DISPLAY_TIMEZONE so both status pages show the same time.

@@ -6,6 +6,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocFeedbackController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StatusController;
@@ -49,6 +50,12 @@ Route::prefix('{locale}')
             ->where('slug', '[a-zA-Z0-9_-]+')
             ->middleware('throttle:10,1')
             ->name('docs.feedback');
+
+        Route::get('/terms', fn (string $locale) => app(LegalController::class)->show(app(\App\Support\Markdown\MarkdownRenderer::class), $locale, 'terms'))
+            ->name('legal.terms');
+
+        Route::get('/privacy', fn (string $locale) => app(LegalController::class)->show(app(\App\Support\Markdown\MarkdownRenderer::class), $locale, 'privacy'))
+            ->name('legal.privacy');
 
         Route::get('/pricing', [PricingController::class, 'index'])
             ->name('pricing');

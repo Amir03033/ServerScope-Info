@@ -38,6 +38,8 @@ return [
         'app' => 'Application',
         'status' => 'Status',
         'legal' => 'This site uses no tracking cookies.',
+        'terms' => 'Terms and conditions',
+        'privacy' => 'Privacy',
     ],
     'home' => [
         'title' => 'ServerScope — Understand your infrastructure',
@@ -246,6 +248,18 @@ return [
             'fixed' => 'Fixed',
         ],
     ],
+    'legal' => [
+        'terms' => [
+            'title' => 'Terms and conditions',
+            'intro' => 'The agreements for using ServerScope: what you can expect from us and what we expect from you.',
+        ],
+        'privacy' => [
+            'title' => 'Privacy statement',
+            'intro' => 'Which data ServerScope processes, why, for how long, and what your rights are.',
+        ],
+        'updated' => 'Last updated on :date.',
+        'draft_warning' => 'Draft: the company details have not been completed yet. This page is not final and is not indexed by search engines.',
+    ],
     'common' => [
         'coming_soon' => 'Coming soon',
         'example' => 'Example',
@@ -328,9 +342,9 @@ return [
         'remove_title' => 'Remove entry',
         'remove_text' => 'Do you want to remove your entry from the waiting list? This cannot be undone.',
         'remove_button' => 'Remove my entry',
+        'remove_invalid' => 'This link is invalid, or the entry no longer exists.',
         'opened_subject' => 'ServerScope: registration is open',
         'opened_body' => 'Good news: registration for ServerScope is open. You can now create an account:',
         'opened_footer' => 'You get this once because you were on the waiting list. Want your sign-up removed?',
-        'remove_invalid' => 'This link is invalid, or the entry no longer exists.',
     ],
 ];
