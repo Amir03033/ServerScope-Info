@@ -67,12 +67,21 @@ class SiteData
 
     /**
      * Where a plan button goes: the plan's own link or the sign-up URL when
-     * registration is open, otherwise an external waiting list (when set) or this site's own one.
+     * registration is open (with ?plan=key), otherwise an external waiting list (when set) or this site's own one.
      */
     public function planUrl(Plan $plan, string $locale): string
     {
         if (Setting::get('registration_open')) {
-            return $plan->cta_url ?: (Setting::get('signup_url') ?: config('serverscope.app_url'));
+            // An explicit link on the plan wins; otherwise the registration
+            // page of ServerScope with the plan key (keys are shared with
+            // the application: free, pro, premium).
+            if ($plan->cta_url) {
+                return $plan->cta_url;
+            }
+
+            $base = (string) (Setting::get('signup_url') ?: rtrim((string) config('serverscope.app_url'), '/').'/register');
+
+            return $base.(str_contains($base, '?') ? '&' : '?').'plan='.rawurlencode($plan->key);
         }
 
         return Setting::get('waitlist_url') ?: url("{$locale}/waitlist").'?plan='.rawurlencode($plan->key);

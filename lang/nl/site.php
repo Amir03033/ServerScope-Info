@@ -273,7 +273,7 @@ return [
     'pricing' => [
         'title' => 'Prijzen — ServerScope',
         'headline' => 'Abonnementen',
-        'intro' => 'Free, Pro en Ultra. Vergelijk wat er in elk abonnement zit.',
+        'intro' => 'Free, Pro en Premium. Vergelijk wat er in elk abonnement zit.',
         'monthly' => 'Maandelijks',
         'yearly' => 'Jaarlijks',
         'per_month' => 'per maand',

@@ -273,7 +273,7 @@ return [
     'pricing' => [
         'title' => 'Pricing — ServerScope',
         'headline' => 'Plans',
-        'intro' => 'Free, Pro and Ultra. Compare what each plan includes.',
+        'intro' => 'Free, Pro and Premium. Compare what each plan includes.',
         'monthly' => 'Monthly',
         'yearly' => 'Yearly',
         'per_month' => 'per month',

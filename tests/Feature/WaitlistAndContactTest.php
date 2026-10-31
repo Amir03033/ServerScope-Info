@@ -54,8 +54,8 @@ class WaitlistAndContactTest extends TestCase
         $this->get('/nl/waitlist')->assertSee('Je staat op de wachtlijst.');
 
         // Signing up again updates the entry instead of adding a second one.
-        $this->post('/en/waitlist', ['email' => 'klant@example.com', 'plan' => 'ultra', 'consent' => '1']);
-        $this->assertSame(['en', 'ultra'], [WaitlistEntry::query()->sole()->locale, WaitlistEntry::query()->sole()->plan]);
+        $this->post('/en/waitlist', ['email' => 'klant@example.com', 'plan' => 'premium', 'consent' => '1']);
+        $this->assertSame(['en', 'premium'], [WaitlistEntry::query()->sole()->locale, WaitlistEntry::query()->sole()->plan]);
     }
 
     public function test_entry_can_be_removed_with_the_personal_link_only(): void

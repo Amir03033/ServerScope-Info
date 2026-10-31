@@ -44,7 +44,7 @@ Schermafbeeldingen: map [oplevering/](oplevering/).
   sitemap, de prijstabel of de changelog. Ook de installatie-terminal volgt
   de functie "Koppelen met één commando".
 - **Prijspagina** `/nl/pricing` en `/en/pricing`:
-  - Free, Pro en Ultra met de tekst "Prijs volgt" zolang er geen prijs is
+  - Free, Pro en Premium met de tekst "Prijs volgt" zolang er geen prijs is
     ingevuld;
   - een schakelaar maandelijks/jaarlijks;
   - het label "Aanbevolen";

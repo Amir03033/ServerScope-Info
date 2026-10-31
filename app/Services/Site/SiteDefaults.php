@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Creates the starting content that is missing: features (with their
- * starting status), the Free/Pro/Ultra plans with empty placeholders and
+ * starting status), the Free/Pro/Premium plans with empty placeholders and
  * the rows of the comparison table. Existing records are never changed.
  */
 class SiteDefaults
@@ -54,7 +54,7 @@ class SiteDefaults
                 $created['features'] += (int) $feature->wasRecentlyCreated;
             }
 
-            foreach ([['free', 'Free', 'Gratis starten', 'Start for free'], ['pro', 'Pro', 'Kies Pro', 'Choose Pro'], ['ultra', 'Ultra', 'Kies Ultra', 'Choose Ultra']] as $i => [$key, $name, $nl, $en]) {
+            foreach ([['free', 'Free', 'Gratis starten', 'Start for free'], ['pro', 'Pro', 'Kies Pro', 'Choose Pro'], ['premium', 'Premium', 'Kies Premium', 'Choose Premium']] as $i => [$key, $name, $nl, $en]) {
                 $plan = Plan::query()->firstOrCreate(['key' => $key], [
                     'name' => ['nl' => $name, 'en' => $name],
                     'cta_label' => ['nl' => $nl, 'en' => $en],
