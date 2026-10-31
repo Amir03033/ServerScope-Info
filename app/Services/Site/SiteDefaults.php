@@ -30,7 +30,7 @@ class SiteDefaults
      * in the admin panel is never changed.
      */
     public const LIMIT_VALUES = [
-        'free' => ['3', '5', '25', '1', '∞', '5 min', '30 d'],
+        'free' => ['1', '3', '15', '1', '∞', '5 min', '14 d'],
         'pro' => ['25', '50', '250', '5', '∞', '1 min', '365 d'],
         'premium' => ['250', '1000', '1000', '25', '∞', '1 min', '∞'],
     ];
