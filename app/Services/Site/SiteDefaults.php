@@ -123,13 +123,13 @@ class SiteDefaults
                     $value = self::LIMIT_VALUES[$planKey][$i] ?? null;
 
                     if ($value !== null) {
-                        PlanRowValue::query()->firstOrCreate(['plan_id' => $plan->id, 'plan_row_id' => $row->id], ['value' => $value]);
+                        $this->fillIfEmpty($plan, $row, $value);
                     }
                 }
 
                 foreach ($featureRows as $row) {
                     $included = self::FEATURE_MATRIX[$row->feature->key][$index] ?? true;
-                    PlanRowValue::query()->firstOrCreate(['plan_id' => $plan->id, 'plan_row_id' => $row->id], ['value' => $included ? '1' : '0']);
+                    $this->fillIfEmpty($plan, $row, $included ? '1' : '0');
                 }
             }
 
@@ -140,5 +140,21 @@ class SiteDefaults
         });
 
         return $created;
+    }
+
+    /**
+     * Fills a cell that does not exist or holds nothing. The admin panel saves
+     * an empty field as an empty string, which the pricing page shows as
+     * "to follow", so that counts as empty too. A value that was set is kept.
+     */
+    private function fillIfEmpty(Plan $plan, PlanRow $row, string $value): void
+    {
+        $cell = PlanRowValue::query()->where('plan_id', $plan->id)->where('plan_row_id', $row->id)->first();
+
+        if ($cell === null) {
+            PlanRowValue::query()->create(['plan_id' => $plan->id, 'plan_row_id' => $row->id, 'value' => $value]);
+        } elseif (trim((string) $cell->value) === '') {
+            $cell->update(['value' => $value]);
+        }
     }
 }

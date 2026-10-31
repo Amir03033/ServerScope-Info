@@ -52,4 +52,18 @@ class PricingMatrixTest extends TestCase
 
         $this->assertSame('1', $this->value('free', 'webhooks'));
     }
+
+    public function test_cells_saved_empty_by_the_admin_panel_are_filled_too(): void
+    {
+        $row = PlanRow::query()->whereHas('feature', fn ($q) => $q->where('key', 'webhooks'))->sole();
+        $freeId = Plan::query()->where('key', 'free')->value('id');
+        PlanRowValue::query()->where('plan_row_id', $row->id)->update(['value' => '']);
+        PlanRowValue::query()->where('plan_row_id', $row->id)->where('plan_id', $freeId)->update(['value' => '1']); // set by the owner
+
+        $this->get('/nl/pricing')->assertSee('Volgt');
+        $this->artisan('site:defaults')->assertSuccessful();
+
+        $this->assertSame(['1', '1', '1'], [$this->value('free', 'webhooks'), $this->value('pro', 'webhooks'), $this->value('premium', 'webhooks')]);
+        $this->get('/nl/pricing')->assertDontSee('Volgt');
+    }
 }
