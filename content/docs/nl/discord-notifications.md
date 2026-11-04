@@ -7,7 +7,7 @@ description: Een Discord-webhook aanmaken, koppelen aan ServerScope, testen, en 
 
 ServerScope kan incidenten en DNS-wijzigingen als nette berichten (embeds) in een Discord-kanaal plaatsen. Dit gebruikt de **incoming webhooks** van Discord: er is geen bot of extra account nodig.
 
-Een Discord-koppeling instellen kan alleen een **beheerder** van ServerScope. In Discord heb je het recht **Webhooks beheren** nodig op het kanaal.
+Een Discord-koppeling instellen kan alleen een **eigenaar of beheerder** van het team, op Pro en Premium. Liever Slack, Microsoft Teams of Telegram? Zie [Slack, Teams en Telegram](chat-channels). In Discord heb je het recht **Webhooks beheren** nodig op het kanaal.
 
 ## 1. Een webhook aanmaken in Discord
 
@@ -49,14 +49,18 @@ Onder **Leveringen** zie je elke poging met status (*Geleverd*, *Opnieuw probere
 | `incident.reopened` | “Opnieuw: …” wanneer een probleem binnen het heropen-venster terugkeert |
 | `incident.escalated` | “Escalatie: …” bij een hogere ernst, een volgende vervaldrempel of een onbevestigd incident |
 | `dns.changed` | DNS-records gewijzigd, met de toegevoegde en verwijderde waarden |
+| `page.changed` | Pagina-inhoud gewijzigd, met de pagina en een samenvatting (alleen voor pagina's waarvoor deze melding aanstaat) |
 
-Elk bericht toont de ServerScope-naam, het soort gebeurtenis, de titel en omschrijving, status, ernst, bron, de betrokken server of het domein, het tijdstip en een link naar het incident in ServerScope. De kleur geeft de ernst aan: **rood** kritiek, **oranje** waarschuwing, **blauw** info, **groen** opgelost. Berichten kunnen nooit `@everyone`, `@here` of personen taggen.
+Berichten komen in de taal van het team (Engels of Nederlands).
+
+Elk bericht toont de ServerScope-naam, het soort gebeurtenis, de titel en omschrijving, status, ernst, bron, de betrokken server of het domein, het tijdstip en een link naar het incident in ServerScope. De kleur geeft de ernst aan: **rood** kritiek, **oranje** hoog, **geel** gemiddeld, **blauw** laag, **groen** opgelost. Berichten kunnen nooit `@everyone`, `@here` of personen taggen.
 
 ## Zo voorkomt ServerScope te veel berichten
 
 - Alleen wijzigingen in een incident worden gemeld, nooit elke mislukte controle.
 - Dezelfde gebeurtenis voor hetzelfde incident in dezelfde toestand wordt maximaal één keer per **15 minuten** geplaatst. Een server die steeds wegvalt en terugkomt, vult het kanaal dus niet.
 - Met **Minimale ernst** filter je bijvoorbeeld alleen kritieke incidenten.
+- Worden meerdere incidenten tot één storing gegroepeerd (zie [Afhankelijkheden](dependencies)), dan krijgt Discord één bericht voor het hoofdincident.
 
 ## Problemen oplossen
 
@@ -86,4 +90,4 @@ Lekt de URL uit, of wil je een ander kanaal gebruiken:
 
 - De volledige URL wordt **versleuteld** opgeslagen en daarna nooit meer getoond. In ServerScope zie je alleen `https://discord.com/api/webhooks/<id>/••••••`.
 - Het token komt niet in het auditlog, in foutmeldingen of in de leveringsgeschiedenis.
-- Alleen beheerders kunnen Discord-webhooks bekijken, aanmaken, wijzigen, testen of verwijderen.
+- Alleen eigenaren en beheerders van het team kunnen Discord-webhooks bekijken, aanmaken, wijzigen, testen of verwijderen.

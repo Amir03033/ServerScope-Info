@@ -21,6 +21,7 @@ Statuspagina's beheren kan alleen een **beheerder**.
    - **Publiek (zonder inloggen zichtbaar)**
    - **Beschikbaarheid per dag tonen (90 dagen)**
    - **Incidenttitels tonen**: anders verschijnt een algemene omschrijving
+   - eventueel een geanimeerde **3D-afbeelding** van de onderdelen boven de status (gebruikt WebGL; alleen openbare gegevens)
 4. Voeg onder **Onderdelen** met **Onderdeel toevoegen** de servers en domeinen toe die je wilt tonen. Kies per onderdeel de **Monitor** en een **Publieke naam** (bijvoorbeeld `Website` in plaats van `web-01`) en eventueel een korte omschrijving. De volgorde bepaalt de weergave (maximaal 50 onderdelen).
 5. Klik op **Statuspagina maken**.
 
@@ -42,6 +43,19 @@ Er is ook een JSON-versie, bijvoorbeeld voor een eigen dashboard of een monitor:
 ```
 
 Beide adressen zijn beperkt tot 60 verzoeken per minuut per bezoeker.
+
+## Statusbadges
+
+Een publieke statuspagina heeft ook live **badges** voor je README of website. In het bewerkscherm van de statuspagina staat onder **Badges** kant-en-klare Markdown.
+
+```markdown
+![Status]({app_url}/status/<slug>/badge.svg)
+```
+
+- Eén badge voor de hele pagina (`/status/<slug>/badge.svg`) of één per onderdeel (`/status/<slug>/badge/<onderdeel>.svg`).
+- Opties: `?theme=light` of `?theme=dark`, `?lang=en` of `?lang=nl`, en `?label=` voor je eigen tekst (maximaal 40 tekens).
+- Badges tonen alleen de publieke naam en status. Ze worden 60 seconden gecachet en bewegen niet als *beweging beperken* aanstaat.
+- Badges bestaan alleen voor publieke pagina's.
 
 ## Privé-pagina's
 

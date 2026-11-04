@@ -38,13 +38,16 @@ class SiteDefaults
     /**
      * Which features each plan includes (free, pro, premium), as ServerScope
      * enforces it (config 'plans' > 'features'): API tokens and webhooks (and
-     * with them Discord notifications) need Pro or Premium. Everything else is
-     * in every plan; the limits above differ. Keep in sync with ServerScope.
+     * with them Discord, Slack, Teams and Telegram) and the AI analysis of
+     * incidents need Pro or Premium. Everything else is in every plan; the
+     * limits above differ. Keep in sync with ServerScope.
      */
     public const FEATURE_MATRIX = [
         'webhooks' => [false, true, true],
         'discord' => [false, true, true],
+        'chat-channels' => [false, true, true],
         'api' => [false, true, true],
+        'ai-analysis' => [false, true, true],
     ];
 
     public const LIMIT_ROWS = [
@@ -66,6 +69,7 @@ class SiteDefaults
 
         DB::transaction(function () use (&$created): void {
             $sort = 0;
+            $newFeatures = [];
 
             foreach (FeatureCatalog::FEATURES as $key => [$status, $category, $icon, $name, $summary]) {
                 $feature = Feature::query()->firstOrCreate(['key' => $key], [
@@ -77,6 +81,10 @@ class SiteDefaults
                     'sort' => $sort += 10,
                 ]);
                 $created['features'] += (int) $feature->wasRecentlyCreated;
+
+                if ($feature->wasRecentlyCreated) {
+                    $newFeatures[] = $feature;
+                }
             }
 
             foreach ([['free', 'Free', 'Gratis starten', 'Start for free'], ['pro', 'Pro', 'Kies Pro', 'Choose Pro'], ['premium', 'Premium', 'Kies Premium', 'Choose Premium']] as $i => [$key, $name, $nl, $en]) {
@@ -88,7 +96,9 @@ class SiteDefaults
                 $created['plans'] += (int) $plan->wasRecentlyCreated;
             }
 
-            if (! PlanRow::query()->exists()) {
+            if (PlanRow::query()->exists()) {
+                $created['plan_rows'] += $this->addRowsForNewFeatures($newFeatures);
+            } else {
                 $sort = 0;
 
                 foreach (self::LIMIT_ROWS as [$nl, $en]) {
@@ -140,6 +150,38 @@ class SiteDefaults
         });
 
         return $created;
+    }
+
+    /**
+     * Adds a comparison row for each feature created in this run, at the end
+     * of its category's group (or in a new group at the bottom). Only new
+     * features: a row the owner removed for an older feature stays removed.
+     *
+     * @param  array<int, Feature>  $features
+     */
+    private function addRowsForNewFeatures(array $features): int
+    {
+        $added = 0;
+
+        foreach ($features as $feature) {
+            if (PlanRow::query()->where('feature_id', $feature->id)->exists()) {
+                continue;
+            }
+
+            [$nl, $en] = FeatureCatalog::CATEGORIES[$feature->category] ?? ['Functies', 'Features'];
+            $last = PlanRow::query()->get()->filter(fn (PlanRow $row) => $row->translate('group', 'nl') === $nl)->max('sort');
+
+            PlanRow::query()->create([
+                'group' => ['nl' => $nl, 'en' => $en],
+                'label' => $feature->name,
+                'feature_id' => $feature->id,
+                'type' => 'boolean',
+                'sort' => $last !== null ? $last + 1 : PlanRow::query()->max('sort') + 10,
+            ]);
+            $added++;
+        }
+
+        return $added;
     }
 
     /**

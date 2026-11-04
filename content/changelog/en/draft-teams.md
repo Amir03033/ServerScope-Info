@@ -1,7 +1,7 @@
 ---
-date: 2026-10-29
+date: 2026-10-27
 title: Teams and roles
-status: draft
+status: published
 feature: teams
 source: Amir03033/ServerScope docs/AUDIT.md §5 (phase 1)
 ---

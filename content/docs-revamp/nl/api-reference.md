@@ -3,7 +3,7 @@ order: 20
 icon: code
 category: api
 feature: api
-description: Alle endpoints van de REST API v1, rechten, foutcodes en herhaalbare schrijfverzoeken met Idempotency-Key.
+description: Alle endpoints van de REST API v1, ook deployments, rechten, foutcodes, herhaalbare schrijfverzoeken en de openbare ping-, badge- en webhook-URL's.
 ---
 # API v1: overzicht
 
@@ -23,6 +23,8 @@ Dit is het overzicht van de REST API, versie 1. Hoe je een token maakt en webhoo
 - Maximaal 120 verzoeken per minuut per token; daarboven HTTP 429.
 - Lijsten zijn gepagineerd met `?page=2&per_page=50` (maximaal 100).
 - Tijden zijn ISO 8601 in UTC.
+- Een token ziet alleen de gegevens van zijn eigen team.
+- API-tokens horen bij **Pro en Premium**; Free heeft geen API-tokens.
 
 ## Rechten
 
@@ -59,8 +61,35 @@ Elk token kan lezen. Schrijven vraagt de bevoegdheid `write`. Configuratiewijzig
 | POST | `/incidents/{id}/comments` | write | `message` |
 | POST | `/incidents/{id}/assign` | write | `user_id` (of `null`) |
 | GET | `/predictions` | read | `kind` = anomaly/forecast, `status` = active/resolved |
+| GET | `/deployments` | read | filters `application`, `environment` |
+| GET | `/deployments/{id}` | read | met `analysis` (voor/na) |
+| POST | `/deployments` | write | een deploy melden (zie hieronder) |
 
 Ernstniveaus in de API: `info` (laag), `warning` (gemiddeld), `high` en `critical`.
+
+## Deployments
+
+`POST /deployments` meldt een deploy, zodat ServerScope voor en na kan vergelijken (Deploy Judge). Deploys die de agent of GitHub ziet, hebben geen API-aanroep nodig; zie [Deployments](deployments).
+
+| Veld | Verplicht | Regels |
+|---|---|---|
+| `application` | ja | maximaal 100 tekens |
+| `environment` | nee | `[A-Za-z0-9._-]`, maximaal 50, standaard `production` |
+| `version` | nee | maximaal 100 |
+| `commit_sha` | nee | 7 tot 64 hextekens |
+| `deployed_at` | nee | ISO 8601, binnen de laatste 30 dagen en maximaal 5 minuten vooruit |
+| `source`, `actor` | nee | bijvoorbeeld `github-actions` en een gebruikersnaam |
+| `url` | nee | link naar de run of release |
+| `external_id` | nee | dezelfde waarde nog eens geeft de bestaande deploy terug (200) |
+| `resources` | ja | 1 tot 50 items `{"type": "server"\|"domain"\|"page"\|"service", "id": n}`, alleen van je eigen team |
+
+```sh
+curl -sS -X POST {app_url}/api/v1/deployments \
+  -H "Authorization: Bearer $SERVERSCOPE_API_TOKEN" \
+  -H "Content-Type: application/json" -H "Accept: application/json" \
+  -H "Idempotency-Key: deploy-shop-1f3a9c2" \
+  -d '{"application":"shop","environment":"production","version":"1.4.2","commit_sha":"1f3a9c2","resources":[{"type":"server","id":3},{"type":"domain","id":7}]}'
+```
 
 ## Foutcodes
 
@@ -87,4 +116,18 @@ curl -s -X POST "{app_url}/api/v1/domains/3/pages" \
 ```
 
 > [!NOTE]
-> De agent gebruikt een eigen endpoint (`POST /api/agent/metrics`) met agenttokens per server. Die tokens werken niet voor deze API.
+> De agent gebruikt eigen endpoints (`/api/agent/…`) met agenttokens per server. Die tokens werken niet voor deze API, en je roept die endpoints nooit zelf aan.
+
+## Openbare URL's (zonder token)
+
+| Methode | URL | Waarvoor |
+|---|---|---|
+| GET | `/install.sh` | Installatiescript voor de agent; zie [Een server koppelen met één commando](connect-server) |
+| GET/POST/HEAD | `/api/ping/{token}` · `/start` · `/fail` · `/{0-255}` | Meldingen van een [geplande taak](scheduled-jobs) |
+| POST | `/api/webhooks/github/{uuid}` | GitHub-webhook van een gekoppelde repository; zie [Deployments](deployments) |
+| GET | `/status/{slug}` en `/status/{slug}.json` | Openbare statuspagina, ook als JSON |
+| GET | `/status/{slug}/badge.svg` · `/status/{slug}/badge/{onderdeel}.svg` | Statusbadges; zie [Statuspagina's](status-pages) |
+| GET | `/postmortems/{token}` | Een gedeelde nabeschouwing (alleen-lezen, intrekbaar, niet geïndexeerd) |
+| GET | `/up` | Gezondheidscontrole van de applicatie, voor uptime-tools |
+
+Het ping-token (32 tekens, 0-9 en a-f) is het enige geheim van een geplande taak; een ping-URL accepteert maximaal 120 verzoeken per minuut.

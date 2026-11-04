@@ -10,7 +10,7 @@ description: What a team is, what each role (owner, admin or member) may do, how
 In ServerScope everything belongs to a **team**: servers, domains, websites, alert rules, incidents, webhooks, status pages, API tokens and the audit log. Every team only sees its own data.
 
 > [!NOTE]
-> The ServerScope application is in Dutch. This guide names the Dutch buttons and menus so you can find them in the app.
+> ServerScope is in English by default and also available in Dutch. This guide uses the English names of buttons and menus.
 
 ## Roles
 
@@ -20,7 +20,7 @@ Your role applies per team. You can be an admin in one team and a member in anot
 |---|---|---|---|
 | View the team's monitoring data | ✓ | ✓ | ✓ |
 | Manage configuration (servers, domains, alert rules, webhooks, status pages) | | ✓ | ✓ |
-| Manage members under **Gebruikers** | | ✓ | ✓ |
+| Manage members under **Users** | | ✓ | ✓ |
 | Change an owner's role or remove an owner | | | ✓ |
 
 A few fixed rules:

@@ -160,6 +160,7 @@ koppelingen blijven werken zoals je gewend bent.
 
 - Incidenten van verschillende servers en websites worden alleen
   gegroepeerd als je hun relatie hebt vastgelegd onder **Afhankelijkheden**.
-- De interface is voorlopig alleen in het Nederlands.
+- De interface was bij deze release alleen in het Nederlands. Sinds 30 oktober
+  is ServerScope tweetalig: Engels standaard, Nederlands als keuze.
 - "Geen problemen gevonden" betekent dat de ingestelde controles niets
   melden. Het is geen garantie dat een server of website veilig is.

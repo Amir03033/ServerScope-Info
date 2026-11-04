@@ -57,7 +57,7 @@ class FeatureResource extends Resource
                 Textarea::make('summary.en')->label('Samenvatting (EN)')->rows(2)->maxLength(300),
             ])->columnSpanFull(),
             Select::make('category')->label('Groep')->options(collect(FeatureCatalog::CATEGORIES)->map(fn ($c) => $c[0])),
-            Select::make('icon')->label('Icoon')->options(DocForm::ICONS + ['globe' => 'Wereldbol', 'alert' => 'Waarschuwing', 'link' => 'Koppeling', 'network' => 'Netwerk', 'list' => 'Lijst'])->default('pulse'),
+            Select::make('icon')->label('Icoon')->options(DocForm::ICONS + ['alert' => 'Waarschuwing', 'network' => 'Netwerk', 'list' => 'Lijst', 'sparkle' => 'Fonkeling', 'history' => 'Geschiedenis', 'monitor' => 'Beeldscherm', 'sun' => 'Zon'])->default('pulse'),
             TextInput::make('sort')->label('Volgorde')->numeric()->default(100),
         ]);
     }

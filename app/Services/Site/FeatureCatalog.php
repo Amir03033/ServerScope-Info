@@ -38,6 +38,25 @@ class FeatureCatalog
         'teams' => ['available', 'account', 'users', ['Teams en rollen', 'Teams and roles'], ['Eigenaar, beheerder en lid; elk team ziet alleen zijn eigen data.', 'Owner, admin and member; every team only sees its own data.']],
         'two-factor' => ['available', 'account', 'lock', ['Tweestapsverificatie', 'Two-factor authentication'], ['TOTP-codes en herstelcodes.', 'TOTP codes and recovery codes.']],
         'audit-log' => ['available', 'account', 'list', ['Auditlog', 'Audit log'], ['Beheeracties worden vastgelegd, zonder geheimen.', 'Administrative actions are recorded, without secrets.']],
+
+        // Added November 2026. Kept at the end so existing sort values stay unique.
+        'deployments' => ['available', 'servers', 'flag', ['Automatische deploys', 'Automatic deployments'], ['De agent en GitHub melden deploys; Deploy Judge vergelijkt de prestaties vóór en na (agent 0.4.0).', 'The agent and GitHub report deployments; Deploy Judge compares performance before and after (agent 0.4.0).']],
+        'logs' => ['available', 'servers', 'logs', ['Logs', 'Logs'], ['Fouten en waarschuwingen uit je logbestanden, gegroepeerd per probleem en zonder wachtwoorden of tokens (agent 0.4.0).', 'Errors and warnings from your log files, grouped by issue and without passwords or tokens (agent 0.4.0).']],
+        'scheduled-jobs' => ['available', 'servers', 'clock', ['Geplande taken', 'Scheduled jobs'], ['Cron-taken, backups en imports melden zich via een geheime ping-URL; blijft een melding uit, dan krijg je een incident.', 'Cron jobs, backups and imports check in on a secret ping URL; when a check-in is missing, you get an incident.']],
+        'probes' => ['available', 'websites', 'globe', ['Bevestiging vanaf een tweede locatie', 'Second-location confirmation'], ['Een externe probe bevestigt een HTTP-storing voordat er een incident opent.', 'An external probe confirms an HTTP outage before an incident opens.']],
+        'root-cause' => ['available', 'incidents', 'search', ['Oorzaakanalyse', 'Root cause analysis'], ['Elk incident wordt onderzocht met vaste regels: de meest waarschijnlijke verklaring, met bewijs voor en tegen.', 'Every incident is investigated with fixed rules: the most likely explanation, with evidence for and against.']],
+        'ai-analysis' => ['available', 'incidents', 'sparkle', ['AI-analyse van incidenten', 'AI incident analysis'], ['Een AI-interpretatie van het onderzoek, alleen op basis van het bewijs. Een hypothese, geen zekerheid.', 'An AI interpretation of the investigation, based only on the evidence. A hypothesis, not a certainty.']],
+        'time-machine' => ['available', 'incidents', 'history', ['Time Machine', 'Time Machine'], ['Metingen, tijdlijn en bewijs van vóór, tijdens en na een incident.', 'Measurements, timeline and evidence from before, during and after an incident.']],
+        'incident-memory' => ['available', 'incidents', 'book', ['Incident Memory en nabeschouwingen', 'Incident Memory and postmortems'], ['Leg oorzaak en oplossing vast, vind vergelijkbare incidenten en deel een nabeschouwing via een link.', 'Record cause and fix, find similar incidents and share a postmortem through a link.']],
+        'chat-channels' => ['available', 'incidents', 'chat', ['Slack, Teams en Telegram', 'Slack, Teams and Telegram'], ['Incidenten in je chatkanaal, met knoppen om ze te bekijken of te bevestigen.', 'Incidents in your chat channel, with buttons to view or acknowledge them.']],
+        'push' => ['available', 'incidents', 'phone', ['Pushmeldingen', 'Push notifications'], ['Incidenten als melding op je telefoon of computer, per apparaat aan te zetten.', 'Incidents as notifications on your phone or computer, switched on per device.']],
+        'status-badges' => ['available', 'integrations', 'status', ['Statusbadges', 'Status badges'], ['Een live statusbadge voor je README of website, ook per onderdeel.', 'A live status badge for your README or website, also per component.']],
+        'mission-control' => ['available', 'overview', 'monitor', ['Missiecontrole', 'Mission control'], ['Gezondheidsscore, tegels, een tijdlijn van 24 uur en een focusmodus bovenaan het dashboard.', 'Health score, tiles, a 24-hour timeline and focus mode at the top of the dashboard.']],
+        'dashboard-widgets' => ['available', 'overview', 'chart', ['Dashboard zelf indelen', 'Your own dashboard'], ['14 widgets om te verslepen, te vergroten en te verbergen, met een live hartslag per server.', '14 widgets to drag, resize and hide, with a live heartbeat per server.']],
+        'nexus' => ['available', 'overview', 'map', ['NEXUS', 'NEXUS'], ['Een live kaart van servers, services, websites en hun afhankelijkheden, ook in 3D, met Skyline, Wereldbol, Tijdreis en Wandscherm.', 'A live map of servers, services, websites and their dependencies, also in 3D, with Skyline, Globe, Time travel and Wall screen.']],
+        'command-palette' => ['available', 'overview', 'search', ['Opdrachtpalet en zijpaneel', 'Command palette and side panel'], ['Zoeken en acties met ⌘K, en een snelle blik op elke server, website of incident.', 'Search and actions with ⌘K, and a quick look at every server, website or incident.']],
+        'mobile-app' => ['available', 'overview', 'phone', ['ServerScope als app', 'ServerScope as an app'], ['Installeerbaar op telefoon en computer, met een tabbalk en vegen om te bevestigen.', 'Installable on phone and computer, with a tab bar and swipe to acknowledge.']],
+        'themes' => ['available', 'overview', 'sun', ['Thema\'s en twee talen', 'Themes and two languages'], ['Licht, donker, Midnight, Terminal en Hoog contrast; Engels of Nederlands.', 'Light, dark, Midnight, Terminal and High contrast; English or Dutch.']],
     ];
 
     public const CATEGORIES = [
@@ -46,5 +65,6 @@ class FeatureCatalog
         'incidents' => ['Incidenten en meldingen', 'Incidents and alerts'],
         'integrations' => ['Rapporten en integraties', 'Reports and integrations'],
         'account' => ['Account en beveiliging', 'Account and security'],
+        'overview' => ['Dashboard en NEXUS', 'Dashboard and NEXUS'],
     ];
 }

@@ -21,53 +21,35 @@ class DraftRevisionTest extends TestCase
         $this->artisan('site:defaults')->assertSuccessful();
     }
 
-    public function test_drafts_exist_for_both_pages_without_changing_the_published_content(): void
+    public function test_a_fresh_database_gets_the_current_pages_without_redundant_drafts(): void
     {
-        foreach (['nl', 'en'] as $locale) {
-            foreach (['getting-started', 'security-account'] as $slug) {
-                $doc = Doc::query()->where('locale', $locale)->where('slug', $slug)->sole();
-                $draft = $doc->pendingDrafts()->sole();
-
-                $this->assertTrue($draft->is_draft);
-                $this->assertNotSame($doc->body, $draft->body);
-                $this->assertSame(hash('sha256', $doc->body), $doc->imported_body_sha256);
-            }
-        }
-
+        $this->assertSame(0, DocRevision::query()->where('is_draft', true)->count());
         $this->artisan('docs:verify')->assertSuccessful();
 
-        // Published pages still say what they said; drafts are not public.
-        $this->get('/nl/docs/security-account')->assertSee('ServerScope heeft geen abonnementen of pakketten')->assertDontSee('Er zijn nog geen abonnementen actief');
-        $this->get('/en/docs/getting-started')->assertSee('ServerScope has two roles')->assertDontSee('There are three roles');
-
-        // Repeatable, and drafts do not count as "edited in the panel".
-        app(DraftRevisionImporter::class)->run();
-        $this->assertSame(4, DocRevision::query()->where('is_draft', true)->count());
-        $this->assertSame(['ongewijzigd'], array_values(array_unique(array_column(app(DocImporter::class)->run(), 'action'))));
+        $this->get('/en/docs/security-account')->assertSee('depends on its <strong>plan</strong>', false)->assertDontSee('has no subscriptions or plans');
+        $this->get('/nl/docs/getting-started')->assertSee('Zelf aanmelden')->assertSee('Eigenaar')->assertDontSee('geen openbare registratie');
+        $this->get('/en/docs/getting-started')->assertSee('Sign up yourself')->assertDontSee('These English guides quote the Dutch');
     }
 
-    public function test_drafts_match_the_new_roles_and_plans(): void
+    public function test_a_page_edited_in_the_panel_receives_the_update_as_a_draft(): void
     {
-        $nl = Doc::query()->where('locale', 'nl')->where('slug', 'getting-started')->sole()->pendingDrafts()->sole()->body;
-        $this->assertStringContainsString('| | Lid | Beheerder | Eigenaar |', $nl);
-        $this->assertStringContainsString('[Teams en rollen](teams-and-roles)', $nl);
-
-        $security = Doc::query()->where('locale', 'en')->where('slug', 'security-account')->sole()->pendingDrafts()->sole()->body;
-        $this->assertStringContainsString('No subscriptions are active yet', $security);
-        $this->assertStringNotContainsString('has no subscriptions or plans', $security);
-    }
-
-    public function test_publishing_a_draft_makes_it_live_and_can_be_rolled_back(): void
-    {
+        // As on production: the teams draft was published in the panel earlier.
         $doc = Doc::query()->where('locale', 'nl')->where('slug', 'security-account')->sole();
-        $original = $doc->body;
+        $doc->update(['body' => "# Beveiliging en accountbeheer\n\nEr zijn nog geen abonnementen actief.\n"]);
+        $this->assertTrue($doc->fresh()->editedSinceImport());
 
-        $doc->publishDraft($doc->pendingDrafts()->sole());
+        $this->assertContains('overgeslagen: na import bewerkt in Filament', array_column(app(DocImporter::class)->run(), 'action'));
+        app(DraftRevisionImporter::class)->run();
+        app(DraftRevisionImporter::class)->run(); // repeatable
 
+        $draft = $doc->fresh()->pendingDrafts()->sole();
+        $this->assertSame(DraftRevisionImporter::REASON, $draft->reason);
+        $this->assertStringContainsString('Escalatiecontacten', $draft->body);
         $this->get('/nl/docs/security-account')->assertSee('Er zijn nog geen abonnementen actief');
-        $this->assertSame(0, $doc->pendingDrafts()->count());
-        $this->assertStringStartsWith('Concept gepubliceerd', $doc->revisions()->where('is_draft', false)->first()->reason);
-        $this->assertTrue($doc->revisions()->where('is_draft', false)->get()->contains(fn ($r) => $r->body === $original));
+
+        $doc->fresh()->publishDraft($draft);
+        $this->get('/nl/docs/security-account')->assertSee('Escalatiecontacten')->assertDontSee('Er zijn nog geen abonnementen actief');
+        $this->assertSame(0, $doc->fresh()->pendingDrafts()->count());
     }
 
     public function test_bash_agent_guide_asks_customers_to_get_in_touch_and_names_no_download(): void

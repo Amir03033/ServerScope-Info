@@ -1,7 +1,7 @@
 ---
-date: 2026-10-29
+date: 2026-10-28
 title: Connect a server with one command
-status: draft
+status: published
 feature: one-command-install
 source: Amir03033/ServerScope agent/README.md and docs/AUDIT.md §6 (phase 2)
 ---

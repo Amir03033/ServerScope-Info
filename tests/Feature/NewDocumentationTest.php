@@ -21,6 +21,17 @@ class NewDocumentationTest extends TestCase
         'agent-updates' => 'agent-updates',
         'agent-security' => null,
         'api-reference' => 'api',
+        'website-monitoring' => 'website-monitoring',
+        'dependencies' => 'correlation',
+        'forecasts-anomalies' => 'predictions',
+        'reports-system-status' => 'reports',
+        'deployments' => 'deployments',
+        'logs' => 'logs',
+        'scheduled-jobs' => 'scheduled-jobs',
+        'incident-investigation' => 'root-cause',
+        'chat-channels' => 'chat-channels',
+        'dashboard-nexus' => 'mission-control',
+        'mobile-app' => 'mobile-app',
     ];
 
     protected function setUp(): void

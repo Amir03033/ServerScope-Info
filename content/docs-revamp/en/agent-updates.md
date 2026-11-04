@@ -19,7 +19,7 @@ The signature is Ed25519. Your server keeps the public key in `/etc/serverscope/
 
 The agent runs as the user `serverscope` without write access to its own installation, so it cannot update itself. A small separate program does that: `/usr/local/sbin/serverscope-updater`. It runs as root from the systemd timer `serverscope-updater.timer`, every 5 minutes.
 
-When a team admin clicks **Bijwerken** (or **automatisch bijwerken** is on for the server), the updater:
+When a team admin clicks **Update** (or **Update automatically** is on for the server), the updater:
 
 1. receives only a request id and a version number: no URLs, scripts or commands. It downloads that release from fixed paths;
 2. checks the signature with the **local** key, then the manifest, the SHA-256 and the contents of the package, and the version. It refuses any version equal to or lower than the installed one or the highest one ever installed (no downgrades), and a version that already failed here;
