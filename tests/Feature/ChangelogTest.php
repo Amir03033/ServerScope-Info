@@ -24,12 +24,12 @@ class ChangelogTest extends TestCase
         $this->artisan('site:defaults')->assertSuccessful();
         $this->artisan('site:defaults')->assertSuccessful();
 
-        // 0.1.0 + ten Markdown entries, per locale, no duplicates.
-        $this->assertSame(22, Release::query()->count());
-        $this->assertSame(0, Release::query()->where('status', 'draft')->count());
+        // 0.1.0 + eleven Markdown entries, per locale, no duplicates; only the demo entry is a draft.
+        $this->assertSame(24, Release::query()->count());
+        $this->assertSame(['file:draft-demo', 'file:draft-demo'], Release::query()->where('status', 'draft')->pluck('source_key')->all());
 
         // Every entry has its own day, newest first.
-        $dates = Release::query()->where('locale', 'en')->orderByDesc('released_at')->pluck('released_at')->map->toDateString()->all();
+        $dates = Release::query()->where('locale', 'en')->where('status', 'published')->orderByDesc('released_at')->pluck('released_at')->map->toDateString()->all();
         $this->assertSame(array_values(array_unique($dates)), $dates);
         $this->assertSame('2026-11-04', $dates[0]);
 
@@ -49,7 +49,8 @@ class ChangelogTest extends TestCase
         $this->get('/en/changelog')->assertOk()
             ->assertSee('Automatic deployments, logs, postmortems, scheduled jobs and chat channels (agent 0.4.0)')
             ->assertSee('Website monitoring, smarter incidents and forecasts')
-            ->assertSee('Teams and roles');
+            ->assertSee('Teams and roles')
+            ->assertDontSee('Try ServerScope in the demo');
     }
 
     public function test_entries_typed_into_the_panel_are_tidied_by_the_migration(): void

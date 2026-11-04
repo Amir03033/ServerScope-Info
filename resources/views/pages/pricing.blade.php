@@ -40,6 +40,13 @@
                 <x-page-header :title="$t('headline')" :intro="$t('intro')" intro-class="mx-auto" />
             </div>
 
+            @if ($site->demoUrl())
+                <div class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                    <x-demo-button :locale="$lang" />
+                    <span class="text-sm text-subtle">{{ $c('demo_note') }}</span>
+                </div>
+            @endif
+
             @if ($toggle)
                 <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
                     <div class="ss-segmented" role="group" aria-label="{{ $t('billing') }}" data-billing-toggle>

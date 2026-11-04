@@ -65,6 +65,14 @@ class SiteSettings extends Page
                     ->helperText('Verschijnt in de documentatie over agent-updates. Leeg = een duidelijke plaatshouder.')
                     ->regex('/^[0-9a-fA-F:\s]{64,95}$/')->validationMessages(['regex' => 'Vul de SHA-256 in als 64 hexadecimale tekens (met of zonder dubbele punten).']),
             ]),
+            Section::make('Demo')
+                ->description('De knop "Probeer de demo" op de homepage en de prijspagina. Zet hem pas aan als de demo in ServerScope live staat.')
+                ->schema([
+                    Toggle::make('demo_enabled')->label('Demo tonen'),
+                    TextInput::make('demo_url')->label('Demo-URL')->url()
+                        ->placeholder(rtrim((string) config('serverscope.app_url'), '/').'/demo')
+                        ->helperText('Leeg = het adres hierboven (de ServerScope-URL met /demo).'),
+                ]),
             Section::make('Privacy')->schema([
                 Toggle::make('pageview_counter')->label('Eigen bezoekersteller zonder cookies')
                     ->helperText('Telt alleen weergaven per pagina per dag. Geen IP-adressen, geen cookies, geen browsergegevens.'),

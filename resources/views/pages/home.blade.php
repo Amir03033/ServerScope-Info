@@ -8,6 +8,7 @@
     $counts = $site->counts($lang);
     $features = $site->featuresByCategory();
     $install = $site->featureStatus('one-command-install');
+    $demoUrl = $site->demoUrl();
     $installCommand = "curl --proto '=https' --tlsv1.2 -fsSL " . config('serverscope.app_url') . '/install.sh -o serverscope-install.sh && sudo bash serverscope-install.sh';
     $categories = \App\Services\Site\FeatureCatalog::CATEGORIES;
     $steps = trans('site.features.steps', [], $lang);
@@ -43,7 +44,11 @@
                 <div class="ss-rise ss-rise-4 mt-9 flex flex-wrap gap-3">
                     <x-button :href="url($lang . '/features')" class="!px-5 !py-2.5">{{ $t('v2_primary') }} <x-ss-icon name="arrow" class="ss-arrow h-4 w-4" /></x-button>
                     <x-button :href="url($lang . '/docs')" variant="secondary" class="!px-5 !py-2.5">{{ $t('v2_secondary') }}</x-button>
+                    <x-demo-button :locale="$lang" class="!px-5 !py-2.5" />
                 </div>
+                @if ($demoUrl)
+                    <p class="ss-rise ss-rise-4 mt-3 text-sm text-subtle">{{ $c('demo_note') }}</p>
+                @endif
             </div>
 
             @if ($install?->isVisible())
@@ -177,7 +182,10 @@
                 <h2 class="text-2xl font-semibold tracking-[-0.02em] text-fg sm:text-3xl">{{ $t('cta2_title') }}</h2>
                 <p class="mt-3 text-muted">{{ $t('cta2_text') }}</p>
             </div>
-            <x-button :href="url($lang . '/docs')" class="shrink-0">{{ $t('cta') }} <x-ss-icon name="arrow" class="ss-arrow h-4 w-4" /></x-button>
+            <div class="flex shrink-0 flex-wrap gap-3">
+                <x-button :href="url($lang . '/docs')">{{ $t('cta') }} <x-ss-icon name="arrow" class="ss-arrow h-4 w-4" /></x-button>
+                <x-demo-button :locale="$lang" variant="secondary" />
+            </div>
         </div>
     </section>
 @endsection
