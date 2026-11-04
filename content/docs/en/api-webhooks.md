@@ -1,19 +1,19 @@
 ---
 order: 7
 icon: code
-description: Use the REST API with a personal token, and receive and verify signed webhooks.
+description: Create a personal API token, use the REST API, and receive and verify signed webhooks.
 ---
 # API and webhooks
 
-ServerScope has a **REST API** (version 1) to read data and work on incidents, and **webhooks** that push events to your own system.
+ServerScope has a **REST API** (version 1) to read data, work on incidents and report deployments, and **webhooks** that push events to your own system. Both are part of **Pro and Premium**; Free has no API tokens and no webhooks. Every endpoint is listed in the [API v1 reference](api-reference).
 
 ## Creating an API token
 
-1. Open [Profiel → API-tokens]({app_url}/profile/api-tokens) (Profile → API tokens).
-2. Give the token a **Naam** (name), for example `n8n` or `grafana`.
-3. Choose the **Bevoegdheden** (abilities): `read` is always included; only add `write` if the token must update incidents.
-4. Choose the **Geldigheid** (validity): 30 days, 90 days, 1 year or unlimited.
-5. Click **Token aanmaken** (create token) and copy the token (it starts with `ssk_`).
+1. Open [Profile → API tokens]({app_url}/profile/api-tokens).
+2. Give the token a **Name**, for example `n8n` or `grafana`.
+3. Choose the **Abilities**: `read` is always included; only add `write` if the token must update incidents, report deployments or change configuration.
+4. Choose the **Validity**: 30 days, 90 days, 1 year or unlimited.
+5. Click **Create token** and copy the token (it starts with `ssk_`).
 
 > [!WARNING]
 > The token is shown once; ServerScope only stores a SHA-256 hash. A token has the same permissions as your account, limited to the abilities you chose. Revoke a token immediately if it has leaked.
@@ -31,6 +31,7 @@ ServerScope has a **REST API** (version 1) to read data and work on incidents, a
 - JSON only. Lists are paginated with `?page=2&per_page=50` (max. 100) and return `data`, `links` and `meta`.
 - Timestamps are ISO 8601 in UTC.
 - At most 120 requests per minute per token.
+- A token only sees the data of its own team.
 
 ## Endpoints
 
@@ -48,6 +49,9 @@ ServerScope has a **REST API** (version 1) to read data and work on incidents, a
 | POST | `/incidents/{id}/investigate` | write | |
 | POST | `/incidents/{id}/resolve` | write | optional `notes` |
 | POST | `/incidents/{id}/comments` | write | `message` (required) |
+| POST | `/deployments` | write | report a deployment; see the [API v1 reference](api-reference#deployments) |
+
+Pages, discovery, dependencies, services, forecasts and assigning incidents are in the [API v1 reference](api-reference).
 
 ## Examples
 
@@ -79,11 +83,11 @@ curl -s -X POST "{app_url}/api/v1/incidents/12/comments" \
 
 ## Error responses
 
-Errors look like `{"message": "...", "errors": {"field": ["..."]}}`. Messages are in Dutch.
+Errors look like `{"message": "...", "errors": {"field": ["..."]}}`. Messages are in English or Dutch.
 
 | Status | Meaning |
 |---|---|
-| 401 | Token missing or invalid (*Ontbrekend of ongeldig API-token.*) |
+| 401 | Token missing or invalid |
 | 403 | The token lacks the ability, for example `write` |
 | 404 | The object does not exist |
 | 409 | Invalid incident status transition (for example resolving a closed incident) |
@@ -95,9 +99,11 @@ Errors look like `{"message": "...", "errors": {"field": ["..."]}}`. Messages ar
 
 ## Webhooks
 
-Administrators configure webhooks under [Beheer → Webhooks]({app_url}/webhooks) with **Webhook toevoegen** (add webhook): a name, a public `https` URL and the events. After creating it you see the signing secret **once** (it starts with `whsec_`).
+Administrators configure webhooks under [Administration → Webhooks]({app_url}/webhooks) with **Add webhook**: a name, a public `https` URL and the events. After creating it you see the signing secret **once** (it starts with `whsec_`).
 
-Events: `incident.opened`, `incident.reopened`, `incident.resolved`, `incident.escalated` (threshold crossed, severity increased or not acknowledged in time), `dns.changed` and `test`.
+Events: `incident.opened`, `incident.reopened`, `incident.resolved`, `incident.escalated` (threshold crossed, severity increased or not acknowledged in time), `dns.changed`, `page.changed` (a significant content change on a page that has notifications for it switched on) and `test`.
+
+Generic webhooks receive **every** incident, also incidents grouped under a root incident; those carry `parent_id` and `correlation`, so your own system can group them.
 
 Each delivery is a `POST` with a JSON body:
 
@@ -142,7 +148,7 @@ valid = abs(time.time() - int(timestamp)) < 300 and hmac.compare_digest(expected
 - Only public `https` destinations on allowed ports; checked when saving and again before every attempt. Redirects are not followed.
 - Any `2xx` is success. Network errors, timeouts, `408`, `429` and `5xx` are retried up to 6 times (1 min, 5 min, 15 min, 1 h, 6 h); other responses fail immediately.
 - After 20 consecutive failed deliveries the webhook is disabled.
-- The webhook page lists every delivery; failed ones can be sent again with **Opnieuw** (retry). **Testlevering** (test delivery) sends a `test` event.
-- **Geheim vernieuwen** (rotate secret) creates a new secret; the old one stops working immediately.
+- The webhook page lists every delivery; failed ones can be sent again with **Retry**. **Test delivery** sends a `test` event.
+- **Rotate secret** creates a new secret; the old one stops working immediately.
 
-Want to post to Discord? Use the separate [Discord integration](discord-notifications); it turns events into Discord messages.
+Want messages in a chat channel instead? Use [Slack, Teams and Telegram](chat-channels) or [Discord](discord-notifications); they turn events into chat messages.

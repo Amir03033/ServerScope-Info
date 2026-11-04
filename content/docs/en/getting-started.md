@@ -1,27 +1,25 @@
 ---
 order: 1
 icon: book
-description: What ServerScope does, how to get access and how to find your way around the dashboard.
+description: What ServerScope does, how to sign up or join a team, how to find your way around and what to set up first.
 ---
 # Getting started
 
-ServerScope monitors your **servers** (through a small agent) and your **domains** (HTTP availability, SSL certificates, DNS and domain registration). Problems become **incidents** with a timeline, and notifications are delivered by e-mail, in the app, to Discord or to your own webhook.
+ServerScope monitors your **servers** (through a small, read-only agent), the **services** on them, your **domains** (HTTP, SSL certificates, DNS and domain registration), complete **websites** page by page and your **scheduled jobs**. It notices **deployments** and follows your **log files**. Problems become **incidents**: related outages are grouped into one, every incident is investigated automatically, and notifications go out by e-mail, in the app, as push notifications, to Slack, Microsoft Teams, Telegram, Discord or your own webhook.
 
 The application runs at [{app_url}]({app_url}). This website (documentation and information) is separate from it and has no accounts of its own.
 
 > [!NOTE]
-> The ServerScope application interface is in Dutch. These English guides quote the Dutch button and menu names (with a translation) so you can find them in the app.
+> ServerScope is available in **English** (default) and **Dutch**. Switch under **Profile → Language** or in the user menu. These guides use the English names of buttons and menus.
 
 ## Getting an account
 
-There is **no public sign-up**. Accounts are created by an administrator of your ServerScope environment:
+You can get access in two ways:
 
-1. An administrator opens **Beheer → Gebruikers** (Admin → Users) and enters your name and e-mail address (optionally with administrator rights).
-2. You receive an e-mail with a link to set your own password. The link is valid for **60 minutes**.
-3. Choose a password of at least 12 characters with upper-case letters, lower-case letters and digits.
-4. Log in at [{app_url}/login]({app_url}/login).
+- **Sign up yourself.** Choose a plan (Free, Pro or Premium) on the pricing page and create an account. You confirm your e-mail address and accept the terms and privacy statement. You then own a new team. While sign-up is closed, the pricing page offers the waiting list instead.
+- **Accept an invitation.** A team owner or administrator invites you under **Administration → Users**. You receive an e-mail with a link that is valid for **7 days**; you accept the invitation yourself. The inviter can revoke or resend it.
 
-Did the link expire? Use **Wachtwoord vergeten** (Forgot password) on the login page to receive a new one.
+Choose a password of at least 12 characters with upper-case letters, lower-case letters and digits. Forgot it? Use **Forgot password** on the login page.
 
 > [!TIP]
 > Hosting ServerScope yourself and there are no users yet? Create the first administrator on the server with `php artisan serverscope:create-admin`.
@@ -29,42 +27,51 @@ Did the link expire? Use **Wachtwoord vergeten** (Forgot password) on the login 
 ## Logging in
 
 1. Go to [{app_url}/login]({app_url}/login) and enter your e-mail address and password.
-2. If you enabled two-factor authentication, enter the code from your authenticator app (or a recovery code).
+2. If you turned on two-factor authentication, enter the code from your authenticator app (or a recovery code).
 3. You land on the **Dashboard**.
 
 Too many failed attempts are blocked temporarily; wait a minute and try again.
 
-## Finding your way around the dashboard
+## Finding your way around
 
-The sidebar has three groups:
+The sidebar has these groups:
 
 | Group | Items |
 |---|---|
-| Main menu | Dashboard, Servers, Domeinen (Domains), Incidenten (Incidents), Alerts, Rapporten (Reports) |
-| Beheer (Admin, administrators only) | Alertregels (Alert rules), Statuspagina's (Status pages), Webhooks, Gebruikers (Users), Auditlog (Audit log) |
-| Account | Meldingen (Notifications), Profiel (Profile) |
+| (top) | Dashboard |
+| Monitoring | Servers, Domains, NEXUS (with Skyline, Globe, Time travel and Wall screen), Dependencies, Deployments, Logs, Scheduled jobs |
+| Incidents | Incidents, Alerts |
+| Reporting | Reports |
+| Administration (owners and administrators) | Alert rules, Status pages, Webhooks, Users, Plan and billing, Audit log, System status |
+| Account | Notifications, Profile |
 
-- The **Dashboard** shows the state of your servers and domains and the active incidents.
-- A **search box** at the top finds servers, domains and incidents.
-- The number next to **Incidenten** and **Alerts** is the count of open incidents and active alerts.
-- A link to this documentation sits at the bottom of the sidebar.
+- The **Dashboard** starts with mission control: a health score, a tile per server and website, the last 24 hours and **Needs attention**. See [Dashboard, NEXUS and finding your way](dashboard-nexus).
+- **⌘K / Ctrl+K** searches servers, websites and incidents and runs actions.
+- The number next to **Incidents** and **Alerts** is the count of open incidents and active alerts.
+- If you are a member of several teams, switch with the team switcher.
+- On a phone you can [install ServerScope as an app](mobile-app).
 
-## Roles
+## Teams and roles
 
-ServerScope has two roles:
+Everything in ServerScope belongs to a **team**, and your role applies per team:
 
-| | User | Administrator |
-|---|---|---|
-| View servers, domains, metrics, incidents and reports | ✓ | ✓ |
-| Acknowledge, investigate, resolve, assign and comment on incidents | ✓ | ✓ |
-| Manage own notifications, password, 2FA and API tokens | ✓ | ✓ |
-| Add or change servers, domains and alert rules | | ✓ |
-| Create incidents manually, change severity, close or reopen | | ✓ |
-| Webhooks (incl. Discord), status pages, users and audit log | | ✓ |
+| | Member | Administrator | Owner |
+|---|---|---|---|
+| View the team's servers, domains, metrics, incidents and reports | ✓ | ✓ | ✓ |
+| Acknowledge, investigate, resolve, assign and comment on incidents | ✓ | ✓ | ✓ |
+| Manage own notifications, password, 2FA and API tokens | ✓ | ✓ | ✓ |
+| Add or change servers, domains, pages, scheduled jobs and alert rules | | ✓ | ✓ |
+| Create incidents manually, change severity, close or reopen | | ✓ | ✓ |
+| Webhooks and chat channels, status pages, members, audit log | | ✓ | ✓ |
+| Change an owner's role or remove an owner | | | ✓ |
+
+More in [Teams and roles](teams-and-roles). What your team can add depends on its plan; on Free, for example, 1 server and 3 domains, without API tokens and webhooks.
 
 ## Next steps
 
-1. [Add a server and install the agent](server-monitoring)
-2. [Monitor a domain](domain-monitoring)
-3. [Understand alerts and incidents](alerts-incidents)
-4. [Send notifications to Discord](discord-notifications)
+1. [Connect a server with one command](connect-server)
+2. [Monitor a domain](domain-monitoring) and [its pages](website-monitoring)
+3. [Monitor your cron jobs](scheduled-jobs)
+4. [Understand alerts and incidents](alerts-incidents)
+5. [Record dependencies](dependencies), so one outage becomes one incident
+6. [Send notifications to Slack, Teams or Telegram](chat-channels) or [Discord](discord-notifications)

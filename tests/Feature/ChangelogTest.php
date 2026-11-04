@@ -19,30 +19,56 @@ class ChangelogTest extends TestCase
         $this->withoutVite();
     }
 
-    public function test_existing_changelog_is_imported_once_with_drafts_unpublished(): void
+    public function test_existing_changelog_is_imported_once_and_published(): void
     {
         $this->artisan('site:defaults')->assertSuccessful();
         $this->artisan('site:defaults')->assertSuccessful();
 
-        // 0.1.0 + 26 October + 2 drafts, per locale, no duplicates.
-        $this->assertSame(8, Release::query()->count());
-        $this->assertSame(['draft', 'draft'], Release::query()->where('locale', 'nl')->where('status', 'draft')->pluck('status')->map->value->all());
+        // 0.1.0 + ten Markdown entries, per locale, no duplicates.
+        $this->assertSame(22, Release::query()->count());
+        $this->assertSame(0, Release::query()->where('status', 'draft')->count());
+
+        // Every entry has its own day, newest first.
+        $dates = Release::query()->where('locale', 'en')->orderByDesc('released_at')->pluck('released_at')->map->toDateString()->all();
+        $this->assertSame(array_values(array_unique($dates)), $dates);
+        $this->assertSame('2026-11-04', $dates[0]);
 
         // The 26 October body is the ServerScope changelog, unchanged after its heading.
         $source = file_get_contents(base_path('content/changelog/nl/2026-10-26-website-monitoring.md'));
         $release = Release::query()->where('locale', 'nl')->where('source_key', 'file:2026-10-26-website-monitoring')->sole();
         $this->assertStringEndsWith($release->body, $source);
         $this->assertStringContainsString('Monitoring per pagina', $release->body);
+        $this->assertStringNotContainsString('voorlopig alleen in het Nederlands', $release->body);
 
         $this->get('/nl/changelog')->assertOk()
-            ->assertSee('Websitemonitoring, slimme incidenten en voorspellingen')
+            ->assertSeeInOrder(['Automatische deploys, logs', 'Missiecontrole', 'NEXUS', 'Time Machine', 'Abonnementen', 'Nieuw ontwerp', 'Agent-updates', 'Een server koppelen met één commando', 'Teams en rollen', 'Websitemonitoring, slimme incidenten en voorspellingen'])
             ->assertSee('Monitoring per pagina')
             ->assertSee('v0.1.0')
-            ->assertSee('Agentverbinding via HTTPS', false)
-            ->assertDontSee('Teams en rollen')
-            ->assertDontSee('met één commando');
+            ->assertSee('Agentverbinding via HTTPS', false);
 
-        $this->get('/en/changelog')->assertOk()->assertSee('Website monitoring, smarter incidents and forecasts')->assertDontSee('Teams and roles');
+        $this->get('/en/changelog')->assertOk()
+            ->assertSee('Automatic deployments, logs, postmortems, scheduled jobs and chat channels (agent 0.4.0)')
+            ->assertSee('Website monitoring, smarter incidents and forecasts')
+            ->assertSee('Teams and roles');
+    }
+
+    public function test_entries_typed_into_the_panel_are_tidied_by_the_migration(): void
+    {
+        $migration = require database_path('migrations/2026_11_04_100000_tidy_changelog_entries.php');
+        $item = ['type' => 'new', 'text' => 'Meldingen per e-mail en in de app, met eigen voorkeuren per gebruiker.'];
+
+        $v2 = Release::query()->create(['locale' => 'nl', 'version' => '0.2.0', 'released_at' => '2026-10-26', 'items' => [['type' => 'new', 'text' => 'Domeinmonitoring'], $item, $item], 'status' => 'published']);
+        $v3 = Release::query()->create(['locale' => 'nl', 'version' => '0.3.0', 'released_at' => '2026-10-26', 'items' => [$item], 'status' => 'published']);
+        $v4 = Release::query()->create(['locale' => 'nl', 'version' => '0.4.0', 'released_at' => '2026-10-28', 'items' => [$item], 'status' => 'published']);
+
+        $migration->up();
+        $migration->up(); // repeatable
+
+        $this->assertSame([['type' => 'new', 'text' => 'Domeinmonitoring'], $item], $v2->fresh()->items);
+        $this->assertSame('2026-10-15', $v2->fresh()->released_at->toDateString());
+        $this->assertSame('2026-10-21', $v3->fresh()->released_at->toDateString());
+        $this->assertSame('draft', $v4->fresh()->status->value);
+        $this->assertSame([$item], $v3->fresh()->items);
     }
 
     public function test_entries_edited_in_the_panel_are_kept_and_hidden_features_hide_entries(): void

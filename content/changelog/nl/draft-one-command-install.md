@@ -1,7 +1,7 @@
 ---
-date: 2026-10-29
+date: 2026-10-28
 title: Een server koppelen met één commando
-status: draft
+status: published
 feature: one-command-install
 source: Amir03033/ServerScope agent/README.md en docs/AUDIT.md §6 (fase 2)
 ---

@@ -59,6 +59,24 @@ class AdminPanelRevampTest extends TestCase
             ->assertSee('Was dit nuttig?');
     }
 
+    public function test_the_november_content_opens_in_the_admin_panel(): void
+    {
+        $admin = $this->user('admin');
+
+        foreach (['deployments', 'dashboard-nexus', 'discord-notifications', 'status-pages'] as $slug) {
+            $doc = Doc::query()->where('locale', 'en')->where('slug', $slug)->sole();
+            $this->actingAs($admin)->get("/admin/docs/{$doc->id}/edit")->assertOk();
+            $this->assertArrayHasKey($doc->icon, \App\Filament\Resources\Docs\Schemas\DocForm::ICONS, $slug);
+        }
+
+        $release = \App\Models\Release::query()->where('locale', 'nl')->where('source_key', 'file:2026-11-04-deploys-logs')->sole();
+        $this->actingAs($admin)->get("/admin/releases/{$release->id}/edit")->assertOk();
+
+        $this->actingAs($admin)->get('/admin/features?tableSearch=NEXUS')->assertOk()->assertSee('Dashboard en NEXUS');
+        $this->actingAs($admin)->get('/admin/plan-rows')->assertOk();
+        $this->actingAs($admin)->get('/admin/releases')->assertOk()->assertSee('Automatische deploys, logs');
+    }
+
     public function test_editors_manage_content_but_not_users_settings_prices_or_feature_status(): void
     {
         $editor = $this->user('editor');

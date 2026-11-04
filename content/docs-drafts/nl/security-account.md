@@ -1,6 +1,6 @@
 # Beveiliging en accountbeheer
 
-Er zijn nog geen abonnementen actief: alle functies zijn beschikbaar in elke omgeving. Wat je mag doen, hangt af van je **rol** in je team (eigenaar, beheerder of lid; zie [Teams en rollen](teams-and-roles)). Sommige instellingen, zoals bewaartermijnen, regelt degene die ServerScope host.
+Wat je mag doen, hangt af van je **rol** in je team (eigenaar, beheerder of lid; zie [Teams en rollen](teams-and-roles)). Wat je team kan toevoegen en hoe lang de geschiedenis wordt bewaard, hangt af van het **plan** (Free, Pro of Premium); zie de prijspagina.
 
 | Functie | Wie |
 |---|---|
@@ -8,6 +8,8 @@ Er zijn nog geen abonnementen actief: alle functies zijn beschikbaar in elke omg
 | Leden uitnodigen, rollen wijzigen, leden verwijderen | Eigenaar of beheerder (de rol van een eigenaar wijzigt alleen een eigenaar) |
 | Auditlog bekijken | Eigenaar of beheerder |
 | Onderhoudsvensters voor servers en domeinen | Eigenaar of beheerder |
+| Plan, betaling en facturen (**Beheer → Abonnement en betaling**) | Eigenaar of beheerder |
+| Escalatiecontacten (maximaal 5 per team) | Eigenaar of beheerder |
 | Bewaartermijnen en e-mailinstellingen | Host van ServerScope (serverconfiguratie) |
 
 ## Tweestapsverificatie (2FA)
@@ -38,39 +40,47 @@ Bij het inloggen vraagt ServerScope voortaan na je wachtwoord om een code. Ben j
 
 1. Open [Beheer → Gebruikers]({app_url}/users).
 2. Vul bij **Gebruiker uitnodigen** de naam en het e-mailadres in en vink eventueel **Beheerder** aan.
-3. Klik op **Uitnodigen**. De gebruiker ontvangt een e-mail om zelf een wachtwoord in te stellen (60 minuten geldig).
+3. Klik op **Uitnodigen**. De persoon ontvangt een e-mail met een link die **7 dagen** geldig is en accepteert de uitnodiging zelf. Zolang die niet is geaccepteerd, kun je de uitnodiging intrekken of opnieuw sturen.
 
 Alle leden van een team zien de servers, domeinen en incidenten van dat team; eigenaren en beheerders wijzigen de configuratie. Beveiligingen:
 
 - Een team houdt altijd minstens één eigenaar en één beheerder; de laatste kan niet worden verwijderd of gedegradeerd.
-- Je kunt je eigen beheerdersrechten niet intrekken en je eigen account niet via *Gebruikers* verwijderen.
+- Je kunt je eigen beheerdersrechten niet intrekken en jezelf niet verwijderen onder **Gebruikers**.
 
 ## Auditlog
 
 Onder [Beheer → Auditlog]({app_url}/audit-logs) zien eigenaren en beheerders wie in hun team wat heeft gewijzigd, met tijdstip, gebruiker, onderdeel en IP-adres. Je kunt filteren op actie en gebruiker en zoeken.
 
-Vastgelegd worden onder andere: servers en domeinen (aanmaken, wijzigen, pauzeren, verwijderen, herstellen, onderhoud), agenttokens (uitgeven, roteren, intrekken), handmatige incidenten, statuspagina's, webhooks (inclusief vervangen van een Discord-URL en automatisch uitschakelen), API-tokens, en gebruikersacties (uitnodiging, rolwijziging, wachtwoord, 2FA, gebruik van herstelcodes).
+Vastgelegd worden onder andere: servers en domeinen (aanmaken, wijzigen, pauzeren, verwijderen, herstellen, onderhoud), agenttokens (uitgeven, roteren, intrekken), agent-updates, handmatige incidenten, statuspagina's, webhooks en chatkanalen (inclusief vervangen van een URL of bot-token en automatisch uitschakelen), GitHub-koppelingen, geplande taken (ook een nieuwe ping-URL), gedeelde nabeschouwingen, API-tokens, en gebruikersacties (uitnodiging, rolwijziging, wachtwoord, 2FA, gebruik van herstelcodes).
 
 > [!NOTE]
-> Geheimen (tokens, wachtwoorden, webhook-URL's van Discord) worden nooit in het auditlog opgeslagen. Wijzigingen aan **alertregels** worden op dit moment niet in het auditlog vastgelegd.
+> Geheimen (tokens, wachtwoorden, webhook-URL's, bottokens, ping-URL's) worden nooit in het auditlog opgeslagen. Wijzigingen aan **alertregels** worden op dit moment niet in het auditlog vastgelegd.
 
 ## Onderhoudsvensters
 
 Plan onderhoud zodat er geen onnodige incidenten ontstaan:
 
-- **Servers**: start op de serverpagina een onderhoudsvenster van 5 minuten tot 7 dagen, of stel bij *Bewerken* een start- en eindtijd in. Er worden dan geen alerts of incidenten voor die server aangemaakt.
-- **Domeinen**: stel bij *Bewerken* een start, einde en reden in. De controles lopen door, maar er ontstaan geen incidenten.
+- **Servers**: gebruik het paneel **onderhoud** op de serverpagina: start onderhoud nu voor een gekozen duur, of kies zelf een start- en eindtijd. Er worden dan geen nieuwe alerts of incidenten voor de server geopend.
+- **Domeinen**: stel bij **Bewerken** een start, einde en reden in. De controles lopen door, maar er ontstaan geen incidenten.
 - Op statuspagina's verschijnt het onderdeel als *Onderhoud*.
 
 Tijden worden ingevoerd en getoond in de tijdzone Europe/Amsterdam en opgeslagen in UTC.
 
+## Geheimen en persoonsgegevens
+
+- Webhook-URL's, bottokens van chatkanalen en het GitHub-webhookgeheim worden **versleuteld** opgeslagen, gemaskeerd getoond en uit foutmeldingen gefilterd.
+- Logregels worden **twee keer** ontdaan van wachtwoorden, tokens en e-mailadressen: door de agent en door ServerScope.
+- De ping-URL van een geplande taak is een geheim; vervang hem met **Nieuwe URL** als hij is uitgelekt.
+- Agent-updates zijn **ondertekend**; zelfs een gehackte ServerScope-server kan geen eigen code op je servers installeren. Zie [Agent-updates](agent-updates).
+- Elk team ziet alleen zijn eigen gegevens.
+
 ## Bewaartermijnen
 
-Standaard bewaart ServerScope alle historie. Wie ServerScope host, kan per soort gegevens een bewaartermijn in dagen instellen voor metingen, domeincontroles, verzendgeschiedenis van meldingen, gelezen meldingen en het auditlog (`SERVERSCOPE_RETAIN_*_DAYS`). Een dagelijkse taak (`serverscope:prune`) verwijdert oudere gegevens.
+Hoe lang de geschiedenis wordt bewaard, hangt af van het plan (Free: 14 dagen, Pro: 365 dagen, Premium: onbeperkt). Logregels blijven 14 dagen bewaard. Host je ServerScope zelf, dan stel je per soort gegevens een bewaartermijn in dagen in (`SERVERSCOPE_RETAIN_*_DAYS`); een dagelijkse taak verwijdert oudere gegevens.
 
 > [!WARNING]
 > Rapporten kunnen alleen periodes beslaan waarvoor nog gegevens bewaard zijn.
 
 ## Een beveiligingsprobleem melden
 
-Zie je iets dat niet klopt, of denk je dat een token of webhook-URL is uitgelekt? Trek het token in of vervang de URL (zie [Discord](discord-notifications) en [API en webhooks](api-webhooks)) en neem [contact](/nl/contact) op. Stuur nooit tokens, wachtwoorden of webhook-URL's mee.
+Zie je iets dat niet klopt, of denk je dat een token of webhook-URL is uitgelekt? Trek het token in of vervang de URL (zie [Slack, Teams en Telegram](chat-channels), [Discord](discord-notifications) en [API en webhooks](api-webhooks)) en neem [contact](/nl/contact) op. Stuur nooit tokens, wachtwoorden of webhook-URL's mee.

@@ -3,7 +3,7 @@ order: 20
 icon: code
 category: api
 feature: api
-description: All REST API v1 endpoints, permissions, error codes and repeatable write requests with Idempotency-Key.
+description: All REST API v1 endpoints including deployments, permissions, error codes, repeatable write requests, and the public ping, badge and webhook URLs.
 ---
 # API v1 reference
 
@@ -23,6 +23,8 @@ This is the overview of the REST API, version 1. How to create a token and recei
 - At most 120 requests per minute per token; above that HTTP 429.
 - Lists are paginated with `?page=2&per_page=50` (at most 100).
 - Times are ISO 8601 in UTC.
+- A token only sees the data of its own team.
+- API tokens are part of **Pro and Premium**; Free has no API tokens.
 
 ## Permissions
 
@@ -59,8 +61,35 @@ Every token can read. Writes need the `write` ability. Configuration changes (pa
 | POST | `/incidents/{id}/comments` | write | `message` |
 | POST | `/incidents/{id}/assign` | write | `user_id` (or `null`) |
 | GET | `/predictions` | read | `kind` = anomaly/forecast, `status` = active/resolved |
+| GET | `/deployments` | read | filters `application`, `environment` |
+| GET | `/deployments/{id}` | read | includes `analysis` (before/after) |
+| POST | `/deployments` | write | report a deployment (see below) |
 
 Severity values in the API: `info` (low), `warning` (medium), `high` and `critical`.
+
+## Deployments
+
+`POST /deployments` reports a deployment, so ServerScope can compare before and after (Deploy Judge). Deployments seen by the agent or GitHub need no API call; see [Deployments](deployments).
+
+| Field | Required | Rules |
+|---|---|---|
+| `application` | yes | at most 100 characters |
+| `environment` | no | `[A-Za-z0-9._-]`, at most 50, default `production` |
+| `version` | no | at most 100 |
+| `commit_sha` | no | 7 to 64 hex characters |
+| `deployed_at` | no | ISO 8601, within the last 30 days and at most 5 minutes ahead |
+| `source`, `actor` | no | for example `github-actions` and a user name |
+| `url` | no | link to the run or release |
+| `external_id` | no | sending the same value again returns the existing deployment (200) |
+| `resources` | yes | 1 to 50 items `{"type": "server"\|"domain"\|"page"\|"service", "id": n}`, of your own team only |
+
+```sh
+curl -sS -X POST {app_url}/api/v1/deployments \
+  -H "Authorization: Bearer $SERVERSCOPE_API_TOKEN" \
+  -H "Content-Type: application/json" -H "Accept: application/json" \
+  -H "Idempotency-Key: deploy-shop-1f3a9c2" \
+  -d '{"application":"shop","environment":"production","version":"1.4.2","commit_sha":"1f3a9c2","resources":[{"type":"server","id":3},{"type":"domain","id":7}]}'
+```
 
 ## Error codes
 
@@ -87,4 +116,18 @@ curl -s -X POST "{app_url}/api/v1/domains/3/pages" \
 ```
 
 > [!NOTE]
-> The agent uses its own endpoint (`POST /api/agent/metrics`) with agent tokens per server. Those tokens do not work for this API.
+> The agent uses its own endpoints (`/api/agent/…`) with agent tokens per server. Those tokens do not work for this API, and you never call those endpoints yourself.
+
+## Public URLs (no token)
+
+| Method | URL | Purpose |
+|---|---|---|
+| GET | `/install.sh` | Install script for the agent; see [Connect a server with one command](connect-server) |
+| GET/POST/HEAD | `/api/ping/{token}` · `/start` · `/fail` · `/{0-255}` | Check-ins of a [scheduled job](scheduled-jobs) |
+| POST | `/api/webhooks/github/{uuid}` | GitHub webhook of a connected repository; see [Deployments](deployments) |
+| GET | `/status/{slug}` and `/status/{slug}.json` | Public status page, also as JSON |
+| GET | `/status/{slug}/badge.svg` · `/status/{slug}/badge/{component}.svg` | Status badges; see [Status pages](status-pages) |
+| GET | `/postmortems/{token}` | A shared postmortem (read-only, can be revoked, not indexed) |
+| GET | `/up` | Health check of the application, for uptime tools |
+
+The ping token (32 characters, 0-9 and a-f) is the only secret of a scheduled job; a ping URL is limited to 120 requests per minute.

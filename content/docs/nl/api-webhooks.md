@@ -1,17 +1,17 @@
 ---
 order: 7
 icon: code
-description: De REST API gebruiken met een persoonlijk token, en ondertekende webhooks ontvangen en controleren.
+description: Een persoonlijk API-token aanmaken, de REST API gebruiken, en ondertekende webhooks ontvangen en controleren.
 ---
 # API en webhooks
 
-ServerScope heeft een **REST API** (versie 1) om gegevens op te halen en incidenten te behandelen, en **webhooks** die gebeurtenissen naar je eigen systeem sturen.
+ServerScope heeft een **REST API** (versie 1) om gegevens op te halen, incidenten te behandelen en deploys te melden, en **webhooks** die gebeurtenissen naar je eigen systeem sturen. Allebei horen bij **Pro en Premium**; Free heeft geen API-tokens en geen webhooks. Alle endpoints staan in het [API v1-overzicht](api-reference).
 
 ## API-token aanmaken
 
 1. Open [Profiel → API-tokens]({app_url}/profile/api-tokens).
 2. Geef het token een **Naam**, bijvoorbeeld `n8n` of `grafana`.
-3. Kies de **Bevoegdheden**: `read` zit er altijd in; voeg `write` alleen toe als het token incidenten moet bijwerken.
+3. Kies de **Bevoegdheden**: `read` zit er altijd in; voeg `write` alleen toe als het token incidenten moet bijwerken, deploys moet melden of instellingen moet wijzigen.
 4. Kies de **Geldigheid**: 30 dagen, 90 dagen, 1 jaar of onbeperkt.
 5. Klik op **Token aanmaken** en kopieer het token (begint met `ssk_`).
 
@@ -31,6 +31,7 @@ ServerScope heeft een **REST API** (versie 1) om gegevens op te halen en inciden
 - Alleen JSON. Lijsten zijn gepagineerd met `?page=2&per_page=50` (maximaal 100) en geven `data`, `links` en `meta` terug.
 - Tijden zijn ISO 8601 in UTC.
 - Maximaal 120 verzoeken per minuut per token.
+- Een token ziet alleen de gegevens van zijn eigen team.
 
 ## Endpoints
 
@@ -48,6 +49,9 @@ ServerScope heeft een **REST API** (versie 1) om gegevens op te halen en inciden
 | POST | `/incidents/{id}/investigate` | write | |
 | POST | `/incidents/{id}/resolve` | write | optioneel `notes` |
 | POST | `/incidents/{id}/comments` | write | `message` (verplicht) |
+| POST | `/deployments` | write | een deploy melden; zie het [API v1-overzicht](api-reference#deployments) |
+
+Pagina's, ontdekken, afhankelijkheden, services, prognoses en incidenten toewijzen staan in het [API v1-overzicht](api-reference).
 
 ## Voorbeelden
 
@@ -83,7 +87,7 @@ Fouten hebben de vorm `{"message": "...", "errors": {"veld": ["..."]}}`:
 
 | Status | Betekenis |
 |---|---|
-| 401 | Token ontbreekt of is ongeldig (*Ontbrekend of ongeldig API-token.*) |
+| 401 | Token ontbreekt of is ongeldig |
 | 403 | Het token mist de bevoegdheid, bijvoorbeeld `write` |
 | 404 | Het object bestaat niet |
 | 409 | Ongeldige statusovergang van een incident (bijvoorbeeld een gesloten incident oplossen) |
@@ -97,7 +101,9 @@ Fouten hebben de vorm `{"message": "...", "errors": {"veld": ["..."]}}`:
 
 Beheerders stellen webhooks in onder [Beheer → Webhooks]({app_url}/webhooks) met **Webhook toevoegen**: een naam, een publieke `https`-URL en de gebeurtenissen. Na het aanmaken zie je **één keer** het ondertekeningsgeheim (begint met `whsec_`).
 
-Gebeurtenissen: `incident.opened`, `incident.reopened`, `incident.resolved`, `incident.escalated` (drempel gepasseerd, ernst verhoogd of niet op tijd bevestigd), `dns.changed` en `test`.
+Gebeurtenissen: `incident.opened`, `incident.reopened`, `incident.resolved`, `incident.escalated` (drempel gepasseerd, ernst verhoogd of niet op tijd bevestigd), `dns.changed`, `page.changed` (een significante inhoudswijziging op een pagina waarvoor die melding aanstaat) en `test`.
+
+Algemene webhooks ontvangen **elk** incident, ook incidenten die onder een hoofdincident zijn gegroepeerd; die hebben `parent_id` en `correlation`, zodat je eigen systeem ze kan groeperen.
 
 Elke levering is een `POST` met een JSON-body:
 
@@ -145,4 +151,4 @@ valid = abs(time.time() - int(timestamp)) < 300 and hmac.compare_digest(expected
 - Op de webhookpagina zie je elke levering; mislukte leveringen kun je **Opnieuw** versturen. Met **Testlevering** stuur je een `test`-gebeurtenis.
 - **Geheim vernieuwen** maakt een nieuw geheim; het oude werkt direct niet meer.
 
-Wil je naar Discord sturen? Gebruik dan de aparte [Discord-koppeling](discord-notifications); die zet de gebeurtenissen om naar Discord-berichten.
+Liever berichten in een chatkanaal? Gebruik [Slack, Teams en Telegram](chat-channels) of [Discord](discord-notifications); die zetten de gebeurtenissen om naar chatberichten.

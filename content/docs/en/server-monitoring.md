@@ -1,13 +1,16 @@
 ---
 order: 2
 icon: server
-description: Add a server, install and configure the agent, verify that data arrives and fix common installation problems.
+description: Install the agent by hand, configure it (services, deployments, logs), verify that data arrives and fix common problems.
 ---
 # Server monitoring
 
-A server sends its own measurements to ServerScope with the **ServerScope agent**: a small Python program that collects CPU, load, memory, swap, disks, network counters and uptime every 60 seconds and sends them over HTTPS. The agent runs no commands and needs no open port; only outbound traffic to ServerScope on port 443.
+A server sends its own measurements to ServerScope with the **ServerScope agent**: a small Python program that collects CPU, load, memory, swap, disks, disk activity, network traffic and errors, the number of processes and uptime every 60 seconds and sends them over HTTPS. It can also report [services](service-checks), notice [deployments](deployments) and follow [log files](logs). The agent only reads data, runs no remote commands and needs no open port; only outbound traffic to ServerScope on port 443.
 
-For this guide you need an **administrator account** and root access (sudo) on the server.
+> [!TIP]
+> The quickest way is the install script: see [Connect a server with one command](connect-server). It also sets up [signed agent updates](agent-updates). This guide describes the **manual installation** and the configuration that applies to both.
+
+For this guide you need to be a team owner or administrator, and root access (sudo) on the server.
 
 ## Requirements
 
@@ -18,25 +21,25 @@ For this guide you need an **administrator account** and root access (sudo) on t
 - The agent files: the `agent/` directory of the ServerScope source code (`serverscope_agent/`, `requirements.txt` and `serverscope-agent.service`)
 
 > [!NOTE]
-> There is no installer script or package (yet). You copy the agent files to the server yourself, as described below.
+> For a manual installation you copy the agent files to the server yourself, as described below. No Python or systemd, for example in a container? Use the [Bash agent](bash-agent).
 
 ## 1. Add the server
 
-1. Open [Servers → Server toevoegen]({app_url}/servers/create) (Add server).
+1. Open [Servers → Add server]({app_url}/servers/add) and choose **Register manually**.
 2. Fill in:
-   - **Servernaam** (server name, required, max. 100 characters), for example `Production VPS`
+   - **Server name** (required, max. 100 characters), for example `Production VPS`
    - **Hostname** (required), for example `server.example.com`
-   - **IP-adres** and **Besturingssysteem** (IP address and operating system, optional, for reference)
-   - **Omgeving** (environment): Productie, Staging, Ontwikkeling, Test or Overig
-   - **Naam agentcredential** (credential name, default `Primary agent`)
-   - **Notities** (notes, optional)
-3. Click **Server registreren** (Register server).
+   - **IP address** and **Operating system** (optional, for reference)
+   - **Environment**: Production, Staging, Development, Test or Other
+   - the name of the agent credential (default `Primary agent`)
+   - **Notes** (optional)
+3. Click **Register server**.
 4. Copy the **agent token** that is now shown.
 
 > [!WARNING]
 > The agent token is shown **once**. ServerScope only stores a hash. If you lose it, generate a new token on the server page (see *Rotating the token*).
 
-The server now shows **In afwachting** (pending) until the first measurement arrives.
+The server now shows **Pending** until the first measurement arrives.
 
 ## 2. Install the agent
 
@@ -100,6 +103,9 @@ The agent reads `/opt/serverscope-agent/.env`:
 | `SERVERSCOPE_URL` | yes | Base URL of ServerScope. Must start with `https://`. |
 | `SERVERSCOPE_TOKEN` | yes | The agent token of this server. |
 | `SERVERSCOPE_INTERVAL` | no | Seconds between measurements. Default `60`, minimum `10`. |
+| `SERVERSCOPE_SERVICES` | no | Services to watch, for example `nginx,php8.4-fpm,mysql` (agent 0.2.0+). See [Service checks](service-checks). |
+| `SERVERSCOPE_DEPLOY_PATHS` | no | `name=/path,name2=/path2`: git checkouts (or bare repositories) to detect deployments (agent 0.4.0+). See [Deployments](deployments). |
+| `SERVERSCOPE_LOG_FILES` | no | `name=/path/file.log,…`: log files to follow (agent 0.4.0+). See [Logs](logs). |
 
 Restart after a change: `sudo systemctl restart serverscope-agent`.
 
@@ -121,27 +127,34 @@ Restart after a change: `sudo systemctl restart serverscope-agent`.
 
    A valid token returns `{"authenticated":true,"server_id":…,"server_name":"…"}`.
 
-3. Open the server under [Servers]({app_url}/servers). Its status becomes **Online**, *Laatste meting* (last measurement) keeps updating and the CPU, memory, disk and network charts fill up.
+3. Open the server under [Servers]({app_url}/servers). Its status becomes **Online**, *Latest measurement* keeps updating and the charts fill up: CPU, memory, swap, disks, disk activity, network traffic and network errors. On the dashboard the server's heartbeat starts beating.
+
+## Server diagnosis
+
+At the top of the server page the **diagnosis** explains in plain words what is going on. ServerScope separates situations that look alike from the outside: a stopped service (the agent still reports), an agent that does not respond (websites on the server still work) and a server that is really unreachable (its websites fail too). It also shows missing data, an outdated agent and the agent's integrity (a known build, an unknown build or not verified).
 
 ## Troubleshooting
 
 | What you see | Cause and fix |
 |---|---|
-| `Metrics submission failed.` in the log | The agent cannot reach ServerScope or the token is rejected. Test with the `curl` command above and check firewalls/proxies for outbound traffic on port 443. |
-| `ping` answers *Ongeldige of niet meer geldige agentcredential.* (HTTP 401) | The token is wrong, revoked or rotated. Generate a new token and put it in `.env`. |
+| `Metrics submission failed.` in the log | The agent cannot reach ServerScope. Test with the `curl` command above and check firewalls/proxies for outbound traffic on port 443. |
+| `Metrics submission failed: HTTP 401, token rejected; …` (or `ping` answers HTTP 401) | The token is wrong, revoked or rotated, or belongs to another ServerScope URL. Generate a new token and put it in `.env`. |
+| `Metrics submission failed: HTTP 404, endpoint not found; …` | `SERVERSCOPE_URL` is wrong; use the base URL without a path. |
+| `Metrics submission failed: HTTP 422, rejected fields: …` | ServerScope refused part of the sample, usually because the clock is off (see below). The log names the fields, never values or tokens. |
+| `Metrics submission failed: HTTP 429, rate limited; …` | Increase `SERVERSCOPE_INTERVAL`. |
 | `SERVERSCOPE_URL must be a valid HTTPS base URL.` | Use `{app_url}` with `https://` and without a path. |
 | `SERVERSCOPE_INTERVAL must be at least 10 seconds.` | Choose an interval of 10 seconds or more. |
 | The service does not start, or `Permission denied` on `.env` | Check owner and mode (`root:serverscope`, `640`) and `systemctl status serverscope-agent`. |
-| The server stays **In afwachting** or turns **Offline** while the agent runs (and the log shows `Metrics submission failed.`) | Check the clock: measurements more than 30 seconds in the future or more than 10 minutes in the past are rejected. |
+| The server stays **Pending** or turns **Offline** while the agent runs (and the log shows `Metrics submission failed.`) | Check the clock: measurements more than 30 seconds in the future or more than 10 minutes in the past are rejected. |
 
 > [!IMPORTANT]
 > A server that sends nothing for 2 minutes is shown as **Offline**. The default alert rule *Agent offline* opens a **critical** incident after 5 minutes of silence. See [Alerts and incidents](alerts-incidents).
 
 ## Rotating the token
 
-On the server page, under **Agentcredentials**:
+On the server page, under **Agent credentials**:
 
-1. Click **Token roteren** (Rotate token). All active tokens of this server are revoked and one new token is shown.
+1. Click **Rotate token**. All active tokens of this server are revoked and one new token is shown.
 2. Put the new token in `/opt/serverscope-agent/.env`.
 3. Restart: `sudo systemctl restart serverscope-agent`.
 
@@ -149,4 +162,4 @@ The old token stops working immediately. You can also create an **Extra token** 
 
 ## Maintenance
 
-Planning work on a server? Start a **maintenance window** on the server page (5 minutes to 7 days) or set a start and end time under **Bewerken** (Edit). During maintenance no alerts or incidents are created for that server.
+Planning work on a server? Use the **maintenance** panel on the server page: start maintenance now for a set time, or choose your own start and end time. During maintenance no new alerts or incidents are opened for the server's resource metrics, agent offline and service checks.

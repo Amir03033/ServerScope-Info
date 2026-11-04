@@ -26,6 +26,8 @@ class DocForm
         'book' => 'Boek', 'server' => 'Server', 'globe' => 'Wereldbol', 'bell' => 'Bel', 'pulse' => 'Hartslag',
         'code' => 'Code', 'shield' => 'Schild', 'lock' => 'Slot', 'users' => 'Gebruikers', 'terminal' => 'Terminal',
         'chart' => 'Grafiek', 'chat' => 'Bericht', 'clock' => 'Klok', 'cpu' => 'Processor',
+        'message' => 'Chatballon', 'link' => 'Koppeling', 'flag' => 'Vlag', 'logs' => 'Logbestand', 'search' => 'Zoeken',
+        'map' => 'Kaart', 'phone' => 'Telefoon', 'status' => 'Status',
     ];
 
     public static function configure(Schema $schema): Schema

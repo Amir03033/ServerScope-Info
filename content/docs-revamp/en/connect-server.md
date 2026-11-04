@@ -22,7 +22,7 @@ Does your server not meet these requirements? See the [manual installation](serv
 
 ## 1. Create an enrollment token
 
-In ServerScope open **Servers → Server toevoegen → Linux → Koppeltoken aanmaken**. The page shows the install command and an enrollment token.
+In ServerScope open **Servers → Add server → Linux → Create enrolment token**. The page shows the install command and an enrollment token.
 
 - The token is valid for **60 minutes** and works **once**.
 - You can **revoke** a token on the same page.

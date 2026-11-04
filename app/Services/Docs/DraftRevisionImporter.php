@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\File;
 /**
  * Imports content/docs-drafts/{locale}/{slug}.md as DRAFT revisions of an
  * existing page. The published page is not touched; a draft only goes
- * live when someone publishes it in the admin panel. Repeatable: the same
- * draft is never added twice.
+ * live when someone publishes it in the admin panel. Used for pages that
+ * were edited in the panel, which the regular import no longer updates.
+ * Repeatable: the same draft is never added twice, and a draft that is
+ * already the published text is skipped.
  */
 class DraftRevisionImporter
 {
-    public const REASON = 'Concept: bijgewerkt voor teams en rollen (eigenaar, beheerder, lid)';
+    public const REASON = 'Concept: bijgewerkt voor de functies van november 2026 (plannen, chatkanalen, geheimen)';
 
     /**
      * @return array<int, array{locale: string, slug: string, action: string}>
@@ -31,6 +33,12 @@ class DraftRevisionImporter
 
                 if ($doc === null) {
                     $report[] = ['locale' => $locale, 'slug' => $slug, 'action' => 'overgeslagen: pagina bestaat niet'];
+
+                    continue;
+                }
+
+                if (hash('sha256', $doc->body) === hash('sha256', $body)) {
+                    $report[] = ['locale' => $locale, 'slug' => $slug, 'action' => 'ongewijzigd: al gepubliceerd'];
 
                     continue;
                 }

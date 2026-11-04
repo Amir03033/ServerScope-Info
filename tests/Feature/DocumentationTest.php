@@ -87,7 +87,9 @@ class DocumentationTest extends TestCase
     {
         // Verified against routes/web.php of ServerScope Core.
         $known = ['', '/login', '/servers', '/servers/create', '/domains/create', '/alert-rules', '/alert-rules/create',
-            '/alerts', '/incidents', '/profile', '/profile/api-tokens', '/webhooks', '/status-pages', '/users', '/audit-logs'];
+            '/alerts', '/incidents', '/profile', '/profile/api-tokens', '/webhooks', '/status-pages', '/users', '/audit-logs',
+            '/servers/add', '/domains', '/dashboard', '/dependencies', '/deployments', '/deployments/sources', '/logs', '/heartbeats',
+            '/reports', '/nexus', '/nexus/skyline', '/nexus/globe', '/nexus/timelapse', '/nexus/wall', '/status/<slug>/badge.svg'];
 
         foreach (['nl', 'en'] as $locale) {
             foreach (File::files(base_path("content/docs/{$locale}")) as $file) {

@@ -153,6 +153,7 @@ before.
 
 - Incidents of different servers and websites are only grouped when you
   have recorded their relation under **Dependencies**.
-- The interface is available in Dutch only for now.
+- At the time of this release the interface was in Dutch only. Since 30
+  October ServerScope is bilingual: English by default, Dutch as an option.
 - "No problems found" means the configured checks report nothing. It is not
   a guarantee that a server or website is secure.

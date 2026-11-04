@@ -1,13 +1,16 @@
 ---
 order: 2
 icon: server
-description: Een server toevoegen, de agent installeren en configureren, controleren dat er data binnenkomt en veelvoorkomende problemen oplossen.
+description: De agent met de hand installeren, instellen (services, deploys, logs), controleren dat er data binnenkomt en veelvoorkomende problemen oplossen.
 ---
 # Servermonitoring
 
-Een server stuurt zijn metingen zelf naar ServerScope met de **ServerScope-agent**: een klein Python-programma dat elke 60 seconden CPU, load, geheugen, swap, schijven, netwerktellers en uptime verzamelt en via HTTPS verstuurt. De agent voert geen opdrachten uit en heeft geen open poort nodig; alleen uitgaand verkeer naar ServerScope op poort 443.
+Een server stuurt zijn metingen zelf naar ServerScope met de **ServerScope-agent**: een klein Python-programma dat elke 60 seconden CPU, load, geheugen, swap, schijven, schijfactiviteit, netwerkverkeer en -fouten, het aantal processen en de uptime verzamelt en via HTTPS verstuurt. Hij kan ook [services](service-checks) melden, [deploys](deployments) zien en [logbestanden](logs) volgen. De agent leest alleen gegevens, voert geen opdrachten op afstand uit en heeft geen open poort nodig; alleen uitgaand verkeer naar ServerScope op poort 443.
 
-Voor deze handleiding heb je een **beheerdersaccount** nodig en root-toegang (sudo) op de server.
+> [!TIP]
+> De snelste weg is het installatiescript: zie [Een server koppelen met één commando](connect-server). Dat zet ook [ondertekende agent-updates](agent-updates) klaar. Deze handleiding beschrijft de **handmatige installatie** en de instellingen die voor allebei gelden.
+
+Voor deze handleiding moet je eigenaar of beheerder van het team zijn, en heb je root-toegang (sudo) op de server nodig.
 
 ## Vereisten
 
@@ -18,11 +21,11 @@ Voor deze handleiding heb je een **beheerdersaccount** nodig en root-toegang (su
 - De agentbestanden: de map `agent/` uit de ServerScope-broncode (`serverscope_agent/`, `requirements.txt` en `serverscope-agent.service`)
 
 > [!NOTE]
-> Er is (nog) geen installatiescript of pakket. Je kopieert de agentbestanden zelf naar de server, zoals hieronder beschreven.
+> Bij een handmatige installatie kopieer je de agentbestanden zelf naar de server, zoals hieronder beschreven. Geen Python of systemd, bijvoorbeeld in een container? Gebruik de [Bash-agent](bash-agent).
 
 ## 1. De server toevoegen
 
-1. Open [Servers → Server toevoegen]({app_url}/servers/create).
+1. Open [Servers → Server toevoegen]({app_url}/servers/add) en kies **Handmatig registreren**.
 2. Vul in:
    - **Servernaam** (verplicht, max. 100 tekens), bijvoorbeeld `Production VPS`
    - **Hostname** (verplicht), bijvoorbeeld `server.example.com`
@@ -100,6 +103,9 @@ De agent leest `/opt/serverscope-agent/.env`:
 | `SERVERSCOPE_URL` | ja | Basis-URL van ServerScope. Moet met `https://` beginnen. |
 | `SERVERSCOPE_TOKEN` | ja | Het agenttoken van deze server. |
 | `SERVERSCOPE_INTERVAL` | nee | Seconden tussen metingen. Standaard `60`, minimaal `10`. |
+| `SERVERSCOPE_SERVICES` | nee | Services om te bewaken, bijvoorbeeld `nginx,php8.4-fpm,mysql` (agent 0.2.0+). Zie [Diensten bewaken](service-checks). |
+| `SERVERSCOPE_DEPLOY_PATHS` | nee | `naam=/pad,naam2=/pad2`: git-checkouts (of bare repositories) voor deploydetectie (agent 0.4.0+). Zie [Deployments](deployments). |
+| `SERVERSCOPE_LOG_FILES` | nee | `naam=/pad/bestand.log,…`: logbestanden om te volgen (agent 0.4.0+). Zie [Logs](logs). |
 
 Herstart na een wijziging: `sudo systemctl restart serverscope-agent`.
 
@@ -121,14 +127,21 @@ Herstart na een wijziging: `sudo systemctl restart serverscope-agent`.
 
    Een geldig token geeft `{"authenticated":true,"server_id":…,"server_name":"…"}`.
 
-3. Open de server in [Servers]({app_url}/servers). De status wordt **Online**, *Laatste meting* loopt mee en de grafieken voor CPU, geheugen, schijven en netwerk vullen zich.
+3. Open de server in [Servers]({app_url}/servers). De status wordt **Online**, *Laatste meting* loopt mee en de grafieken vullen zich: CPU, geheugen, swap, schijven, schijfactiviteit, netwerkverkeer en netwerkfouten. Op het dashboard begint de hartslag van de server te kloppen.
+
+## Diagnose van de server
+
+Bovenaan de serverpagina legt de **diagnose** in gewone woorden uit wat er aan de hand is. ServerScope onderscheidt situaties die er van buiten hetzelfde uitzien: een gestopte service (de agent meldt zich nog), een agent die niet reageert (websites op de server werken nog) en een server die echt onbereikbaar is (de websites erop vallen ook uit). Ook ontbrekende gegevens, een verouderde agent en de integriteit van de agent (een bekende build, een onbekende build of niet geverifieerd) staan erbij.
 
 ## Problemen oplossen
 
 | Wat je ziet | Oorzaak en oplossing |
 |---|---|
-| `Metrics submission failed.` in het log | De agent kan ServerScope niet bereiken of het token wordt geweigerd. Test met de `curl`-opdracht hierboven en controleer firewall/proxy voor uitgaand verkeer op poort 443. |
-| `ping` antwoordt met *Ongeldige of niet meer geldige agentcredential.* (HTTP 401) | Het token is fout, ingetrokken of geroteerd. Genereer een nieuw token en zet het in `.env`. |
+| `Metrics submission failed.` in het log | De agent kan ServerScope niet bereiken. Test met de `curl`-opdracht hierboven en controleer firewall/proxy voor uitgaand verkeer op poort 443. |
+| `Metrics submission failed: HTTP 401, token rejected; …` (of `ping` antwoordt met HTTP 401) | Het token is fout, ingetrokken of geroteerd, of hoort bij een ander ServerScope-adres. Genereer een nieuw token en zet het in `.env`. |
+| `Metrics submission failed: HTTP 404, endpoint not found; …` | `SERVERSCOPE_URL` klopt niet; gebruik de basis-URL zonder pad. |
+| `Metrics submission failed: HTTP 422, rejected fields: …` | ServerScope weigerde een deel van de meting, meestal omdat de klok niet klopt (zie hieronder). Het log noemt de velden, nooit waarden of tokens. |
+| `Metrics submission failed: HTTP 429, rate limited; …` | Verhoog `SERVERSCOPE_INTERVAL`. |
 | `SERVERSCOPE_URL must be a valid HTTPS base URL.` | Gebruik `{app_url}` zonder pad en met `https://`. |
 | `SERVERSCOPE_INTERVAL must be at least 10 seconds.` | Kies een interval van 10 seconden of meer. |
 | Service start niet, of `Permission denied` op `.env` | Controleer eigenaar en rechten (`root:serverscope`, `640`) en `systemctl status serverscope-agent`. |
@@ -149,4 +162,4 @@ Het oude token werkt direct niet meer. Je kunt ook een **Extra token** aanmaken 
 
 ## Onderhoud
 
-Plan je werk aan een server, start dan een **onderhoudsvenster** op de serverpagina (5 minuten tot 7 dagen) of vul een start- en eindtijd in bij **Bewerken**. Tijdens onderhoud worden er voor die server geen alerts of incidenten aangemaakt.
+Plan je werk aan een server, gebruik dan het paneel **onderhoud** op de serverpagina: start onderhoud nu voor een gekozen duur, of kies zelf een start- en eindtijd. Tijdens onderhoud worden er voor de resourcemetingen, agent offline en servicecontroles van de server geen nieuwe alerts of incidenten geopend.

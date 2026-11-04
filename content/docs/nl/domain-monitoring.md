@@ -49,14 +49,23 @@ De eerste resultaten verschijnen binnen een paar minuten op de domeinpagina. Met
 |---|---|---|
 | HTTP | Na *Faaldrempel* mislukte controles op rij: “… is onbereikbaar” | Kritiek |
 | SSL | Ongeldig certificaat (verlopen, nog niet geldig, verkeerde hostname, onbetrouwbaar of self-signed) | Kritiek |
-| SSL-vervaldatum | Bij het passeren van een waarschuwingsmoment: “Certificaat van … verloopt over N dagen” | Waarschuwing; kritiek bij 3 dagen of minder |
+| SSL-vervaldatum | Bij het passeren van een waarschuwingsmoment: “Certificaat van … verloopt over N dagen” | Gemiddeld; kritiek bij 3 dagen of minder |
 | DNS | Na *Faaldrempel* mislukte resoluties op rij | Kritiek |
-| Registratie | Bij het passeren van een waarschuwingsmoment | Waarschuwing; kritiek bij 7 dagen of minder |
+| Registratie | Bij het passeren van een waarschuwingsmoment | Gemiddeld; kritiek bij 7 dagen of minder |
 
 - Herhaalde mislukkingen werken hetzelfde incident bij; er komt geen nieuw incident per controle.
 - Passeert een vervaldatum een volgend (lager) waarschuwingsmoment terwijl het incident nog open is, dan wordt het incident **geëscaleerd**.
 - Bij herstel (na de *Hersteldrempel*, of een vernieuwd certificaat) wordt het incident automatisch opgelost.
 - **DNS-wijzigingen** maken geen incident aan, maar worden bewaard in de DNS-geschiedenis en kunnen een melding sturen (instelbaar per gebruiker).
+- Is er een externe **probe** ingesteld, dan wordt een HTTP-storing eerst vanaf een tweede locatie bevestigd voordat het incident opent. Een probe controleert alleen als er een storing te bevestigen is.
+
+## Certificaatgeschiedenis
+
+De domeinpagina bewaart elk certificaat dat ServerScope voor het domein heeft gezien, met de uitgever, de geldigheid en wanneer het in gebruik was. Handig om te zien wanneer een certificaat is vernieuwd, of dat er ineens een andere uitgever opduikt.
+
+## Meer pagina's van dezelfde website
+
+De HTTP-controle bewaakt één URL per domein. Meer pagina's, zoals `/prijzen` of `/api/health`, voeg je toe op het tabblad **Website & pagina's**; zie [Websitemonitoring](website-monitoring).
 
 > [!WARNING]
 > Niet elke registry publiceert een vervaldatum via RDAP. De registratiestatus heet alleen **verified** als de registry een datum teruggeeft; anders kan ServerScope niet waarschuwen voor het verlopen van die registratie.
