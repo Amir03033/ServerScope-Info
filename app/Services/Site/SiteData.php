@@ -66,6 +66,20 @@ class SiteData
     }
 
     /**
+     * Where "Try the demo" goes, or null while the demo is switched off.
+     */
+    public function demoUrl(): ?string
+    {
+        if (! Setting::get('demo_enabled')) {
+            return null;
+        }
+
+        $url = (string) (Setting::get('demo_url') ?: rtrim((string) config('serverscope.app_url'), '/').'/demo');
+
+        return preg_match('~\Ahttps?://~i', $url) === 1 ? $url : null;
+    }
+
+    /**
      * Where a plan button goes: the plan's own link or the sign-up URL when
      * registration is open (with ?plan=key), otherwise an external waiting list (when set) or this site's own one.
      */

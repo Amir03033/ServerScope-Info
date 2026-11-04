@@ -310,7 +310,8 @@ REVAMP = {
     'cta2_title': 'Begin met de documentatie.', 'cta2_text': 'Van het koppelen van je eerste server tot deploys, logs en meldingen in Slack of Discord: de handleidingen leggen elke stap uit.',
   },
   'features': {'v2_intro': 'Servers, websites, domeinen, geplande taken, deploys, logs, incidenten, NEXUS en meldingen in één omgeving. Functies met het label binnenkort zijn nog niet beschikbaar.'},
-  'common': {'coming_soon': 'Binnenkort', 'example': 'Voorbeeld', 'read_more': 'Lees meer', 'last_updated': 'Laatst bijgewerkt'},
+  'common': {'coming_soon': 'Binnenkort', 'example': 'Voorbeeld', 'read_more': 'Lees meer', 'last_updated': 'Laatst bijgewerkt',
+             'demo': 'Probeer de demo', 'demo_note': 'Voorbeeldgegevens, geen account nodig'},
   'status2': {
     'operational': 'Alle systemen operationeel', 'degraded': 'Verminderde prestaties', 'partial_outage': 'Gedeeltelijke storing',
     'major_outage': 'Grote storing', 'maintenance': 'Onderhoud', 'unknown': 'Status momenteel onbekend',
@@ -364,7 +365,8 @@ REVAMP = {
     'cta2_title': 'Start with the documentation.', 'cta2_text': 'From connecting your first server to deployments, logs and notifications in Slack or Discord: the guides explain every step.',
   },
   'features': {'v2_intro': 'Servers, websites, domains, scheduled jobs, deployments, logs, incidents, NEXUS and notifications in one environment. Features labelled coming soon are not available yet.'},
-  'common': {'coming_soon': 'Coming soon', 'example': 'Example', 'read_more': 'Read more', 'last_updated': 'Last updated'},
+  'common': {'coming_soon': 'Coming soon', 'example': 'Example', 'read_more': 'Read more', 'last_updated': 'Last updated',
+             'demo': 'Try the demo', 'demo_note': 'Sample data, no account needed'},
   'status2': {
     'operational': 'All systems operational', 'degraded': 'Degraded performance', 'partial_outage': 'Partial outage',
     'major_outage': 'Major outage', 'maintenance': 'Maintenance', 'unknown': 'Status currently unknown',

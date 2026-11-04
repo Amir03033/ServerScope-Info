@@ -35,6 +35,9 @@ class Setting extends Model
         'release_fingerprint' => null,
         // Cookieless page counter (aggregated per path per day).
         'pageview_counter' => true,
+        // "Try the demo" buttons; the demo itself is part of ServerScope.
+        'demo_enabled' => false,
+        'demo_url' => null,            // empty = {SERVERSCOPE_APP_URL}/demo
     ];
 
     /**

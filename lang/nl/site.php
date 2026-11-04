@@ -265,6 +265,8 @@ return [
         'example' => 'Voorbeeld',
         'read_more' => 'Lees meer',
         'last_updated' => 'Laatst bijgewerkt',
+        'demo' => 'Probeer de demo',
+        'demo_note' => 'Voorbeeldgegevens, geen account nodig',
     ],
     'status2' => [
         'operational' => 'Alle systemen operationeel',

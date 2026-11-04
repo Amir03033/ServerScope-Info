@@ -265,6 +265,8 @@ return [
         'example' => 'Example',
         'read_more' => 'Read more',
         'last_updated' => 'Last updated',
+        'demo' => 'Try the demo',
+        'demo_note' => 'Sample data, no account needed',
     ],
     'status2' => [
         'operational' => 'All systems operational',
